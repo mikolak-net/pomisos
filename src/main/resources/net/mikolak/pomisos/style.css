@@ -1,0 +1,16 @@
+.header {
+    -fx-font-size: 20;
+    -fx-font-style: oblique;
+}
+
+.timeDisplay {
+    -fx-font-size: 40;
+}
+
+.table-row-cell {
+    -fx-cell-size: 35px;
+}
+
+.pomodoro-completed-text .text {
+    -fx-strikethrough: true;
+}
