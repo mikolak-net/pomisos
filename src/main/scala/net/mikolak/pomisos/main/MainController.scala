@@ -6,6 +6,7 @@ import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.crud.{AddNew, AddNewController}
 import net.mikolak.pomisos.data.Id
 import net.mikolak.pomisos.prefs._
+import net.mikolak.pomisos.run.{RunView, RunViewController}
 import net.mikolak.pomisos.utils.Notifications
 
 import scala.concurrent.duration._

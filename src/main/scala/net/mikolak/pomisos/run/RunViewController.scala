@@ -1,25 +1,25 @@
-package net.mikolak.pomisos.main
+package net.mikolak.pomisos.run
 
-import java.time.{Instant, LocalDateTime, ZoneOffset}
 import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 
-import akka.actor.{Actor, ActorSystem, Cancellable, Props}
-import gremlin.scala.ScalaGraph
-import gremlin.scala._
+import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
+import gremlin.scala.{ScalaGraph, _}
+import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.Pomodoro
-import net.mikolak.pomisos.prefs.{Command, Preference}
+import net.mikolak.pomisos.main.{PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.prefs.{Command, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
-import net.mikolak.pomisos.utils.{Implicits, Notifications}
+import net.mikolak.pomisos.utils.Notifications
 
-import scalafxml.core.macros.sfxml
-import scalafx.Includes._
+import scala.concurrent.duration._
+import scala.language.postfixOps
 import scalafx.application.Platform
 import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
-import scalafx.scene.text.Text
-import scala.concurrent.duration._
-import language.postfixOps
 import scalafx.event.ActionEvent
+import scalafx.scene.text.Text
+import scalafxml.core.macros.sfxml
 
 trait RunView {
 
@@ -76,7 +76,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   timerText.text <== Bindings.createStringBinding(() => formatter.format(
     LocalDateTime.ofEpochSecond(remainingSeconds.toLong, 0, ZoneOffset.UTC)), remainingSeconds)
 
-  private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds))
+  private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, db))
 
   //TODO: TEMP
   private def processes = db.V.hasLabel[Command].toCC[Command].map(cmd => processMan.processFor(cmd.cmd)).toList
@@ -111,10 +111,10 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   runningPomodoro.onChange((obs, _, newVal) => for(newPomodoro <- newVal if newVal.isDefined) {
     println(s"Running Pomodoro $newPomodoro")
-    val breakDuration = if (pomodoroCounter > 1 && (pomodoroCounter - 1) % Preference.current(db).pomodorosForLongBreak == 0) Preference.current(db).longBreakLength else Preference.current(db).shortBreakLength
+    val breakDuration = if (pomodoroCounter > 1 && (pomodoroCounter - 1) % Preferences.current(db).length.pomodorosForLongBreak == 0) Preferences.current(db).length.longBreak else Preferences.current(db).length.shortBreak
 
     timerStack ::= TimerPeriod(None, BreakText, breakDuration)
-    timerStack ::= TimerPeriod(Some(newPomodoro.id), newPomodoro.name, Preference.current(db).pomodoroLength)
+    timerStack ::= TimerPeriod(Some(newPomodoro.id), newPomodoro.name, Preferences.current(db).length.pomodoro)
     updateRunning(timerStack.headOption)
   })
 
@@ -145,17 +145,25 @@ class RunViewController(val currentPomodoroDisplay: Text,
 }
 
 
-case class TimerActor(remainingSeconds: LongProperty) extends Actor {
+case class TimerActor(remainingSeconds: LongProperty, db: ScalaGraph) extends Actor { //TODO: actor injection
 
   var currentSchedule: Option[Cancellable] = None
+
+  var ticker: Option[ActorRef] = None
 
   override def receive = {
     case Start =>
       toggleScheduler()
+      if(Preferences.current(db).playTick) {
+        ticker = Some(context.actorOf(Props[TickPlayer]))
+      }
     case Stop =>
       handleUpdate(0)
+      ticker.foreach(_ ! PoisonPill)
+      ticker = None
     case Tick =>
       handleUpdate(remainingSeconds.value - 1)
+      ticker.foreach(_ ! Tick)
     case PauseResume =>
       toggleScheduler()
   }
@@ -179,14 +187,15 @@ case class TimerActor(remainingSeconds: LongProperty) extends Actor {
   }
 }
 
-class AudioActor(db: ScalaGraph) extends Actor {
-
-
+class TickPlayer extends Actor {
+  lazy val ticker = new SamplePlayer("/net/mikolak/pomisos/audio/clock_tick.wav")
 
   override def receive = {
-
+    case Tick =>
+      ticker.play()
   }
 }
+
 
 case object Tick
 

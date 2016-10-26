@@ -12,11 +12,11 @@ import scalafx.event.ActionEvent
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafxml.core.macros.{nested, sfxml}
 import gremlin.scala._
-import scalafx.Includes._
 
+import scalafx.Includes._
 import scala.concurrent.duration.Duration
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.control.{ListView, SelectionMode, Spinner}
+import scalafx.scene.control.{CheckBox, ListView, SelectionMode, Spinner}
 import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import scalafx.scene.control.cell.TextFieldListCell
 import scalafx.scene.input.{KeyCode, KeyEvent}
@@ -40,7 +40,8 @@ class PrefsController(
                        val minutesPomodoro: Spinner[Integer],
                        val minutesBreakShort: Spinner[Integer],
                        val minutesBreakLong: Spinner[Integer],
-                       val numberOfPomodorosUntilLongBreak: Spinner[Integer]
+                       val numberOfPomodorosUntilLongBreak: Spinner[Integer],
+                       val playTick: CheckBox
                      ) extends PrefsPage {
 
   lazy val visible: BooleanProperty = mainPane.visible
@@ -52,12 +53,13 @@ class PrefsController(
   appsView.visible <== mode === AppPreferences
   prefsView.visible <== mode === GeneralPreferences
 
-  def preferences = Preference.current(db)
+  def preferences = Preferences.current(db)
   //TODO: shapeless?
-  minutesPomodoro.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.pomodoroLength.toMinutes.toInt)
-  minutesBreakShort.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.shortBreakLength.toMinutes.toInt)
-  minutesBreakLong.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.longBreakLength.toMinutes.toInt)
-  numberOfPomodorosUntilLongBreak.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.pomodorosForLongBreak)
+  minutesPomodoro.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.pomodoro.toMinutes.toInt)
+  minutesBreakShort.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.shortBreak.toMinutes.toInt)
+  minutesBreakLong.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.longBreak.toMinutes.toInt)
+  numberOfPomodorosUntilLongBreak.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.pomodorosForLongBreak)
+  playTick.selected.value = preferences.playTick
 
   private def allCmds = db.V.hasLabel[Command]
   val cmds = ObservableBuffer(allCmds.map(_.toCC[Command].cmd).toList)
@@ -87,9 +89,10 @@ class PrefsController(
   })
 
   def toMain(actionEvent: ActionEvent) = {
-    db.V.hasLabel[Preference].head().updateAs[Preference](_.copy(pomodoroLength = minutesPomodoro.value.value.toInt minutes,
-      shortBreakLength = minutesBreakShort.value.value.toInt minutes, longBreakLength = minutesBreakLong.value.value.toInt minutes,
-      pomodorosForLongBreak = numberOfPomodorosUntilLongBreak.value.value.toInt))
+    db.V.hasLabel[Preferences].head().updateAs[Preferences](_.copy(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
+      minutesBreakShort.value.value.toInt minutes,  minutesBreakLong.value.value.toInt minutes,
+      numberOfPomodorosUntilLongBreak.value.value.toInt),
+      playTick = playTick.selected.value))
     visible.value = false
   }
 
@@ -98,13 +101,15 @@ class PrefsController(
 
 case class Command(cmd: String)
 
-case class Preference(pomodoroLength: Duration, shortBreakLength: Duration, longBreakLength: Duration, pomodorosForLongBreak: Int)
+case class Preferences(length: LengthPreferences, playTick: Boolean)
 
-object Preference {
-  def Default = Preference(25 minutes, 5 minutes, 20 minutes, 4)
+case class LengthPreferences(pomodoro: Duration, shortBreak: Duration, longBreak: Duration, pomodorosForLongBreak: Int)
 
-  def current(db: ScalaGraph) = /* Preference.Default.copy(5 seconds, 10 seconds) */ db.V.hasLabel[Preference].toCC[Preference].headOption().getOrElse {
-    val default = Preference.Default
+object Preferences {
+  def Default = Preferences(LengthPreferences(25 minutes, 5 minutes, 20 minutes, 4), false)
+
+  def current(db: ScalaGraph) = /* Preference.Default.copy(5 seconds, 10 seconds) */ db.V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
+    val default = Preferences.Default
     db.addVertex(default)
     default
   }
