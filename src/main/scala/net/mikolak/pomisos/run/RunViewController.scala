@@ -159,8 +159,9 @@ case class TimerActor(remainingSeconds: LongProperty, db: ScalaGraph) extends Ac
       }
     case Stop =>
       handleUpdate(0)
-      ticker.foreach(_ ! PoisonPill)
-      ticker = None
+      ticker.foreach { t =>
+        t ! Stop
+      }
     case Tick =>
       handleUpdate(remainingSeconds.value - 1)
       ticker.foreach(_ ! Tick)
@@ -193,6 +194,8 @@ class TickPlayer extends Actor {
   override def receive = {
     case Tick =>
       ticker.play()
+    case Stop =>
+      ticker.stop()
   }
 }
 
