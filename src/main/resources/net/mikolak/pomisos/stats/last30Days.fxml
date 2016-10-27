@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<VBox fx:id="main" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="net.mikolak.pomisos.stats.Last30DaysChartController">
+    <BarChart fx:id="chart" legendVisible="false" title="Pomodoros in Last 30 days">
+        <xAxis>
+            <CategoryAxis label="Date" side="BOTTOM"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Pomodoros" side="RIGHT"/>
+        </yAxis>
+    </BarChart>
+    <Button alignment="CENTER" text="OK" onAction="#closeStats"/>
+</VBox>

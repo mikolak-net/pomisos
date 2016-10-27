@@ -6,14 +6,14 @@ import java.time.{Instant, LocalDateTime, ZoneOffset}
 import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
 import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
-import net.mikolak.pomisos.data.Pomodoro
-import net.mikolak.pomisos.main.{FontAwesomeGlyphs, PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.main.FontAwesomeGlyphs
 import net.mikolak.pomisos.prefs.{Command, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
-import scalafx.Includes._
 
+import scalafx.Includes._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scalafx.application.Platform

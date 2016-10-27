@@ -18,10 +18,15 @@
         <VBox fx:id="management">
             <MenuBar>
                 <menus>
-                    <Menu mnemonicParsing="false" text="Settings">
+                    <Menu text="Settings">
                         <items>
                             <MenuItem mnemonicParsing="false" onAction="#generalPrefMenu" text="General..." />
                             <MenuItem mnemonicParsing="false" onAction="#appMenu" text="Apps to Start/Stop..." />
+                        </items>
+                    </Menu>
+                    <Menu text="Statistics">
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#stats30" text="Last 30 days..." />
                         </items>
                     </Menu>
                 </menus>
@@ -43,6 +48,7 @@
         </VBox>
         <fx:include fx:id="runStatus" alignment="CENTER" visible="false" source="run_view.fxml"/>
         <fx:include fx:id="prefs" alignment="CENTER" source="../prefs/prefs.fxml" visible="false" />
+        <fx:include fx:id="stats" alignment="CENTER" source="../stats/last30Days.fxml" visible="false" />
     </children>
 </StackPane>
 </VBox>
