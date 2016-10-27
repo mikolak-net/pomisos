@@ -1,22 +1,25 @@
 package net.mikolak.pomisos.utils
 
-import notify.{Notify => NotificationLauncher}
 import org.controlsfx.control.Notifications
 
-class Notifications {
+import scalafx.geometry.Pos
+import scalafx.scene.image.ImageView
+import scala.concurrent.duration._
+import language.postfixOps
+import Implicits._
+import net.mikolak.pomisos.main.MainIcon
+
+class Notifications(icon: MainIcon) {
 
   def show(message: String) = {
-
-    NotificationLauncher.notify("pomodoro", message)
-    //TODO: WERYFIKACJA
-    //    Notifications.create
-    //      .title("Pomodoro")
-    //      .text(message)
-    //      .hideAfter(5 seconds)
-    //      .hideCloseButton()
-    //      .graphic(new ImageView(icon.image))
-    //      .position(Pos.BottomRight)
-    //      .show()
+        Notifications.create
+          .title("Pomodoro")
+          .text(message)
+          .hideAfter(5 seconds)
+          .hideCloseButton()
+          .graphic(new ImageView(icon.image))
+          .position(Pos.TopRight)
+          .show()
   }
 
 }
