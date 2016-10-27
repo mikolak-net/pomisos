@@ -7,10 +7,12 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
 import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.Pomodoro
-import net.mikolak.pomisos.main.{PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.main.{FontAwesomeGlyphs, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.prefs.{Command, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.utils.Notifications
+import org.controlsfx.glyphfont.FontAwesome
+import scalafx.Includes._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -18,30 +20,34 @@ import scalafx.application.Platform
 import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
 import scalafx.event.ActionEvent
+import scalafx.scene.control.Button
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
 
 trait RunView {
 
-  def runningPeriod: ObjectProperty[Option[TimerPeriod]]
-
-  def remainingSeconds: LongProperty
-
   def runningPomodoro: ObjectProperty[Option[Pomodoro]]
 
   def isRunning: BooleanBinding
-
-  def updateRunning(item: Option[TimerPeriod])
 
 }
 
 @sfxml
 class RunViewController(val currentPomodoroDisplay: Text,
                         val timerText: Text,
+                        val stopButton: Button,
+                        val pauseResumeButton: Button,
                        val actorSystem: ActorSystem,
                         notifications: Notifications,
                         processMan: ProcessManager,
-                        db: ScalaGraph) extends RunView {
+                        db: ScalaGraph,
+                        glyphs: FontAwesomeGlyphs,
+                        glyphRotators: GlyphRotators) extends RunView {
+
+
+  stopButton.graphic = glyphs(FontAwesome.Glyph.STOP)
+  val pauseResumeGlyphs = glyphRotators(FontAwesome.Glyph.PAUSE, FontAwesome.Glyph.PLAY)
+  pauseResumeButton.graphic = pauseResumeGlyphs.current()
 
   lazy val runningPeriod: ObjectProperty[Option[TimerPeriod]] = ObjectProperty(None)
   lazy val runningPomodoro = ObjectProperty[Option[Pomodoro]](None)
@@ -53,7 +59,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private var pomodoroCounter = 0
   val BreakText = "Break"
 
-  override def updateRunning(item: Option[TimerPeriod]) = {
+  def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
     item.foreach {
       pom =>
@@ -67,6 +73,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   }
 
   def pauseResume(event: ActionEvent) = {
+    pauseResumeButton.graphic = pauseResumeGlyphs.next()
     timerActor ! PauseResume
   }
 

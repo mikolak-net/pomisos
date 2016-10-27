@@ -12,6 +12,7 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
 import gremlin.scala._
 import net.mikolak.pomisos.data.{Id, Pomodoro}
+import org.controlsfx.glyphfont.{FontAwesome, GlyphFontRegistry}
 
 import scalafx.beans.binding.Bindings
 import scalafx.collections.ObservableBuffer.{Add, Remove, Update}
@@ -37,7 +38,8 @@ class PomodoroTableController(
                              val pomodoroTable: TableView[Pomodoro],
                              val textColumn: TableColumn[Pomodoro, String],
                              val buttonColumn: TableColumn[Pomodoro, Pomodoro],
-                             db: ScalaGraph
+                             db: ScalaGraph,
+                             glyphs: FontAwesomeGlyphs
                              ) extends PomodoroTable{
 
   lazy val pomodoroToRun = ObjectProperty[Option[Pomodoro]](None)
@@ -109,12 +111,12 @@ class PomodoroTableController(
   }
 
   buttonColumn.cellValueFactory = {p =>  ObjectProperty[Pomodoro](p.value)}
-  buttonColumn.cellFactory = x => new ButtonCell(pomodoroToRun)
+  buttonColumn.cellFactory = x => new ButtonCell(pomodoroToRun, glyphs)
 
 }
 
 
-class ButtonCell(runningPomodoro: ObjectProperty[Option[Pomodoro]]) extends TableCell[Pomodoro, Pomodoro] {
+class ButtonCell(runningPomodoro: ObjectProperty[Option[Pomodoro]], glyphs: FontAwesomeGlyphs) extends TableCell[Pomodoro, Pomodoro] {
 
   val graphic = new HBox() {
     visible = false
@@ -132,12 +134,12 @@ class ButtonCell(runningPomodoro: ObjectProperty[Option[Pomodoro]]) extends Tabl
   } )
 
 
-  val playButton = new Button("⧐") {
+  val playButton = new Button("", glyphs(FontAwesome.Glyph.PLAY)) {
     tooltip = "Run this pomodoro"
     onAction = (_:ActionEvent) => runningPomodoro.value = Some(getItem)
   }
 
-  val completeButton = new Button("✔") {
+  val completeButton = new Button("", glyphs(FontAwesome.Glyph.CHECK)) {
     tooltip = "Mark this pomodoro as completed"
     onAction = (_:ActionEvent) => getTableColumn.getTableView.getItems.update(getIndex, getItem.copy(completed = true))
   }

@@ -11,8 +11,8 @@
         <Text fx:id="currentPomodoroDisplay" styleClass="header" />
         <Text fx:id="timerText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="timeDisplay" />
         <HBox alignment="CENTER">
-            <Button text="⏹" onAction="#stopPomodoro"/>
-            <Button text="⧐" onAction="#pauseResume"/>
+            <Button fx:id="stopButton" text="" onAction="#stopPomodoro"/>
+            <Button fx:id="pauseResumeButton" text="" onAction="#pauseResume"/>
         </HBox>
     </children>
 </VBox>

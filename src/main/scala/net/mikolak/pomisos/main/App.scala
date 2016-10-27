@@ -1,19 +1,18 @@
 package net.mikolak.pomisos.main
 
 import java.awt.TrayIcon
-import java.awt.event.{ActionEvent, ActionListener, MouseAdapter, MouseEvent}
+import java.awt.event.{ActionEvent, ActionListener}
 import java.io.IOException
 
 import scalafx.application.Platform
-import javafx.collections.ObservableList
 import javafx.scene.Scene
 
 import akka.actor.ActorSystem
 import net.mikolak.pomisos.process.ProcessManager
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
 import com.softwaremill.macwire._
-import com.sun.javafx.collections.ImmutableObservableList
 import gremlin.scala.ScalaGraph
+import net.mikolak.pomisos.run.GlyphRotators
 import net.mikolak.pomisos.utils.Notifications
 
 import scalafx.application.JFXApp
@@ -102,6 +101,10 @@ class Dependencies {
   lazy val icon: MainIcon = MainIcon(new Image(this.getClass.getResource("/icon.png").toExternalForm))
 
   lazy val notifications = wire[Notifications]
+
+  lazy val glyphs = wire[FontAwesomeGlyphs]
+
+  lazy val glyphRotators = wire[GlyphRotators]
 
 }
 
