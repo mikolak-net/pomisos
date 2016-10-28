@@ -1,9 +1,8 @@
-package net.mikolak.pomisos.run
-
-import net.mikolak.pomisos.main.FontAwesomeGlyphs
-import org.controlsfx.glyphfont.FontAwesome.Glyph
+package net.mikolak.pomisos.graphics
 
 import javafx.scene.Node
+
+import org.controlsfx.glyphfont.FontAwesome.Glyph
 
 class GlyphRotators(glyphs: FontAwesomeGlyphs) {
 

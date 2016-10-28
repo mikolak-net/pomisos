@@ -3,7 +3,7 @@ package net.mikolak.pomisos.main
 
 import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.crud.{AddNew, AddNewController}
-import net.mikolak.pomisos.dependencies.MainIcon
+import net.mikolak.pomisos.graphics.MainIcon
 import net.mikolak.pomisos.prefs._
 import net.mikolak.pomisos.run.{RunView, RunViewController}
 import net.mikolak.pomisos.utils.Notifications

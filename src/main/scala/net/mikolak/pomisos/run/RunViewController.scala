@@ -7,7 +7,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
 import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
-import net.mikolak.pomisos.main.FontAwesomeGlyphs
+import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
 import net.mikolak.pomisos.prefs.{Command, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.utils.Notifications

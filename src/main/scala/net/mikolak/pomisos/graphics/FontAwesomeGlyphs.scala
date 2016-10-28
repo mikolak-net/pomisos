@@ -1,4 +1,4 @@
-package net.mikolak.pomisos.main
+package net.mikolak.pomisos.graphics
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph
 import org.controlsfx.glyphfont.GlyphFontRegistry

@@ -1,6 +1,5 @@
 package net.mikolak.pomisos.main
 
-import javafx.collections.ObservableList
 import javafx.scene.control.TableCell
 
 import gremlin.scala.ScalaGraph
@@ -12,7 +11,8 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
 import gremlin.scala._
 import net.mikolak.pomisos.data.{Id, Pomodoro}
-import org.controlsfx.glyphfont.{FontAwesome, GlyphFontRegistry}
+import net.mikolak.pomisos.graphics.FontAwesomeGlyphs
+import org.controlsfx.glyphfont.FontAwesome
 
 import scalafx.beans.binding.Bindings
 import scalafx.collections.ObservableBuffer.{Add, Remove, Update}
