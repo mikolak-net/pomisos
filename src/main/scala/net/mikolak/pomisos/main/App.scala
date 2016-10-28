@@ -7,17 +7,11 @@ import java.io.IOException
 import scalafx.application.Platform
 import javafx.scene.Scene
 
-import akka.actor.ActorSystem
-import net.mikolak.pomisos.process.ProcessManager
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
 import com.softwaremill.macwire._
-import gremlin.scala.ScalaGraph
-import net.mikolak.pomisos.run.GlyphRotators
-import net.mikolak.pomisos.utils.Notifications
+import net.mikolak.pomisos.dependencies._
 
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
-import scalafx.scene.image.Image
 import scalafx.Includes._
 import scalafx.stage.WindowEvent
 import scalafxml.core.FXMLView
@@ -90,25 +84,4 @@ object App extends JFXApp {
 
 }
 
-class Dependencies {
 
-  lazy val actorSystem = ActorSystem("pomisos")
-
-  lazy val db = ScalaGraph(new OrientGraphFactory("plocal:./pomisos").getNoTx)
-
-  lazy val processManager = wire[ProcessManager]
-
-  lazy val icon: MainIcon = MainIcon(new Image(this.getClass.getResource("/icon.png").toExternalForm))
-
-  lazy val notifications = wire[Notifications]
-
-  lazy val glyphs = wire[FontAwesomeGlyphs]
-
-  lazy val glyphRotators = wire[GlyphRotators]
-
-}
-
-/**
-  * Wrapper type required to get around sfxml's macro rewriting and auto-injection (no, tagging doesn't work).
-  */
-case class MainIcon(image: Image)

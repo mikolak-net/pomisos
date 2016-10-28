@@ -7,7 +7,7 @@ import scalafx.scene.image.ImageView
 import scala.concurrent.duration._
 import language.postfixOps
 import Implicits._
-import net.mikolak.pomisos.main.MainIcon
+import net.mikolak.pomisos.dependencies.MainIcon
 
 class Notifications(icon: MainIcon) {
 
