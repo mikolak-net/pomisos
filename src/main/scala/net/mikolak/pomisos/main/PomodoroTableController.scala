@@ -19,10 +19,9 @@ import scalafx.collections.ObservableBuffer.{Add, Remove, Update}
 import scalafx.event.{ActionEvent, Event}
 import scalafx.geometry.Pos
 import scalafx.scene.control.TableColumn.CellEditEvent
-import scalafx.scene.control.cell.{CheckBoxTableCell, TextFieldTableCell}
+import scalafx.scene.control.cell.TextFieldTableCell
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.layout.{HBox, Priority}
-import scalafx.util.StringConverter
 
 
 trait PomodoroTable {

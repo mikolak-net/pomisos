@@ -38,38 +38,45 @@ object App extends JFXApp {
 
   stage.toFront()
 
-  java.awt.Toolkit.getDefaultToolkit
-  val tray = java.awt.SystemTray.getSystemTray
-  val trayIcon = new TrayIcon(javax.imageio.ImageIO.read(this.getClass.getResource("/icon_small.png").toURI.toURL),"pomidorosos")
-  trayIcon.addActionListener(new ActionListener {
-    override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
-  })
-  //TODO: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
-//  trayIcon.addMouseListener(new MouseAdapter {
-//    override def mouseClicked(e: MouseEvent) = {
-//      println("Click")
-//      Platform.runLater {
-//        stage.show()
-//        stage.toFront()
-//      }
-//    }
-//  })
-  val menu = new java.awt.PopupMenu()
-  val openItem = new java.awt.MenuItem("Show")
-  openItem.addActionListener(new ActionListener {
-    override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
-  })
-  val exitItem = new java.awt.MenuItem("Exit")
-  openItem.addActionListener(new ActionListener {
-    override def actionPerformed(e: ActionEvent) = Platform.runLater(doExit())
-  })
-
-  menu.add(openItem)
-  menu.add(exitItem)
-  trayIcon.setPopupMenu(menu)
-  tray.add(trayIcon)
-
   stage.onCloseRequest = (t: WindowEvent) => doExit()
+
+  setupTray()
+
+  private def setupTray(): Unit = {
+    java.awt.Toolkit.getDefaultToolkit
+    val tray = java.awt.SystemTray.getSystemTray
+    val trayIcon = new TrayIcon(javax.imageio.ImageIO.read(this.getClass.getResource("/icon_small.png").toURI.toURL), "pomidorosos")
+    trayIcon.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
+    })
+    //TODO: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
+    //  trayIcon.addMouseListener(new MouseAdapter {
+    //    override def mouseClicked(e: MouseEvent) = {
+    //      println("Click")
+    //      Platform.runLater {
+    //        stage.show()
+    //        stage.toFront()
+    //      }
+    //    }
+    //  })
+    val menu = new java.awt.PopupMenu()
+    val openItem = new java.awt.MenuItem("Show")
+    openItem.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
+    })
+    val exitItem = new java.awt.MenuItem("Exit")
+    openItem.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent) = Platform.runLater(doExit())
+    })
+
+    menu.add(openItem)
+    menu.add(exitItem)
+    trayIcon.setPopupMenu(menu)
+    tray.add(trayIcon)
+  }
+
+
+
 
   private def showStage() = {
     stage.show()
