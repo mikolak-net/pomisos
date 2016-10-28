@@ -5,9 +5,14 @@ import java.io.IOException
 import scalafx.application.Platform
 import javafx.scene.Scene
 
+import com.orientechnologies.orient.core.metadata.schema.OType
 import com.softwaremill.macwire._
 import com.softwaremill.tagging._
+import gremlin.scala.Key
+import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.dependencies._
+import org.apache.commons.configuration.BaseConfiguration
+import org.apache.tinkerpop.gremlin.structure.T
 
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
@@ -56,5 +61,11 @@ object App extends JFXApp {
     dependencies.actorSystem.terminate()
     Platform.exit()
   }
+
+
+
+  //dependencies.orientGraph.createVertexIndex(T.label.name(), classOf[Pomodoro].getSimpleName, dependencies.orientGraph.configuration())
+
+//  dependencies.orientGraph.createVertexIndex("id", classOf[Pomodoro].getName.replaceAll("\\.", "/"), dependencies.orientGraph.configuration())
 
 }
