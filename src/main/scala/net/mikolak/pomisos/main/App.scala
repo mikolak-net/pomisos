@@ -1,13 +1,12 @@
 package net.mikolak.pomisos.main
 
-import java.awt.TrayIcon
-import java.awt.event.{ActionEvent, ActionListener}
 import java.io.IOException
 
 import scalafx.application.Platform
 import javafx.scene.Scene
 
 import com.softwaremill.macwire._
+import com.softwaremill.tagging._
 import net.mikolak.pomisos.dependencies._
 
 import scalafx.application.JFXApp
@@ -25,7 +24,12 @@ object App extends JFXApp {
     throw new IOException("Cannot load resource: main.fxml")
   }
 
-  lazy val dependencies = new Dependencies
+  lazy val dependencies = new Dependencies with AppModule {
+
+    lazy val closeApp = (doExit _).taggedWith[AppCloseFunction]
+    lazy val openApp = (showStage _).taggedWith[AppOpenFunction]
+
+  }
 
   val root = FXMLView(resource, new MacWireDependencyResolver(wiredInModule(dependencies)))
 
@@ -40,55 +44,17 @@ object App extends JFXApp {
 
   stage.onCloseRequest = (t: WindowEvent) => doExit()
 
-  setupTray()
+  val tray = dependencies.tray
 
-  private def setupTray(): Unit = {
-    java.awt.Toolkit.getDefaultToolkit
-    val tray = java.awt.SystemTray.getSystemTray
-    val trayIcon = new TrayIcon(javax.imageio.ImageIO.read(this.getClass.getResource("/icon_small.png").toURI.toURL), "pomidorosos")
-    trayIcon.addActionListener(new ActionListener {
-      override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
-    })
-    //TODO: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
-    //  trayIcon.addMouseListener(new MouseAdapter {
-    //    override def mouseClicked(e: MouseEvent) = {
-    //      println("Click")
-    //      Platform.runLater {
-    //        stage.show()
-    //        stage.toFront()
-    //      }
-    //    }
-    //  })
-    val menu = new java.awt.PopupMenu()
-    val openItem = new java.awt.MenuItem("Show")
-    openItem.addActionListener(new ActionListener {
-      override def actionPerformed(e: ActionEvent) = Platform.runLater(showStage())
-    })
-    val exitItem = new java.awt.MenuItem("Exit")
-    openItem.addActionListener(new ActionListener {
-      override def actionPerformed(e: ActionEvent) = Platform.runLater(doExit())
-    })
-
-    menu.add(openItem)
-    menu.add(exitItem)
-    trayIcon.setPopupMenu(menu)
-    tray.add(trayIcon)
-  }
-
-
-
-
-  private def showStage() = {
+  private def showStage(): Unit = {
     stage.show()
     stage.toFront()
   }
 
-  private def doExit() = {
-    tray.remove(trayIcon)
+  private def doExit(): Unit = {
+    tray.close()
     dependencies.actorSystem.terminate()
     Platform.exit()
   }
 
 }
-
-
