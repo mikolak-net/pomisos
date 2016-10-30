@@ -12,6 +12,7 @@ import gremlin.scala.Key
 import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.dependencies._
 import org.apache.commons.configuration.BaseConfiguration
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
 import org.apache.tinkerpop.gremlin.structure.T
 
 import scalafx.application.JFXApp
@@ -36,6 +37,8 @@ object App extends JFXApp {
 
   }
 
+
+  //DbModule.ensureIndices(dependencies.orientGraph) TODO: temporarily disabled
   val root = FXMLView(resource, new MacWireDependencyResolver(wiredInModule(dependencies)))
 
   stage = new PrimaryStage() {
@@ -61,11 +64,5 @@ object App extends JFXApp {
     dependencies.actorSystem.terminate()
     Platform.exit()
   }
-
-
-
-  //dependencies.orientGraph.createVertexIndex(T.label.name(), classOf[Pomodoro].getSimpleName, dependencies.orientGraph.configuration())
-
-//  dependencies.orientGraph.createVertexIndex("id", classOf[Pomodoro].getName.replaceAll("\\.", "/"), dependencies.orientGraph.configuration())
 
 }
