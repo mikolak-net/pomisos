@@ -17,9 +17,9 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="icon.svg"
-   inkscape:export-filename="src/main/resources/icon.png"
-   inkscape:export-xdpi="9.2903223"
-   inkscape:export-ydpi="9.2903223">
+   inkscape:export-filename="src/main/resources/icon_small.png"
+   inkscape:export-xdpi="3.483871"
+   inkscape:export-ydpi="3.483871">
   <defs
      id="defs4">
     <linearGradient
@@ -50,19 +50,19 @@
        inkscape:collect="always"
        xlink:href="#linearGradient4198"
        id="linearGradient4204"
-       x1="431.84912"
-       y1="278.90636"
-       x2="465.63607"
-       y2="278.90636"
+       x1="426.13483"
+       y1="281.04922"
+       x2="477.06464"
+       y2="280.33493"
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4206"
        id="linearGradient4212"
-       x1="325.78311"
-       y1="547.60693"
-       x2="374.40335"
-       y2="547.60693"
+       x1="317.21167"
+       y1="551.89264"
+       x2="392.97479"
+       y2="551.89264"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
@@ -72,9 +72,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.24748738"
-     inkscape:cx="33.493342"
-     inkscape:cy="35.400868"
+     inkscape:zoom="0.35000001"
+     inkscape:cx="-801.30497"
+     inkscape:cy="179.44633"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
