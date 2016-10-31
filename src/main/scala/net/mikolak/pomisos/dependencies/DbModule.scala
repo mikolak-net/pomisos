@@ -15,7 +15,12 @@ trait DbModule {
 
   lazy val orientGraph = new OrientGraphFactory("plocal:./pomisos").getNoTx
 
-  lazy val scalaDb = wire[ScalaGraph]
+  private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
+
+  lazy val scalaDbProvider: () => ScalaGraph = () => {
+    orientGraph.database().activateOnCurrentThread()
+    scalaDb
+  }
 
 }
 

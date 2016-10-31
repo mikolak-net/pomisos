@@ -40,7 +40,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                        val actorSystem: ActorSystem,
                         notifications: Notifications,
                         processMan: ProcessManager,
-                        db: ScalaGraph,
+                        db: () => ScalaGraph,
                         glyphs: FontAwesomeGlyphs,
                         glyphRotators: GlyphRotators) extends RunView {
 
@@ -86,7 +86,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, db))
 
   //TODO: TEMP
-  private def processes = db.V.hasLabel[Command].toCC[Command].map(cmd => processMan.processFor(cmd.cmd)).toList
+  private def processes = db().V.hasLabel[Command].toCC[Command].map(cmd => processMan.processFor(cmd.cmd)).toList
 
   remainingSeconds.onChange((_, _, currentSeconds) => {
     if (currentSeconds.intValue() == 0) {
@@ -142,9 +142,9 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private def storeRun(period: TimerPeriod) = {
     for {
       pomId <- period.id
-      pomodoro <- db.V.hasLabel[Pomodoro].hasId(pomId).headOption() //TODO: this should be really one query
+      pomodoro <- db().V.hasLabel[Pomodoro].hasId(pomId).headOption() //TODO: this should be really one query
     } {
-      val run = db.addVertex(PomodoroRun(Instant.now(), period.duration))
+      val run = db().addVertex(PomodoroRun(Instant.now(), period.duration))
       pomodoro.addEdge("ranAt", run)
     }
   }
@@ -152,7 +152,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 }
 
 
-case class TimerActor(remainingSeconds: LongProperty, db: ScalaGraph) extends Actor { //TODO: actor injection
+case class TimerActor(remainingSeconds: LongProperty, db: () => ScalaGraph) extends Actor { //TODO: actor injection
 
   var currentSchedule: Option[Cancellable] = None
 

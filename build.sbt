@@ -9,7 +9,7 @@ scalaVersion := "2.11.8"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
-val gremlinVersion = "3.2.1.0"
+val gremlinVersion = "3.2.3."
 val sfxVersion = "0.3"
 val macwireVersion = "2.2.4"
 
@@ -19,8 +19,8 @@ libraryDependencies ++= Seq(
   "org.scalafx" %% "scalafxml-macwire-sfx8" % sfxVersion,
   "org.controlsfx" % "controlsfx" % "8.40.12",
   "com.typesafe.akka" %% "akka-actor" % "2.4.11",
-  "com.michaelpollmeier" %% "gremlin-scala" % gremlinVersion,
-  "com.michaelpollmeier" % "orientdb-gremlin" % gremlinVersion,
+  "com.michaelpollmeier" %% "gremlin-scala" % (gremlinVersion+"1"),
+  "com.michaelpollmeier" % "orientdb-gremlin" % (gremlinVersion+"0"),
   "com.softwaremill.macwire" %% "macros" % macwireVersion % "provided",
   "com.softwaremill.macwire" %% "util" % macwireVersion
 )

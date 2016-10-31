@@ -37,13 +37,13 @@ class PomodoroTableController(
                              val pomodoroTable: TableView[Pomodoro],
                              val textColumn: TableColumn[Pomodoro, String],
                              val buttonColumn: TableColumn[Pomodoro, Pomodoro],
-                             db: ScalaGraph,
+                             db: () => ScalaGraph,
                              glyphs: FontAwesomeGlyphs
                              ) extends PomodoroTable{
 
   lazy val pomodoroToRun = ObjectProperty[Option[Pomodoro]](None)
 
-  lazy val items = ObservableBuffer[Pomodoro](db.V.hasLabel[Pomodoro].toCC[Pomodoro].toList)
+  lazy val items = ObservableBuffer[Pomodoro](db().V.hasLabel[Pomodoro].toCC[Pomodoro].toList)
   pomodoroTable.setItems(items)
   pomodoroTable.getSelectionModel.setSelectionMode(SelectionMode.Single)
 
@@ -65,16 +65,16 @@ class PomodoroTableController(
 
     events.collect {
       case Update(from, until) =>
-        items.slice(from, until).foreach(p => db.V.hasLabel[Pomodoro].hasId(p.id).head.updateWith[Pomodoro](p))
+        items.slice(from, until).foreach(p => db().V.hasLabel[Pomodoro].hasId(p.id).head.updateWith[Pomodoro](p))
       case Remove(_, removed) =>
         val ids = removed.map(_.id).toSeq
-        db.V.hasLabel[Pomodoro].hasId(ids: _*).drop.iterate()
+        db().V.hasLabel[Pomodoro].hasId(ids.head, ids.tail: _*).drop.iterate()
     }
   }
   )
 
   def addItem(newName: String) = {
-    val newPomodoro = db.addVertex(Pomodoro(newName)).toCC[Pomodoro]
+    val newPomodoro = db().addVertex(Pomodoro(newName)).toCC[Pomodoro]
     items.add(newPomodoro)
   }
 
@@ -106,7 +106,7 @@ class PomodoroTableController(
   ) //TODO: this should parse w/o .value and be editable
 
   textColumn.onEditCommit = (e: CellEditEvent[Pomodoro, String]) => {
-    db.V.hasLabel[Pomodoro].hasId(e.rowValue.id).head.updateAs[Pomodoro](_.copy(name=e.newValue))
+    db().V.hasLabel[Pomodoro].hasId(e.rowValue.id).head.updateAs[Pomodoro](_.copy(name=e.newValue))
   }
 
   buttonColumn.cellValueFactory = {p =>  ObjectProperty[Pomodoro](p.value)}

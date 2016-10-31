@@ -22,7 +22,7 @@ class MainController(@nested[AddNewController] val newPomodoroController: AddNew
                      val management: VBox,
                      val runStatus: VBox,
                      val stats: VBox,
-                     val db: ScalaGraph,
+                     val db: () => ScalaGraph,
                      val icon: MainIcon,
                      notifications: Notifications) {
 

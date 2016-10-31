@@ -17,10 +17,10 @@ import scalafx.scene.layout.VBox
 @sfxml
 class Last30DaysChartController(val main: VBox,
                                 chart: BarChart[String, Int],
-                                db: ScalaGraph) {
+                                db: () => ScalaGraph) {
 
 
-  lazy val byDayCount = db.V.hasLabel[PomodoroRun].toCC[PomodoroRun]
+  lazy val byDayCount = db().V.hasLabel[PomodoroRun].toCC[PomodoroRun]
     .toList
     .groupBy(v => LocalDate.from(LocalDateTime.ofInstant(v.endTime, ZoneId.systemDefault()))).map { case (day, verts) => (day, verts.size) }
     .withDefaultValue(0)

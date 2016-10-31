@@ -36,7 +36,7 @@ class PrefsController(
                        val appsView: VBox,
                        @nested[AddNewController] addNewCmdController: AddNew,
                        val cmdList: ListView[String],
-                       db: ScalaGraph,
+                       db: () => ScalaGraph,
                        val minutesPomodoro: Spinner[Integer],
                        val minutesBreakShort: Spinner[Integer],
                        val minutesBreakLong: Spinner[Integer],
@@ -61,13 +61,13 @@ class PrefsController(
   numberOfPomodorosUntilLongBreak.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.pomodorosForLongBreak)
   playTick.selected.value = preferences.playTick
 
-  private def allCmds = db.V.hasLabel[Command]
+  private def allCmds = db().V.hasLabel[Command]
   val cmds = ObservableBuffer(allCmds.map(_.toCC[Command].cmd).toList)
   cmdList.setItems(cmds)
 
   cmds.onChange((buffer, _) => { //YOLO update for now
     allCmds.drop.iterate
-    buffer.toList.map(Command.apply).foreach(db.addVertex[Command])
+    buffer.toList.map(Command.apply).foreach(db().addVertex[Command])
   })
 
 
@@ -89,7 +89,7 @@ class PrefsController(
   })
 
   def toMain(actionEvent: ActionEvent) = {
-    db.V.hasLabel[Preferences].head().updateAs[Preferences](_.copy(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
+    db().V.hasLabel[Preferences].head().updateAs[Preferences](_.copy(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
       minutesBreakShort.value.value.toInt minutes,  minutesBreakLong.value.value.toInt minutes,
       numberOfPomodorosUntilLongBreak.value.value.toInt),
       playTick = playTick.selected.value))
@@ -108,9 +108,9 @@ case class LengthPreferences(pomodoro: Duration, shortBreak: Duration, longBreak
 object Preferences {
   def Default = Preferences(LengthPreferences(25 minutes, 5 minutes, 20 minutes, 4), false)
 
-  def current(db: ScalaGraph) = /* Preference.Default.copy(5 seconds, 10 seconds) */ db.V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
+  def current(db: () => ScalaGraph) = /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
     val default = Preferences.Default
-    db.addVertex(default)
+    db().addVertex(default)
     default
   }
 }
