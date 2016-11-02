@@ -1,3 +1,4 @@
+import sbt._
 import sbt.Keys._
 
 name := "pomisos"
@@ -34,3 +35,35 @@ assemblyMergeStrategy in assembly := {
 
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
+val makeIcons = taskKey[Seq[File]]("make them icons")
+
+resourceGenerators in Compile += makeIcons.taskValue
+fork in run := true //so that OrientDB runs correctly
+
+makeIcons := {
+  val inputFile = "icon.svg"
+
+  val inputName = inputFile.split('.').head
+
+  val outputBasePath = (resourceDirectory in Compile).value
+
+  val outputFiles = List(("_small", 24, 24), ("", 64, 64))
+
+  import sys.process._
+  import language.postfixOps
+
+  for( (suffix, width, height) <- outputFiles) yield {
+    val outputFile = outputBasePath / s"$inputName$suffix.png"
+    val cmd =
+    Process("inkscape", List(
+      s"--file=${baseDirectory.value / inputFile}",
+      s"--export-png=${outputFile}",
+      s"-w$width",
+      s"-h$height",
+    "--export-area-page"))
+    streams.value.log.info(cmd !!)
+    outputFile
+  }
+}
+
