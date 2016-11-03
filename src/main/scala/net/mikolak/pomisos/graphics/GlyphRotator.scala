@@ -4,22 +4,26 @@ import javafx.scene.Node
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph
 
+import scalafx.beans.property.ObjectProperty
+
 class GlyphRotators(glyphs: FontAwesomeGlyphs) {
 
-  def apply(glyphList: Glyph*) = GlyphRotator(glyphList.toList.map(glyphs.apply))
+  def apply(glyphList: Glyph*) = new GlyphRotator(glyphList.toList.map(glyphs.apply))
 
 }
 
-case class GlyphRotator(nodes: List[Node]) {
+class GlyphRotator private[graphics](nodes: List[Node]) {
   require(nodes.nonEmpty)
 
-  var pointer = 0
+  private var pointer = 0
 
-  def current() = nodes(pointer)
+  private def current() = nodes(pointer)
 
-  def next() = {
+  val value = ObjectProperty[Node](current())
+
+  def rotate(): Unit = {
     pointer = (pointer + 1) % nodes.size
-    current()
+    value.value = current()
   }
 
 }

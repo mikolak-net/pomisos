@@ -47,7 +47,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   stopButton.graphic = glyphs(FontAwesome.Glyph.STOP)
   val pauseResumeGlyphs = glyphRotators(FontAwesome.Glyph.PAUSE, FontAwesome.Glyph.PLAY)
-  pauseResumeButton.graphic = pauseResumeGlyphs.current()
+  pauseResumeButton.graphic <== pauseResumeGlyphs.value
 
   lazy val runningPeriod: ObjectProperty[Option[TimerPeriod]] = ObjectProperty(None)
   lazy val runningPomodoro = ObjectProperty[Option[Pomodoro]](None)
@@ -73,7 +73,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   }
 
   def pauseResume(event: ActionEvent) = {
-    pauseResumeButton.graphic = pauseResumeGlyphs.next()
+    pauseResumeGlyphs.rotate()
     timerActor ! PauseResume
   }
 
