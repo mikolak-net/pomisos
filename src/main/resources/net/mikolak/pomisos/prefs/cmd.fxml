@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+
+
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ListView?>
+<VBox fx:controller="net.mikolak.pomisos.prefs.CommandController" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <Text text="Applications to start/stop" styleClass="header"/>
+    <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml"/>
+    <ListView fx:id="cmdList" editable="true" minHeight="-Infinity" minWidth="-Infinity"
+              onKeyPressed="#listKeyPressed"/>
+
+</VBox>
