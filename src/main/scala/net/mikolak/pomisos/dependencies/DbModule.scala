@@ -12,7 +12,7 @@ import org.apache.tinkerpop.gremlin.structure.T
 
 trait DbModule {
 
-  lazy val orientGraph = new OrientGraphFactory("plocal:./pomisos").getNoTx
+  lazy val orientGraph = new OrientGraphFactory("memory:pomisos").getNoTx
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 

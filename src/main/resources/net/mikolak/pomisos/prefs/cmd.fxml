@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-
-
-<?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ListView?>
-<VBox fx:controller="net.mikolak.pomisos.prefs.CommandController" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
-    <Text text="Applications to start/stop" styleClass="header"/>
-    <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml"/>
-    <ListView fx:id="cmdList" editable="true" minHeight="-Infinity" minWidth="-Infinity"
-              onKeyPressed="#listKeyPressed"/>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
+    <Text styleClass="header" text="Applications to start/stop" />
+    <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
+    <fx:define>
+        <ToggleGroup fx:id="commandType"/>
+    </fx:define>
+   <GridPane>
+     <columnConstraints>
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+     </columnConstraints>
+     <rowConstraints>
+       <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+       <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+     </rowConstraints>
+       <children>
+           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.rowIndex="0" GridPane.columnIndex="0"  GridPane.rowSpan="2" />
+           <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <children>
+                <Label text="Type:"/>
+                <RadioButton text="Simple command" toggleGroup="$commandType"/>
+                <RadioButton text="Scripts" toggleGroup="$commandType"/>
+            </children>
+           </VBox>
+           <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <Label text="Admin"/>
+           </VBox>
+       </children>
+   </GridPane>
 
 </VBox>

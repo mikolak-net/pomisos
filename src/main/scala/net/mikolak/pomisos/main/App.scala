@@ -5,15 +5,9 @@ import java.io.IOException
 import scalafx.application.Platform
 import javafx.scene.Scene
 
-import com.orientechnologies.orient.core.metadata.schema.OType
 import com.softwaremill.macwire._
 import com.softwaremill.tagging._
-import gremlin.scala.Key
-import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.dependencies._
-import org.apache.commons.configuration.BaseConfiguration
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
-import org.apache.tinkerpop.gremlin.structure.T
 
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
@@ -21,7 +15,6 @@ import scalafx.Includes._
 import scalafx.stage.WindowEvent
 import scalafxml.core.FXMLView
 import scalafxml.macwire.MacWireDependencyResolver
-
 
 object App extends JFXApp {
 
@@ -33,12 +26,11 @@ object App extends JFXApp {
   lazy val dependencies = new Dependencies with AppModule {
 
     lazy val closeApp = (doExit _).taggedWith[AppCloseFunction]
-    lazy val openApp = (showStage _).taggedWith[AppOpenFunction]
+    lazy val openApp  = (showStage _).taggedWith[AppOpenFunction]
 
   }
 
-
-  //DbModule.ensureIndices(dependencies.orientGraph) TODO: temporarily disabled
+  //DbModule.ensureIndices(dependencies.orientGraph) //TODO: temporarily disabled
   val root = FXMLView(resource, new MacWireDependencyResolver(wiredInModule(dependencies)))
 
   stage = new PrimaryStage() {

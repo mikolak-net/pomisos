@@ -8,7 +8,7 @@ import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
-import net.mikolak.pomisos.prefs.{Command, Preferences}
+import net.mikolak.pomisos.prefs.{ExecuteCommand, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
@@ -37,34 +37,33 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         val timerText: Text,
                         val stopButton: Button,
                         val pauseResumeButton: Button,
-                       val actorSystem: ActorSystem,
+                        val actorSystem: ActorSystem,
                         notifications: Notifications,
                         processMan: ProcessManager,
                         db: () => ScalaGraph,
                         glyphs: FontAwesomeGlyphs,
-                        glyphRotators: GlyphRotators) extends RunView {
-
+                        glyphRotators: GlyphRotators)
+    extends RunView {
 
   stopButton.graphic = glyphs(FontAwesome.Glyph.STOP)
   val pauseResumeGlyphs = glyphRotators(FontAwesome.Glyph.PAUSE, FontAwesome.Glyph.PLAY)
   pauseResumeButton.graphic <== pauseResumeGlyphs.value
 
   lazy val runningPeriod: ObjectProperty[Option[TimerPeriod]] = ObjectProperty(None)
-  lazy val runningPomodoro = ObjectProperty[Option[Pomodoro]](None)
+  lazy val runningPomodoro                                    = ObjectProperty[Option[Pomodoro]](None)
 
   lazy val remainingSeconds = LongProperty(0)
-  lazy val isRunning = new BooleanBinding(remainingSeconds =!= 0)
+  lazy val isRunning        = new BooleanBinding(remainingSeconds =!= 0)
 
-  private var timerStack = List.empty[TimerPeriod]
+  private var timerStack      = List.empty[TimerPeriod]
   private var pomodoroCounter = 0
-  val BreakText = "Break"
+  val BreakText               = "Break"
 
   def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
-    item.foreach {
-      pom =>
-        remainingSeconds.value = pom.duration.toSeconds
-        timerActor ! Start
+    item.foreach { pom =>
+      remainingSeconds.value = pom.duration.toSeconds
+      timerActor ! Start
     }
   }
 
@@ -77,16 +76,18 @@ class RunViewController(val currentPomodoroDisplay: Text,
     timerActor ! PauseResume
   }
 
-  currentPomodoroDisplay.text <== Bindings.createStringBinding(() => runningPeriod.value.map(_.name).getOrElse(""), runningPeriod)
+  currentPomodoroDisplay.text <== Bindings.createStringBinding(() => runningPeriod.value.map(_.name).getOrElse(""),
+                                                               runningPeriod)
 
   lazy val formatter = DateTimeFormatter.ofPattern("mm:ss")
-  timerText.text <== Bindings.createStringBinding(() => formatter.format(
-    LocalDateTime.ofEpochSecond(remainingSeconds.toLong, 0, ZoneOffset.UTC)), remainingSeconds)
+  timerText.text <== Bindings.createStringBinding(
+    () => formatter.format(LocalDateTime.ofEpochSecond(remainingSeconds.toLong, 0, ZoneOffset.UTC)),
+    remainingSeconds)
 
   private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, db))
 
   //TODO: TEMP
-  private def processes = db().V.hasLabel[Command].toCC[Command].map(cmd => processMan.processFor(cmd.cmd)).toList
+  private def processes = db().V.hasLabel[ExecuteCommand].toCC[ExecuteCommand].map(cmd => processMan.processFor(cmd.cmd)).toList
 
   remainingSeconds.onChange((_, _, currentSeconds) => {
     if (currentSeconds.intValue() == 0) {
@@ -102,12 +103,12 @@ class RunViewController(val currentPomodoroDisplay: Text,
   isRunning.onChange((_, _, newVal) => {
     for (period <- runningPeriod.value if newVal) {
       val onBreak = period.name == BreakText
-      val text = if (onBreak) "You're on a break" else period.name
+      val text    = if (onBreak) "You're on a break" else period.name
 
-      if(onBreak) { //TODO: TEMP
+      if (onBreak) { //TODO: TEMP
         processes.foreach(_.create())
       } else {
-        pomodoroCounter+=1
+        pomodoroCounter += 1
         processes.foreach(_.kill())
       }
 
@@ -115,14 +116,17 @@ class RunViewController(val currentPomodoroDisplay: Text,
     }
   })
 
+  runningPomodoro.onChange((obs, _, newVal) =>
+    for (newPomodoro <- newVal if newVal.isDefined) {
+      println(s"Running Pomodoro $newPomodoro")
+      val breakDuration =
+        if (pomodoroCounter > 1 && (pomodoroCounter - 1) % Preferences.current(db).length.pomodorosForLongBreak == 0)
+          Preferences.current(db).length.longBreak
+        else Preferences.current(db).length.shortBreak
 
-  runningPomodoro.onChange((obs, _, newVal) => for(newPomodoro <- newVal if newVal.isDefined) {
-    println(s"Running Pomodoro $newPomodoro")
-    val breakDuration = if (pomodoroCounter > 1 && (pomodoroCounter - 1) % Preferences.current(db).length.pomodorosForLongBreak == 0) Preferences.current(db).length.longBreak else Preferences.current(db).length.shortBreak
-
-    timerStack ::= TimerPeriod(None, BreakText, breakDuration)
-    timerStack ::= TimerPeriod(Some(newPomodoro.id), newPomodoro.name, Preferences.current(db).length.pomodoro)
-    updateRunning(timerStack.headOption)
+      timerStack ::= TimerPeriod(None, BreakText, breakDuration)
+      timerStack ::= TimerPeriod(Some(newPomodoro.id), newPomodoro.name, Preferences.current(db).length.pomodoro)
+      updateRunning(timerStack.headOption)
   })
 
   private def popStack() = {
@@ -141,7 +145,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   private def storeRun(period: TimerPeriod) = {
     for {
-      pomId <- period.id
+      pomId    <- period.id
       pomodoro <- db().V.hasLabel[Pomodoro].hasId(pomId).headOption() //TODO: this should be really one query
     } {
       val run = db().addVertex(PomodoroRun(Instant.now(), period.duration))
@@ -150,7 +154,6 @@ class RunViewController(val currentPomodoroDisplay: Text,
   }
 
 }
-
 
 case class TimerActor(remainingSeconds: LongProperty, db: () => ScalaGraph) extends Actor { //TODO: actor injection
 
@@ -161,7 +164,7 @@ case class TimerActor(remainingSeconds: LongProperty, db: () => ScalaGraph) exte
   override def receive = {
     case Start =>
       toggleScheduler()
-      if(Preferences.current(db).playTick) {
+      if (Preferences.current(db).playTick) {
         ticker = Some(context.actorOf(Props[TickPlayer]))
       }
     case Stop =>
@@ -205,7 +208,6 @@ class TickPlayer extends Actor {
       ticker.stop()
   }
 }
-
 
 case object Tick
 
