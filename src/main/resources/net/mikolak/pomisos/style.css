@@ -14,3 +14,8 @@
 .pomodoro-completed-text .text {
     -fx-strikethrough: true;
 }
+
+.hint-text {
+    -fx-font-size: 8;
+    -fx-font-style: oblique;
+}

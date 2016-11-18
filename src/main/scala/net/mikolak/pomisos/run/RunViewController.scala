@@ -23,6 +23,7 @@ import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, Slider}
+import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
 
@@ -39,8 +40,9 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         val timerText: Text,
                         val stopButton: Button,
                         val pauseResumeButton: Button,
+                        val qualityQueryView: VBox,
                         val qualitySlider: Slider,
-                       val actorSystem: ActorSystem,
+                        val actorSystem: ActorSystem,
                         notifications: Notifications,
                         processMan: ProcessManager,
                         db: () => ScalaGraph,
@@ -62,7 +64,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private var pomodoroCounter = 0
   val BreakText = "Break"
 
-  qualitySlider.visible <== Bindings.createBooleanBinding(() => currentPomodoroDisplay.text.value == BreakText, currentPomodoroDisplay.text)
+  qualityQueryView.visible <== Bindings.createBooleanBinding(() => currentPomodoroDisplay.text.value == BreakText, currentPomodoroDisplay.text)
 
   def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
