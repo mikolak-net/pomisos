@@ -23,7 +23,12 @@ libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % (gremlinVersion+"1"),
   "com.michaelpollmeier" % "orientdb-gremlin" % (gremlinVersion+"0"),
   "com.softwaremill.macwire" %% "macros" % macwireVersion % "provided",
-  "com.softwaremill.macwire" %% "util" % macwireVersion
+  "com.softwaremill.macwire" %% "util" % macwireVersion,
+  "com.github.haifengl" % "smile-core" % "1.2.0",
+  "com.github.haifengl" % "smile-math" % "1.2.0",
+  "com.github.haifengl" %% "smile-scala" % "1.2.0"
+
+
 )
 
 mainClass in assembly := Some("net.mikolak.pomisos.main.App")
