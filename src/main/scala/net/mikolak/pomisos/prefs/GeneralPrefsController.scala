@@ -23,10 +23,11 @@ class GeneralPrefsController(
                               val minutesBreakShort: Spinner[Integer],
                               val minutesBreakLong: Spinner[Integer],
                               val numberOfPomodorosUntilLongBreak: Spinner[Integer],
-                              val playTick: CheckBox
+                              val playTick: CheckBox,
+                              val preferenceDao: PreferenceDao
                             ) extends  GeneralPrefs {
 
-  def preferences = Preferences.current(db)
+  def preferences = preferenceDao.get()
   //TODO: shapeless?
   minutesPomodoro.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.pomodoro.toMinutes.toInt)
   minutesBreakShort.valueFactory = new IntegerSpinnerValueFactory(0, 100, preferences.length.shortBreak.toMinutes.toInt)
@@ -52,9 +53,14 @@ case class LengthPreferences(pomodoro: Duration, shortBreak: Duration, longBreak
 object Preferences {
   def Default = Preferences(LengthPreferences(25 minutes, 5 minutes, 20 minutes, 4), false)
 
-  def current(db: () => ScalaGraph) = /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
+}
+
+class PreferenceDao(db: () => ScalaGraph) {
+
+  def get() = /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
     val default = Preferences.Default
     db().addVertex(default)
     default
   }
+
 }
