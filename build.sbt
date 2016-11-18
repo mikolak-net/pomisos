@@ -38,7 +38,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.fu
 
 val makeIcons = taskKey[Seq[File]]("make them icons")
 
-resourceGenerators in Compile += makeIcons.taskValue
+//TODO: temporarily disable resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
 
 makeIcons := {
