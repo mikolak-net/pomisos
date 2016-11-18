@@ -12,7 +12,7 @@ class QualityAdjuster(consecutiveQuality: ConsecutiveQuality, preferenceDao: Pre
   def apply(): Option[Int] = {
       consecutiveQuality.predict().map ( quality => {
         val current = preferenceDao.get().length.pomodoro.toMinutes
-        val newValue  = (current+(quality-Neutral)*FudgeFactor).toInt
+        val newValue  = Math.max(current+(quality-Neutral)*FudgeFactor, preferenceDao.get().length.shortBreak.toMinutes).toInt
 
         preferenceDao.saveWith(_.modify(_.length.pomodoro).setTo(newValue minutes))
 
