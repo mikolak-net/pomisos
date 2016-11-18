@@ -1,20 +1,14 @@
 package net.mikolak.pomisos.quality
 
-import net.mikolak.pomisos.prefs.PreferenceDao
-import com.softwaremill.quicklens._
-import scala.concurrent.duration._
-import language.postfixOps
+import net.mikolak.pomisos.prefs.LengthPreferences
 
-class ConsecutiveQualityAdjuster(consecutiveQuality: ConsecutiveQuality, preferenceDao: PreferenceDao) {
+class ConsecutiveQualityAdjuster(consecutiveQuality: ConsecutiveQuality) extends QualityAdjuster {
 
   import ConsecutiveQualityAdjuster._
 
-  def apply(): Option[Int] = {
+  def apply(lengths: LengthPreferences): Option[Int] = {
       consecutiveQuality.predict().map ( quality => {
-        val current = preferenceDao.get().length.pomodoro.toMinutes
-        val newValue  = Math.max(current+(quality-Neutral)*FudgeFactor, preferenceDao.get().length.shortBreak.toMinutes).toInt
-
-        preferenceDao.saveWith(_.modify(_.length.pomodoro).setTo(newValue minutes))
+        val newValue  = Math.max(lengths.pomodoro.toMinutes+(quality-Neutral)*FudgeFactor, lengths.shortBreak.toMinutes).toInt
 
         newValue
       })
@@ -24,8 +18,8 @@ class ConsecutiveQualityAdjuster(consecutiveQuality: ConsecutiveQuality, prefere
 
 object ConsecutiveQualityAdjuster {
 
-  val Neutral = 7
+  val Neutral = 6
 
-  val FudgeFactor = 1.0
+  val FudgeFactor = 2.0
 
 }
