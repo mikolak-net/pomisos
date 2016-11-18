@@ -10,8 +10,10 @@ import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
 import net.mikolak.pomisos.prefs.{Command, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
+import net.mikolak.pomisos.quality.{PomodoroQuality, Quality}
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
+import shapeless.tag
 
 import scalafx.Includes._
 import scala.concurrent.duration._
@@ -20,7 +22,7 @@ import scalafx.application.Platform
 import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
 import scalafx.event.ActionEvent
-import scalafx.scene.control.Button
+import scalafx.scene.control.{Button, Slider}
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
 
@@ -37,6 +39,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         val timerText: Text,
                         val stopButton: Button,
                         val pauseResumeButton: Button,
+                        val qualitySlider: Slider,
                        val actorSystem: ActorSystem,
                         notifications: Notifications,
                         processMan: ProcessManager,
@@ -58,6 +61,8 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private var timerStack = List.empty[TimerPeriod]
   private var pomodoroCounter = 0
   val BreakText = "Break"
+
+  qualitySlider.visible <== Bindings.createBooleanBinding(() => currentPomodoroDisplay.text.value == BreakText, currentPomodoroDisplay.text)
 
   def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
@@ -96,8 +101,13 @@ class RunViewController(val currentPomodoroDisplay: Text,
     if (!isRunning.value && timerStack.isEmpty) {
       runningPomodoro.value = None
       notifications.show("Break done, pick a new Pomodoro!")
+      savePomodoroQuality()
     }
   })
+
+  private def savePomodoroQuality(): Unit = {
+    db().addVertex(PomodoroQuality(Instant.now(), tag[Quality](qualitySlider.value.value.toInt)))
+  }
 
   isRunning.onChange((_, _, newVal) => {
     for (period <- runningPeriod.value if newVal) {

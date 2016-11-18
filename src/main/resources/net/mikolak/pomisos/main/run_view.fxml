@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-
-
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
-<VBox fx:controller="net.mikolak.pomisos.run.RunViewController" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" >
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.run.RunViewController">
     <children>
         <Text fx:id="currentPomodoroDisplay" styleClass="header" />
         <Text fx:id="timerText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="timeDisplay" />
         <HBox alignment="CENTER">
-            <Button fx:id="stopButton" text="" onAction="#stopPomodoro"/>
-            <Button fx:id="pauseResumeButton" text="" onAction="#pauseResume"/>
+            <Button fx:id="stopButton" onAction="#stopPomodoro" text="" />
+            <Button fx:id="pauseResumeButton" onAction="#pauseResume" text="" />
         </HBox>
+        <Slider fx:id="qualitySlider" blockIncrement="1.0" max="10" min="0" minorTickCount="0" majorTickUnit="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
     </children>
 </VBox>
