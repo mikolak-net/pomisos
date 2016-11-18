@@ -7,7 +7,7 @@ import com.softwaremill.macwire._
 import org.apache.commons.configuration.BaseConfiguration
 import gremlin.scala._
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun}
-import net.mikolak.pomisos.prefs.{ExecuteCommand, Preferences}
+import net.mikolak.pomisos.prefs.{Command, Preferences}
 import org.apache.tinkerpop.gremlin.structure.T
 
 trait DbModule {
@@ -43,6 +43,6 @@ object DbModule {
 
   }
 
-  private val Vertices = List(classOf[Pomodoro], classOf[Preferences], classOf[ExecuteCommand], classOf[PomodoroRun])
+  private val Vertices = List(classOf[Pomodoro], classOf[Preferences], classOf[Command], classOf[PomodoroRun])
 
 }
