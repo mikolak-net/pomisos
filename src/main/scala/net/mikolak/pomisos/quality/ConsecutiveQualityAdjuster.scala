@@ -5,9 +5,9 @@ import com.softwaremill.quicklens._
 import scala.concurrent.duration._
 import language.postfixOps
 
-class QualityAdjuster(consecutiveQuality: ConsecutiveQuality, preferenceDao: PreferenceDao) {
+class ConsecutiveQualityAdjuster(consecutiveQuality: ConsecutiveQuality, preferenceDao: PreferenceDao) {
 
-  import QualityAdjuster._
+  import ConsecutiveQualityAdjuster._
 
   def apply(): Option[Int] = {
       consecutiveQuality.predict().map ( quality => {
@@ -22,7 +22,7 @@ class QualityAdjuster(consecutiveQuality: ConsecutiveQuality, preferenceDao: Pre
 
 }
 
-object QualityAdjuster {
+object ConsecutiveQualityAdjuster {
 
   val Neutral = 7
 
