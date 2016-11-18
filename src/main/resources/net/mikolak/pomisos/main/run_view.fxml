@@ -18,7 +18,7 @@
             <Insets top="10.0" />
          </VBox.margin>
         </HBox>
-        <VBox fx:id="qualityQueryView" alignment="CENTER">
+        <VBox fx:id="qualityAppQueryView" alignment="CENTER">
             <Text>How focused were you?</Text>
             <Slider fx:id="qualitySlider" blockIncrement="1.0" majorTickUnit="1" max="10" min="0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
             <Text styleClass="hint-text">(saved automatically)</Text>

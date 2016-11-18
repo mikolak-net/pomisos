@@ -26,8 +26,8 @@ libraryDependencies ++= Seq(
   "com.softwaremill.macwire" %% "util" % macwireVersion,
   "com.github.haifengl" % "smile-core" % "1.2.0",
   "com.github.haifengl" % "smile-math" % "1.2.0",
-  "com.github.haifengl" %% "smile-scala" % "1.2.0"
-
+  "com.github.haifengl" %% "smile-scala" % "1.2.0",
+  "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
 
 )
 

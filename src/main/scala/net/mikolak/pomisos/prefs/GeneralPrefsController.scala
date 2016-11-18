@@ -7,6 +7,8 @@ import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import scalafx.scene.control.{CheckBox, Spinner}
 import scalafxml.core.macros.sfxml
 import gremlin.scala._
+import net.mikolak.pomisos.crud.Dao
+
 import scala.concurrent.duration._
 import language.postfixOps
 
@@ -36,7 +38,7 @@ class GeneralPrefsController(
   playTick.selected.value = preferences.playTick
 
   def commit() = {
-    db().V.hasLabel[Preferences].head().updateAs[Preferences](_.copy(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
+   preferenceDao.save(Preferences(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
       minutesBreakShort.value.value.toInt minutes,  minutesBreakLong.value.value.toInt minutes,
       numberOfPomodorosUntilLongBreak.value.value.toInt),
       playTick = playTick.selected.value))
@@ -55,12 +57,20 @@ object Preferences {
 
 }
 
-class PreferenceDao(db: () => ScalaGraph) {
+class PreferenceDao(db: () => ScalaGraph) extends Dao[Preferences] {
 
   def get() = /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
     val default = Preferences.Default
     db().addVertex(default)
     default
+  }
+
+  def save(preferences: Preferences) = {
+    db().V.hasLabel[Preferences].head().updateWith[Preferences](preferences).toCC[Preferences]
+  }
+
+  def saveWith(transform: Preferences => Preferences) = {
+    save(transform(get()))
   }
 
 }
