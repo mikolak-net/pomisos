@@ -35,6 +35,7 @@ mainClass in assembly := Some("net.mikolak.pomisos.main.App")
 assemblyJarName in assembly := "pomisos.jar"
 assemblyMergeStrategy in assembly := {
   case x if x.endsWith("groovy-release-info.properties") => MergeStrategy.first
+  case x if x.contains("xmlpull") => MergeStrategy.first
   case x => (assemblyMergeStrategy in assembly).value(x)
 }
 
