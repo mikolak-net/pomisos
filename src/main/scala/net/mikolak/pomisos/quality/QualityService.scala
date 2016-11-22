@@ -19,9 +19,12 @@ class QualityService(adjusters: List[QualityAdjuster], db: () => ScalaGraph, pre
 
     val result = (adjusters.map(_(current).getOrElse(current.pomodoro.toMinutes.toInt)).sum / adjusters.size.toDouble).toInt
 
-    preferenceDao.saveWith(_.modify(_.length.pomodoro).setTo(result minutes))
-
-    println(s"Adjustment result: $result")
+    if (preferenceDao.get().adaptive.enabled) {
+      preferenceDao.saveWith(_.modify(_.length.pomodoro).setTo(result minutes))
+      println(s"Adjustment result: $result")
+    } else {
+      println(s"Adaptive adjustment disabled, length unchanged")
+    }
   }
 
 }
