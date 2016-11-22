@@ -23,13 +23,19 @@ libraryDependencies ++= Seq(
   "com.michaelpollmeier" %% "gremlin-scala" % (gremlinVersion+"1"),
   "com.michaelpollmeier" % "orientdb-gremlin" % (gremlinVersion+"0"),
   "com.softwaremill.macwire" %% "macros" % macwireVersion % "provided",
-  "com.softwaremill.macwire" %% "util" % macwireVersion
+  "com.softwaremill.macwire" %% "util" % macwireVersion,
+  "com.github.haifengl" % "smile-core" % "1.2.0",
+  "com.github.haifengl" % "smile-math" % "1.2.0",
+  "com.github.haifengl" %% "smile-scala" % "1.2.0",
+  "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
+
 )
 
 mainClass in assembly := Some("net.mikolak.pomisos.main.App")
 assemblyJarName in assembly := "pomisos.jar"
 assemblyMergeStrategy in assembly := {
   case x if x.endsWith("groovy-release-info.properties") => MergeStrategy.first
+  case x if x.contains("xmlpull") => MergeStrategy.first
   case x => (assemblyMergeStrategy in assembly).value(x)
 }
 
@@ -38,7 +44,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.fu
 
 val makeIcons = taskKey[Seq[File]]("make them icons")
 
-resourceGenerators in Compile += makeIcons.taskValue
+//TODO: temporarily disable resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
 
 makeIcons := {

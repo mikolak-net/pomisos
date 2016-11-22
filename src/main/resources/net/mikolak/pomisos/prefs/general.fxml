@@ -28,6 +28,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <children>
             <Label text="Minutes for pomodoro:" />
@@ -35,11 +36,13 @@
             <Label text="Minutes for long break:" GridPane.rowIndex="2" />
             <Label text="Pomodoros until long break:" GridPane.rowIndex="3" />
             <Label text="Play tick sound:" GridPane.rowIndex="4" />
+            <Label text="Enable adaptive length (EXPERIMENTAL):" GridPane.rowIndex="5" />
             <Spinner fx:id="minutesPomodoro" prefHeight="26.0" prefWidth="171.0" GridPane.columnIndex="1" />
             <Spinner fx:id="minutesBreakShort" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Spinner fx:id="minutesBreakLong" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Spinner fx:id="numberOfPomodorosUntilLongBreak" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <CheckBox fx:id="playTick" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <CheckBox fx:id="adaptiveEnabled" GridPane.columnIndex="1" GridPane.rowIndex="5" />
         </children>
     </GridPane>
 
