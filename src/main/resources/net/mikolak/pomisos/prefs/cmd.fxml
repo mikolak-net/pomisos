@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
 <VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
@@ -46,9 +47,9 @@
                    </VBox>
                    <VBox fx:id="adminViewScript">
                        <Label text="Startup script:"/>
-                       <TextField fx:id="scriptStartup"/>
+                       <TextArea fx:id="scriptStartup"/>
                        <Label text="Stop script:"/>
-                       <TextField fx:id="scriptStop"/>
+                       <TextArea fx:id="scriptStop"/>
                    </VBox>
                </children>
                </StackPane>

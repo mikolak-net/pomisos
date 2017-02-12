@@ -37,13 +37,11 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
                         adminViewExecution: VBox,
                         executionCommand: TextField,
                         adminViewScript: VBox,
-                        scriptStartup: TextField,
-                        scriptStop: TextField,
+                        scriptStartup: TextArea,
+                        scriptStop: TextArea,
                         saveButton: Button) {
 
   import CommandUi._
-
-  commandType.selectedToggle.onChange((_, old, newT) => println(newT))
 
   lazy val cmdSelected: ReadOnlyObjectProperty[FullCommandSpec] =
     cmdList.getSelectionModel.selectedItemProperty
@@ -55,8 +53,10 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
   object withConfig extends Poly1 {
     implicit def forScript =
-      at[Script](_ -> List((lens[Script] >> 'onPomodoro, scriptStartup), (lens[Script] >> 'onBreak, scriptStop)))
-    implicit def forExecution = at[Execution](_ -> List((lens[Execution] >> 'cmd, executionCommand)))
+      at[Script](
+        _ -> List((lens[Script] >> 'onPomodoro, scriptStartup: TextInputControl),
+                  (lens[Script] >> 'onBreak, scriptStop: TextInputControl)))
+    implicit def forExecution = at[Execution](_ -> List((lens[Execution] >> 'cmd, executionCommand: TextInputControl)))
   }
 
   adminPaneGeneral.disable <== cmdSelected.map(_ == null).toBoolean
@@ -171,7 +171,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 }
 
 object CommandUi {
-  type FieldList[T]                     = List[(Lens[T, Option[String]], TextField)]
+  type FieldList[T]                     = List[(Lens[T, Option[String]], TextInputControl)]
   type SpecWithFields[T <: CommandSpec] = (T, FieldList[T])
 }
 
