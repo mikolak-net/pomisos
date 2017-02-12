@@ -18,7 +18,7 @@ class ProcessManager {
 
   }
   //TODO: temp
-  def processFor(spec: SpecEither) = spec.map(toProcess).select[CommandProcess].get
+  def processFor(spec: SpecEither) = spec.map(toProcess).unify
 
 }
 
@@ -39,11 +39,11 @@ case class ExecutionProcess(execution: Execution) extends CommandProcess {
 
   val cmd = execution.cmd.getOrElse("")
 
-  private def running_?() = (s"pgrep $cmd" !) == 0
+  private def running_?() = (s"pgrep '$cmd'" !) == 0
 
-  def kill() = Future(while (running_?()) { s"pkill $cmd" ! })
+  def kill() = Future(while (running_?()) { s"pkill '$cmd'" ! })
 
-  def create() = Future(if (!running_?()) { s"nohup $cmd" ! })
+  def create() = Future(if (!running_?()) { s"nohup '$cmd'" ! })
 
 }
 
@@ -55,10 +55,11 @@ case class ScriptProcess(script: Script) extends CommandProcess {
     scriptText
       .map(text =>
         Future {
-          val tempFile = Files.createTempFile(
-            "pomisos",
-            "script",
-            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--"))) //execute perm
+          val tempFile =
+            Files.createTempFile(
+              "pomisos",
+              "script",
+              PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--"))) //execute perm
           Files.write(tempFile, text.split("\n").toIterable.asJava)
           tempFile
         }.map(f => { f.toAbsolutePath.toString !; (); }))

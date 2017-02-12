@@ -147,26 +147,27 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
   private def loadValues(): Unit = {
     import shapeless._
     import ops.coproduct._
+    for ((_, curSpec) <- Option(cmdSelected.value)) {
 
-    val (_, curSpec) = cmdSelected.value
-
-    //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
-    object fillText extends Poly1 {
-      private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
-        case (on, list) =>
-          list.foldLeft(on) {
-            case (current, (lensToUse, field)) => {
-              field.text.value = lensToUse.get(current).getOrElse("")
-              current
+      //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
+      object fillText extends Poly1 {
+        private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
+          case (on, list) =>
+            list.foldLeft(on) {
+              case (current, (lensToUse, field)) => {
+                field.text.value = lensToUse.get(current).getOrElse("")
+                current
+              }
             }
-          }
+        }
+
+        implicit def caseScript = at[SpecWithFields[Script]](allCases)
+
+        implicit def caseExecution = at[SpecWithFields[Execution]](allCases)
       }
 
-      implicit def caseScript    = at[SpecWithFields[Script]](allCases)
-      implicit def caseExecution = at[SpecWithFields[Execution]](allCases)
+      curSpec.map(withConfig).map(fillText)
     }
-
-    curSpec.map(withConfig).map(fillText)
   }
 }
 
