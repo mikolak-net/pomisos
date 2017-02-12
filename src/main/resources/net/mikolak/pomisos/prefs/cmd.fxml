@@ -10,6 +10,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
 <VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
@@ -26,17 +29,31 @@
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
      </rowConstraints>
        <children>
-           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.rowIndex="0" GridPane.columnIndex="0"  GridPane.rowSpan="2" />
-           <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.rowIndex="0" GridPane.columnIndex="0"  GridPane.rowSpan="3" />
+           <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="adminPaneGeneral">
             <children>
                 <Label text="Type:"/>
-                <RadioButton text="Simple command" toggleGroup="$commandType"/>
-                <RadioButton text="Scripts" toggleGroup="$commandType"/>
+                <RadioButton text="Simple command" fx:id="toggleExecution" toggleGroup="$commandType"/>
+                <RadioButton text="Scripts" fx:id="toggleScript" toggleGroup="$commandType"/>
             </children>
            </VBox>
-           <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <Label text="Admin"/>
+           <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="adminPaneDetail">
+               <StackPane>
+               <children>
+                   <VBox fx:id="adminViewExecution">
+                       <Label text="Command"/>
+                       <TextField fx:id="executionCommand"/>
+                   </VBox>
+                   <VBox fx:id="adminViewScript">
+                       <Label text="Startup script:"/>
+                       <TextField fx:id="scriptStartup"/>
+                       <Label text="Stop script:"/>
+                       <TextField fx:id="scriptStop"/>
+                   </VBox>
+               </children>
+               </StackPane>
            </VBox>
+           <Button GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="saveButton" text="Save" onAction="#saveSpec"/>
        </children>
    </GridPane>
 

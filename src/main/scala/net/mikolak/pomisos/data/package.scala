@@ -3,16 +3,17 @@ package net.mikolak.pomisos
 import java.time.Instant
 
 import com.orientechnologies.orient.core.id.ORecordId
-import gremlin.scala.id
+import gremlin.scala.{ScalaGraph, id}
 
 import scala.concurrent.duration.Duration
 
 package object data {
 
-  type Id = ORecordId
+  type Id = ORecordId //TODO: switch to IdStandard
+
+  type DB = () => ScalaGraph
 
   case class Pomodoro(@id id: Id, name: String, completed: Boolean)
-
 
   object Pomodoro {
 
@@ -20,7 +21,7 @@ package object data {
 
   }
 
-  case class TimerPeriod(id: Option[Id],name: String, duration: Duration)
+  case class TimerPeriod(id: Option[Id], name: String, duration: Duration)
 
   case class PomodoroRun(endTime: Instant, duration: Duration)
 }

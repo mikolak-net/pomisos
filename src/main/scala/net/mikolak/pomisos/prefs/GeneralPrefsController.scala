@@ -7,7 +7,7 @@ import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import scalafx.scene.control.{CheckBox, Spinner}
 import scalafxml.core.macros.sfxml
 import gremlin.scala._
-import net.mikolak.pomisos.crud.Dao
+import net.mikolak.pomisos.crud.{Dao, SingletonDao}
 
 import scala.concurrent.duration._
 import language.postfixOps
@@ -20,7 +20,7 @@ trait GeneralPrefs {
 
 @sfxml
 class GeneralPrefsController(
-    db: () => ScalaGraph,
+    db: () => ScalaGraph, //TODO: switch to DB
     val minutesPomodoro: Spinner[Integer],
     val minutesBreakShort: Spinner[Integer],
     val minutesBreakLong: Spinner[Integer],
@@ -41,12 +41,16 @@ class GeneralPrefsController(
 
   def commit() =
     preferenceDao.save(
-      Preferences(LengthPreferences(minutesPomodoro.value.value.toInt minutes,
-                                    minutesBreakShort.value.value.toInt minutes,
-                                    minutesBreakLong.value.value.toInt minutes,
-                                    numberOfPomodorosUntilLongBreak.value.value.toInt),
-                  AudioPreferences(playTick.selected.value),
-                  AdaptivePreferences(adaptiveEnabled.selected.value)))
+      Preferences(
+        LengthPreferences(
+          minutesPomodoro.value.value.toInt minutes,
+          minutesBreakShort.value.value.toInt minutes,
+          minutesBreakLong.value.value.toInt minutes,
+          numberOfPomodorosUntilLongBreak.value.value.toInt
+        ),
+        AudioPreferences(playTick.selected.value),
+        AdaptivePreferences(adaptiveEnabled.selected.value)
+      ))
 
 }
 
@@ -64,19 +68,28 @@ object Preferences {
 
 }
 
-class PreferenceDao(db: () => ScalaGraph) extends Dao[Preferences] {
+class PreferenceDao(db: () => ScalaGraph) extends SingletonDao[Preferences] {
 
   def get() =
-    /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V.hasLabel[Preferences].toCC[Preferences].headOption().getOrElse {
-      val default = Preferences.Default
-      db().addVertex(default)
-      default
-    }
+    /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V
+      .hasLabel[Preferences]
+      .toCC[Preferences]
+      .headOption()
+      .getOrElse {
+        val default = Preferences.Default
+        db().addVertex(default)
+        default
+      }
 
   def save(preferences: Preferences) =
-    db().V.hasLabel[Preferences].head().updateWith[Preferences](preferences).toCC[Preferences]
+    db().V
+      .hasLabel[Preferences]
+      .head()
+      .updateWith[Preferences](preferences)
+      .toCC[Preferences]
 
   def saveWith(transform: Preferences => Preferences) =
     save(transform(get()))
 
+  override def removeAll(): Unit = db().V.hasLabel[Preferences].drop.iterate()
 }

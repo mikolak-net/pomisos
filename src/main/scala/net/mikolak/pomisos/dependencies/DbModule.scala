@@ -7,12 +7,12 @@ import com.softwaremill.macwire._
 import org.apache.commons.configuration.BaseConfiguration
 import gremlin.scala._
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun}
-import net.mikolak.pomisos.prefs.{Command, PreferenceDao, Preferences}
+import net.mikolak.pomisos.prefs._
 import org.apache.tinkerpop.gremlin.structure.T
 
 trait DbModule {
-
-  lazy val orientGraph = new OrientGraphFactory("memory:pomisos").getNoTx
+  //switch to memory:pomisos for debug
+  lazy val orientGraph = new OrientGraphFactory("plocal:./pomisos").getNoTx
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 
@@ -22,12 +22,13 @@ trait DbModule {
   }
 
   lazy val preferenceDao = wire[PreferenceDao]
+
+  lazy val commandDao = wire[CommandDao]
 }
 
 object DbModule {
 
-  def ensureIndices(g: => OrientGraph): Unit = {
-
+  def ensureIndices(g: => OrientGraph): Unit =
     for {
       vertexClassObj <- Vertices
       vertexClass = vertexClassObj.getSimpleName
@@ -42,8 +43,12 @@ object DbModule {
       }
     }
 
-  }
-
-  private val Vertices = List(classOf[Pomodoro], classOf[Preferences], classOf[Command], classOf[PomodoroRun])
+  private val Vertices = List(classOf[Pomodoro],
+                              classOf[Preferences],
+                              classOf[Command],
+                              classOf[CommandAlt],
+                              classOf[Script],
+                              classOf[Execution],
+                              classOf[PomodoroRun])
 
 }
