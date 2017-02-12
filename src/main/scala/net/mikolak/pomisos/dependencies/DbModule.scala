@@ -46,7 +46,7 @@ object DbModule {
   private val Vertices = List(classOf[Pomodoro],
                               classOf[Preferences],
                               classOf[Command],
-                              classOf[CommandAlt],
+                              classOf[Command],
                               classOf[Script],
                               classOf[Execution],
                               classOf[PomodoroRun])

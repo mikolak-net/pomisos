@@ -49,7 +49,7 @@ class CommandDao(db: () => ScalaGraph) extends MultiDao[FullCommandSpec] {
         val vCommand =
           command.id.flatMap(id => db().V.hasId(id).headOption().map(_.updateWith(command))).getOrElse(db().addVertex(command))
 
-        (vCommand.toCC[CommandAlt], updateSpecDetail(vCommand, spec))
+        (vCommand.toCC[Command], updateSpecDetail(vCommand, spec))
     }
 
   private def updateSpecDetail(vCommand: Vertex, detail: SpecEither) = {
@@ -72,9 +72,9 @@ class CommandDao(db: () => ScalaGraph) extends MultiDao[FullCommandSpec] {
 
   private def getAllQuery =
     db().V
-      .hasLabel[CommandAlt]
+      .hasLabel[Command]
       .outE(SpecEdge)
-      .map(e => e.outVertex().toCC[CommandAlt] -> vertexToSpec(e.inVertex()))
+      .map(e => e.outVertex().toCC[Command] -> vertexToSpec(e.inVertex()))
 
   override def remove(id: IdKey*): Unit = {
     val ids = id.toSet
@@ -83,39 +83,3 @@ class CommandDao(db: () => ScalaGraph) extends MultiDao[FullCommandSpec] {
 
   override def removeAll(): Unit = getAllQuery.drop().iterate()
 }
-
-object CommandTest /*extends App*/ {
-
-  import net.mikolak.pomisos.data.GraphEntityImplicits._
-
-  lazy val orientGraph = new OrientGraphFactory("memory:testMultiCmd").getNoTx
-
-  lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
-
-  implicit lazy val db: () => ScalaGraph = () => scalaDb
-
-  val exec = CommandAlt(None, Some("helloExec")) -> Execution(None, Some("echo blah"))
-
-  val script = CommandAlt(None, Some("helloScript")) -> Script(None, Some("echo hello"), Some("echo goodbye"))
-
-  val from = scalaDb.addVertex(exec._1)
-  val to   = scalaDb.addVertex(exec._2)
-  from.addEdge("specced", to)
-
-  val from2 = scalaDb.addVertex(script._1)
-  val to2   = scalaDb.addVertex(script._2)
-  from2.addEdge("specced", to2)
-
-  println(
-    scalaDb.V
-      .hasLabel[CommandAlt]
-      .outE("specced")
-      .map(e => e.outVertex().toCC[CommandAlt])
-      .toList()
-      .map(_.vertex)
-  )
-//    .foreach(v => println(v._2.vertex.label()))
-
-}
-
-case class TestEdge(id: IdKey, inVertex: Vertex, outVertex: Vertex) extends WithId

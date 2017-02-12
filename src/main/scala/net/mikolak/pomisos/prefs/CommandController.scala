@@ -103,7 +103,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
   cmdList.cellFactory = TextFieldListCell.forListView(new StringConverter[FullCommandSpec] {
     override def fromString(string: String) = ???
 
-    override def toString(t: (CommandAlt, SpecEither)) = t._1.name.getOrElse("")
+    override def toString(t: (Command, SpecEither)) = t._1.name.getOrElse("")
   })
   cmdList.editable = false
 
@@ -116,7 +116,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
   addNewCmdController.newName.onChange((obs, _, newItemOpt) =>
     for (newItem <- newItemOpt if !newItem.isEmpty) {
-      val newCmd = dao.save(CommandAlt(None, Some(newItem)) -> Coproduct[SpecEither](Execution(None, Some(newItem))))
+      val newCmd = dao.save(Command(None, Some(newItem)) -> Coproduct[SpecEither](Execution(None, Some(newItem))))
 
       cmdList.items.get().add(newCmd)
 
@@ -170,20 +170,6 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
   }
 }
 
-trait Command extends Product with Serializable {
-
-  def name: Option[String]
-
-}
-
-case class ExecuteCommand(cmd: String) extends Command {
-
-  val name = Some(cmd)
-
-}
-
-case class ScriptCommand(name: Option[String], onPomodoro: Option[String], onBreak: Option[String]) extends Command
-
 object CommandUi {
   type FieldList[T]                     = List[(Lens[T, Option[String]], TextField)]
   type SpecWithFields[T <: CommandSpec] = (T, FieldList[T])
@@ -196,7 +182,7 @@ object Command {
    */
   type SpecEither = Execution :+: Script :+: CNil
 
-  type FullCommandSpec = (CommandAlt, SpecEither)
+  type FullCommandSpec = (Command, SpecEither)
 
   val SpecEdge = "specced"
 
@@ -228,7 +214,7 @@ object Command {
 
 }
 
-case class CommandAlt(@id id: IdKey, name: Option[String]) extends WithId
+case class Command(@id id: IdKey, name: Option[String]) extends WithId
 
 sealed trait CommandSpec extends Product with Serializable with WithId
 

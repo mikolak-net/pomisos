@@ -8,7 +8,7 @@ import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
-import net.mikolak.pomisos.prefs.{ExecuteCommand, PreferenceDao, Preferences}
+import net.mikolak.pomisos.prefs.{CommandDao, PreferenceDao, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.quality.{PomodoroQuality, Quality, QualityService}
 import net.mikolak.pomisos.utils.Notifications
@@ -43,6 +43,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         val qualityAppQueryView: VBox,
                         val qualitySlider: Slider,
                         val actorSystem: ActorSystem,
+                        commandDao: CommandDao,
                         notifications: Notifications,
                         processMan: ProcessManager,
                         qualityService: QualityService,
@@ -95,8 +96,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, preferenceDao))
 
-  //TODO: TEMP
-  private def processes = db().V.hasLabel[ExecuteCommand].toCC[ExecuteCommand].map(cmd => processMan.processFor(cmd.cmd)).toList
+  private def processes = commandDao.getAll().map { case (_, spec) => processMan.processFor(spec) }.toList
 
   remainingSeconds.onChange((_, _, currentSeconds) => {
     if (currentSeconds.intValue() == 0) {
