@@ -120,7 +120,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
     val (curCommand, curSpec) = cmdSelected.value
 
-    //TODO: reduce boilerplate 0. zipWithKeys? 1. test with Generic[CommandSpec] 2. Ask on SO
+    //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
     object applyValues extends Poly1 {
       private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
         case (on, list) =>
@@ -139,7 +139,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
     import shapeless._
     for ((_, curSpec) <- Option(cmdSelected.value)) {
 
-      //TODO: reduce boilerplate 0. zipWithKeys? 1. test with Generic[CommandSpec] 2. Ask on SO
+      //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
       object fillText extends Poly1 {
         private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
           case (on, list) =>

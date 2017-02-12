@@ -8,16 +8,19 @@ import net.mikolak.pomisos.dependencies.{AppCloseFunction, AppOpenFunction}
 
 import scalafx.application.Platform
 
-
+/**
+  * Currently unused, due to multiple issues on different OSes.
+  */
 case class Tray(showApp: (() => Unit) @@ AppOpenFunction, exitApp: (() => Unit) @@ AppCloseFunction) {
 
   java.awt.Toolkit.getDefaultToolkit
   val tray = java.awt.SystemTray.getSystemTray
-  val trayIcon = new TrayIcon(javax.imageio.ImageIO.read(this.getClass.getResource("/icon_small.png").toURI.toURL), "pomidorosos")
+  val trayIcon =
+    new TrayIcon(javax.imageio.ImageIO.read(this.getClass.getResource("/icon_small.png").toURI.toURL), "pomidorosos")
   trayIcon.addActionListener(new ActionListener {
     override def actionPerformed(e: ActionEvent) = Platform.runLater(showApp())
   })
-  //TODO: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
+  //FIXME: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
   //  trayIcon.addMouseListener(new MouseAdapter {
   //    override def mouseClicked(e: MouseEvent) = {
   //      println("Click")
@@ -27,7 +30,7 @@ case class Tray(showApp: (() => Unit) @@ AppOpenFunction, exitApp: (() => Unit) 
   //      }
   //    }
   //  })
-  val menu = new java.awt.PopupMenu()
+  val menu     = new java.awt.PopupMenu()
   val openItem = new java.awt.MenuItem("Show")
   openItem.addActionListener(new ActionListener {
     override def actionPerformed(e: ActionEvent) = Platform.runLater(showApp())

@@ -3,7 +3,7 @@ package net.mikolak.pomisos.prefs
 import gremlin.scala.id
 import net.mikolak.pomisos.crud.Idable
 import net.mikolak.pomisos.data.{IdKey, WithId}
-import shapeless.{:+:, CNil}
+import shapeless._
 
 object Command {
 

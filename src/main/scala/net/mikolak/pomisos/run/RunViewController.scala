@@ -154,7 +154,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private def storeRun(period: TimerPeriod) =
     for {
       pomId    <- period.id
-      pomodoro <- db().V.hasLabel[Pomodoro].hasId(pomId).headOption() //TODO: this should be really one query
+      pomodoro <- db().V.hasLabel[Pomodoro].hasId(pomId).headOption()
     } {
       val run = db().addVertex(PomodoroRun(Instant.now(), period.duration))
       pomodoro.addEdge("ranAt", run)
@@ -162,8 +162,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
 }
 
-case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceDao) extends Actor { //TODO: actor injection
-
+case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceDao) extends Actor {
   var currentSchedule: Option[Cancellable] = None
 
   var ticker: Option[ActorRef] = None

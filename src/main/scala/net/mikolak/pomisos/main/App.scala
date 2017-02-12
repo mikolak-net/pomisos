@@ -30,7 +30,6 @@ object App extends JFXApp {
 
   }
 
-  //DbModule.ensureIndices(dependencies.orientGraph) //TODO: temporarily disabled
   val root = FXMLView(resource, new MacWireDependencyResolver(wiredInModule(dependencies)))
 
   stage = new PrimaryStage() {
@@ -44,15 +43,12 @@ object App extends JFXApp {
 
   stage.onCloseRequest = (t: WindowEvent) => doExit()
 
-  val tray = dependencies.tray
-
   private def showStage(): Unit = {
     stage.show()
     stage.toFront()
   }
 
   private def doExit(): Unit = {
-    tray.close()
     dependencies.actorSystem.terminate()
     Platform.exit()
   }

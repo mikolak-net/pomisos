@@ -13,11 +13,11 @@ class ProcessManager {
   import shapeless._
 
   private object toProcess extends Poly1 {
-    implicit def caseExecution = at[Execution](e => ExecutionProcess(e): CommandProcess)
-    implicit def caseScript    = at[Script](s => ScriptProcess(s): CommandProcess)
+    implicit def caseExecution = at[Execution](ExecutionProcess.apply)
+    implicit def caseScript    = at[Script](ScriptProcess.apply)
 
   }
-  //TODO: temp
+
   def processFor(spec: SpecEither) = spec.map(toProcess).unify
 
 }

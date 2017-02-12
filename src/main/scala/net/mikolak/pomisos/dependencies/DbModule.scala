@@ -9,6 +9,7 @@ import gremlin.scala._
 import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun}
 import net.mikolak.pomisos.prefs._
 import org.apache.tinkerpop.gremlin.structure.T
+import shapeless.the
 
 trait DbModule {
   //switch to memory:pomisos for debug
@@ -30,6 +31,9 @@ trait DbModule {
 
 object DbModule {
 
+  /**
+    * This is unused for the time being, as it does not appear to work reliably.
+    */
   def ensureIndices(g: => OrientGraph): Unit =
     for {
       vertexClassObj <- Vertices
