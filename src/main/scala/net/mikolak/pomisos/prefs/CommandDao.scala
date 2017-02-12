@@ -1,17 +1,10 @@
 package net.mikolak.pomisos.prefs
 
-import akka.actor.Status.Status
-import com.softwaremill.macwire.wire
 import gremlin.scala._
-import gremlin.scala.ScalaGraph
-import net.mikolak.pomisos.crud.{Dao, MultiDao}
-import net.mikolak.pomisos.prefs.Command._
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
-import shapeless._
-import ops.coproduct._
-
-import Command.specToIds
+import net.mikolak.pomisos.crud.MultiDao
 import net.mikolak.pomisos.data.{DB, IdKey}
+import net.mikolak.pomisos.prefs.Command._
+import shapeless._
 
 class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
 

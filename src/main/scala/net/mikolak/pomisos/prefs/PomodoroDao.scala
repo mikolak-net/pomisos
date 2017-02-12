@@ -1,10 +1,9 @@
 package net.mikolak.pomisos.prefs
 
-import gremlin.scala.ScalaGraph
-import net.mikolak.pomisos.crud.{Idable, MultiDao}
-import net.mikolak.pomisos.data.{DB, IdKey, IdStandard, Pomodoro}
-import net.mikolak.pomisos.utils.Implicits._
 import gremlin.scala._
+import net.mikolak.pomisos.utils.Implicits._
+import net.mikolak.pomisos.crud.MultiDao
+import net.mikolak.pomisos.data.{DB, IdKey, IdStandard, Pomodoro}
 
 class PomodoroDao(db: DB) extends MultiDao[Pomodoro] {
 

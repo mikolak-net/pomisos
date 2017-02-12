@@ -2,7 +2,6 @@ package net.mikolak.pomisos.stats
 
 import java.time.{LocalDate, LocalDateTime, ZoneId}
 
-import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.data.{DB, PomodoroRun}
 
 import scalafxml.core.macros.sfxml

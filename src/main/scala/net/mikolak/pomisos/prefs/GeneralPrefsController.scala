@@ -1,17 +1,14 @@
 package net.mikolak.pomisos.prefs
 
-import gremlin.scala.ScalaGraph
-
-import scala.concurrent.duration.Duration
-import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
-import scalafx.scene.control.{CheckBox, Spinner}
-import scalafxml.core.macros.sfxml
 import gremlin.scala._
-import net.mikolak.pomisos.crud.{Dao, SingletonDao}
+import net.mikolak.pomisos.crud.SingletonDao
 import net.mikolak.pomisos.data.DB
 
 import scala.concurrent.duration._
-import language.postfixOps
+import scala.language.postfixOps
+import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
+import scalafx.scene.control.{CheckBox, Spinner}
+import scalafxml.core.macros.sfxml
 
 trait GeneralPrefs {
 

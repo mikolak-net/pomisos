@@ -5,6 +5,7 @@ import javafx.scene.control.TableCell
 import scalafx.scene.control._
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
+import net.mikolak.pomisos.utils.UiUtils._
 import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
 import net.mikolak.pomisos.data.Pomodoro

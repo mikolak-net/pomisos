@@ -1,24 +1,21 @@
 package net.mikolak.pomisos.prefs
 
-import gremlin.scala.ScalaGraph
-import net.mikolak.pomisos.crud.{AddNew, AddNewController, Idable}
+import net.mikolak.pomisos.crud.{AddNew, AddNewController}
+import net.mikolak.pomisos.prefs.Command.{FullCommandSpec, SpecEither, specToIds}
+import net.mikolak.pomisos.utils.Implicits._
+import net.mikolak.pomisos.utils.UiUtils._
+import shapeless.{Coproduct, Inl, Inr, Lens, Poly1, lens}
 
+import scalafx.Includes._
 import scalafx.beans.property.ReadOnlyObjectProperty
 import scalafx.collections.ObservableBuffer
+import scalafx.event.ActionEvent
 import scalafx.scene.control._
 import scalafx.scene.control.cell.TextFieldListCell
 import scalafx.scene.input.{KeyCode, KeyEvent}
-import scalafxml.core.macros.{nested, sfxml}
-import scalafx.Includes._
-import net.mikolak.pomisos.prefs.Command.{FullCommandSpec, SpecEither}
-import shapeless.{:+:, CNil, Coproduct, Generic, Inl, Inr, Lens, Poly, Poly1, lens}
-import net.mikolak.pomisos.utils.Implicits._
-
-import scalafx.event.ActionEvent
 import scalafx.scene.layout.VBox
 import scalafx.util.StringConverter
-import Command.specToIds
-import net.mikolak.pomisos.data.{DB, IdKey, WithId}
+import scalafxml.core.macros.{nested, sfxml}
 
 @sfxml
 class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
@@ -120,7 +117,6 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
   def saveSpec(actionEvent: ActionEvent) = {
     import shapeless._
-    import ops.coproduct._
 
     val (curCommand, curSpec) = cmdSelected.value
 
@@ -141,7 +137,6 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
   private def loadValues(): Unit = {
     import shapeless._
-    import ops.coproduct._
     for ((_, curSpec) <- Option(cmdSelected.value)) {
 
       //TODO: reduce boilerplate 0. zipWithKeys? 1. test with Generic[CommandSpec] 2. Ask on SO

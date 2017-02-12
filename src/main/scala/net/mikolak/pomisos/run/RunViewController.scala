@@ -3,21 +3,20 @@ package net.mikolak.pomisos.run
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneOffset}
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
-import gremlin.scala.{ScalaGraph, _}
+import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, Props}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
-import net.mikolak.pomisos.prefs.{CommandDao, PreferenceDao, Preferences}
+import net.mikolak.pomisos.prefs.{CommandDao, PreferenceDao}
 import net.mikolak.pomisos.process.ProcessManager
-import net.mikolak.pomisos.quality.{PomodoroQuality, Quality, QualityService}
+import net.mikolak.pomisos.quality.QualityService
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
-import shapeless.tag
 
-import scalafx.Includes._
+import gremlin.scala._
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scalafx.Includes._
 import scalafx.application.Platform
 import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
