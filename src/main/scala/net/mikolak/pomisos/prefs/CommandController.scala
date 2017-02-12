@@ -12,7 +12,6 @@ import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafxml.core.macros.{nested, sfxml}
 import scalafx.Includes._
 import gremlin.scala._
-import net.mikolak.pomisos.data.Id
 import net.mikolak.pomisos.prefs.Command.{FullCommandSpec, IdKey, SpecEither, WithId}
 import shapeless.{:+:, CNil, Coproduct, Generic, Inl, Inr, Lens, Poly, Poly1, lens}
 import net.mikolak.pomisos.utils.Implicits._
@@ -98,7 +97,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
     }
   })
 
-  cmds.onChange(observerFor[FullCommandSpec](cmds, dao))
+  cmds.onChange(observerFor[FullCommandSpec](dao))
 
   cmdList.cellFactory = TextFieldListCell.forListView(new StringConverter[FullCommandSpec] {
     override def fromString(string: String) = ??? //not needed

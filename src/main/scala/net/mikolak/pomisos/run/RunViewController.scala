@@ -136,7 +136,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
         else currentPrefs.length.shortBreak
 
       timerStack ::= TimerPeriod(None, BreakText, breakDuration)
-      timerStack ::= TimerPeriod(Some(newPomodoro.id), newPomodoro.name, currentPrefs.length.pomodoro)
+      timerStack ::= TimerPeriod(newPomodoro.id, newPomodoro.name, currentPrefs.length.pomodoro)
       updateRunning(timerStack.headOption)
   })
 

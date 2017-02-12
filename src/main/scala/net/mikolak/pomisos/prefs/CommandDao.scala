@@ -66,8 +66,6 @@ class CommandDao(db: () => ScalaGraph) extends MultiDao[FullCommandSpec] {
     detail
   }
 
-  override def saveWith(transform: (FullCommandSpec) => FullCommandSpec): FullCommandSpec = ???
-
   override def get(id: IdKey): Option[FullCommandSpec] = getAllQuery.headOption
 
   private def getAllQuery =

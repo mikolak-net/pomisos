@@ -39,9 +39,8 @@ object Implicits {
   }
 
   def observerFor[T <: Product with Serializable: Idable](
-      items: ObservableBuffer[T],
       dao: MultiDao[T]): (ObservableBuffer[_ <: T], Seq[ObservableBuffer.Change[T]]) => Unit =
-    (_, rawEvents) => {
+    (items, rawEvents) => {
 
       //splice Add and Remove events into collection
       val eventMap = rawEvents.groupBy {

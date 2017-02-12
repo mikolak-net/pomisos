@@ -88,8 +88,5 @@ class PreferenceDao(db: () => ScalaGraph) extends SingletonDao[Preferences] {
       .updateWith[Preferences](preferences)
       .toCC[Preferences]
 
-  def saveWith(transform: Preferences => Preferences) =
-    save(transform(get()))
-
   override def removeAll(): Unit = db().V.hasLabel[Preferences].drop.iterate()
 }

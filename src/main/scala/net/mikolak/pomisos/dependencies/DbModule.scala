@@ -21,6 +21,8 @@ trait DbModule {
     scalaDb
   }
 
+  lazy val pomodoroDao = wire[PomodoroDao]
+
   lazy val preferenceDao = wire[PreferenceDao]
 
   lazy val commandDao = wire[CommandDao]
