@@ -1,6 +1,8 @@
 import sbt._
 import sbt.Keys._
 
+import scala.util.Try
+
 name := "pomisos"
 version := "1.0"
 scalaVersion := "2.11.8"
@@ -42,31 +44,58 @@ scalacOptions += "-P:clippy:colors=true"
 
 val makeIcons = taskKey[Seq[File]]("make them icons")
 
-//TODO: temporarily disable resourceGenerators in Compile += makeIcons.taskValue
+resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
 
 makeIcons := {
-  val inputFile = "icon.svg"
+  val generatorCmd = "inkscape"
 
-  val inputName = inputFile.split('.').head
+  val inputFileName = "icon.svg"
+  val inputFile     = new File(inputFileName)
 
-  val outputBasePath = (resourceDirectory in Compile).value
+  val inputName = inputFileName.split('.').head
 
   val outputFiles = List(("_small", 24, 24), ("", 64, 64))
 
-  import sys.process._
-  import language.postfixOps
+  val outputBasePath = (resourceDirectory in Compile).value
 
-  for ((suffix, width, height) <- outputFiles) yield {
-    val outputFile = outputBasePath / s"$inputName$suffix.png"
-    val cmd =
-      Process("inkscape",
-              List(s"--file=${baseDirectory.value / inputFile}",
-                   s"--export-png=${outputFile}",
-                   s"-w$width",
-                   s"-h$height",
-                   "--export-area-page"))
-    streams.value.log.info(cmd !!)
-    outputFile
+  val filesToRefresh = {
+    val filesWithTargets = outputFiles.map { configTuple =>
+      (outputBasePath / s"$inputName${configTuple._1}.png", configTuple._2, configTuple._3)
+    }
+
+    filesWithTargets.filter { config =>
+      val out = config._1
+      !out.exists() || (out.lastModified < inputFile.lastModified)
+    }
+  }
+
+  def doRefresh() = {
+    import sys.process._
+    import language.postfixOps
+
+    for ((out, width, height) <- filesToRefresh) yield {
+      val cmd =
+        Process(
+          generatorCmd,
+          List(s"--file=${baseDirectory.value / inputFileName}",
+               s"--export-png=$out",
+               s"-w$width",
+               s"-h$height",
+               "--export-area-page")
+        )
+      streams.value.log.info(cmd !!)
+      out
+    }
+  }
+
+  if (Try(s"$generatorCmd --version").isSuccess) {
+    doRefresh()
+  } else {
+    if (filesToRefresh.nonEmpty) {
+      streams.value.log
+        .warn(s"Icons need to be updated, but $generatorCmd is missing. Install $generatorCmd to allow regeneration.")
+    }
+    Seq.empty[File]
   }
 }
