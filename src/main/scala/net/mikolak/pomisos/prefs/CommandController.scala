@@ -101,7 +101,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
   cmds.onChange(observerFor[FullCommandSpec](cmds, dao))
 
   cmdList.cellFactory = TextFieldListCell.forListView(new StringConverter[FullCommandSpec] {
-    override def fromString(string: String) = ???
+    override def fromString(string: String) = ??? //not needed
 
     override def toString(t: (Command, SpecEither)) = t._1.name.getOrElse("")
   })
@@ -129,7 +129,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
 
     val (curCommand, curSpec) = cmdSelected.value
 
-    //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
+    //TODO: reduce boilerplate 0. zipWithKeys? 1. test with Generic[CommandSpec] 2. Ask on SO
     object applyValues extends Poly1 {
       private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
         case (on, list) =>
@@ -149,7 +149,7 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
     import ops.coproduct._
     for ((_, curSpec) <- Option(cmdSelected.value)) {
 
-      //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
+      //TODO: reduce boilerplate 0. zipWithKeys? 1. test with Generic[CommandSpec] 2. Ask on SO
       object fillText extends Poly1 {
         private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
           case (on, list) =>
