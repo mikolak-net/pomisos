@@ -1,8 +1,8 @@
 package net.mikolak.pomisos.main
 
-
 import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.crud.{AddNew, AddNewController}
+import net.mikolak.pomisos.data.DB
 import net.mikolak.pomisos.graphics.MainIcon
 import net.mikolak.pomisos.prefs._
 import net.mikolak.pomisos.run.{RunView, RunViewController}
@@ -22,7 +22,7 @@ class MainController(@nested[AddNewController] val newPomodoroController: AddNew
                      val management: VBox,
                      val runStatus: VBox,
                      val stats: VBox,
-                     val db: () => ScalaGraph,
+                     val db: DB,
                      val icon: MainIcon,
                      notifications: Notifications) {
 
@@ -46,8 +46,7 @@ class MainController(@nested[AddNewController] val newPomodoroController: AddNew
     prefsVisible.value = true
   }
 
-  def stats30(event: ActionEvent): Unit = {
+  def stats30(event: ActionEvent): Unit =
     statsVisible.value = true
-  }
 
 }

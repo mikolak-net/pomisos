@@ -4,13 +4,20 @@ import java.time.Instant
 
 import com.orientechnologies.orient.core.id.ORecordId
 import gremlin.scala.{ScalaGraph, id}
-import net.mikolak.pomisos.prefs.Command.{IdKey, WithId}
 
 import scala.concurrent.duration.Duration
 
 package object data {
 
   type DB = () => ScalaGraph
+
+  type IdStandard = ORecordId
+
+  type IdKey = Option[IdStandard]
+
+  trait WithId {
+    def id: IdKey
+  }
 
   case class Pomodoro(@id id: IdKey, name: String, completed: Boolean) extends WithId
 

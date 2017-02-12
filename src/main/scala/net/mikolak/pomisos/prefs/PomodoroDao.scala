@@ -2,12 +2,11 @@ package net.mikolak.pomisos.prefs
 
 import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.crud.{Idable, MultiDao}
-import net.mikolak.pomisos.data.Pomodoro
-import net.mikolak.pomisos.prefs.Command.{IdKey, IdStandard}
+import net.mikolak.pomisos.data.{DB, IdKey, IdStandard, Pomodoro}
 import net.mikolak.pomisos.utils.Implicits._
 import gremlin.scala._
 
-class PomodoroDao(db: () => ScalaGraph) extends MultiDao[Pomodoro] {
+class PomodoroDao(db: DB) extends MultiDao[Pomodoro] {
 
   private def getAllQuery = db().V.hasLabel[Pomodoro]
 

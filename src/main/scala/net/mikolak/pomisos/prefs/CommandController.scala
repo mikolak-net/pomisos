@@ -1,6 +1,5 @@
 package net.mikolak.pomisos.prefs
 
-import com.orientechnologies.orient.core.id.ORecordId
 import gremlin.scala.ScalaGraph
 import net.mikolak.pomisos.crud.{AddNew, AddNewController, Idable}
 
@@ -11,23 +10,20 @@ import scalafx.scene.control.cell.TextFieldListCell
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafxml.core.macros.{nested, sfxml}
 import scalafx.Includes._
-import gremlin.scala._
-import net.mikolak.pomisos.prefs.Command.{FullCommandSpec, IdKey, SpecEither, WithId}
+import net.mikolak.pomisos.prefs.Command.{FullCommandSpec, SpecEither}
 import shapeless.{:+:, CNil, Coproduct, Generic, Inl, Inr, Lens, Poly, Poly1, lens}
 import net.mikolak.pomisos.utils.Implicits._
-import org.apache.tinkerpop.gremlin.structure.T
-import shapeless.PolyDefns.{->, ~>}
 
 import scalafx.event.ActionEvent
 import scalafx.scene.layout.VBox
 import scalafx.util.StringConverter
 import Command.specToIds
+import net.mikolak.pomisos.data.{DB, IdKey, WithId}
 
 @sfxml
 class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
                         commandType: ToggleGroup,
                         val cmdList: ListView[FullCommandSpec],
-                        db: () => ScalaGraph,
                         dao: CommandDao,
                         toggleExecution: RadioButton,
                         toggleScript: RadioButton,
@@ -174,50 +170,3 @@ object CommandUi {
   type FieldList[T]                     = List[(Lens[T, Option[String]], TextInputControl)]
   type SpecWithFields[T <: CommandSpec] = (T, FieldList[T])
 }
-
-object Command {
-
-  /*
-   * Coproduct for spec types
-   */
-  type SpecEither = Execution :+: Script :+: CNil
-
-  type FullCommandSpec = (Command, SpecEither)
-
-  val SpecEdge = "specced"
-
-  type IdStandard = ORecordId
-
-  type IdKey = Option[IdStandard]
-
-  trait WithId {
-    def id: IdKey
-  }
-
-  implicit val specToIds: Idable[FullCommandSpec] = {
-    import shapeless._
-    import poly._
-    import ops.coproduct._
-
-    object idOfSpec extends Poly1 {
-      implicit def caseScript    = at[Script](_.id)
-      implicit def caseExecution = at[Execution](_.id)
-
-    }
-
-    new Idable[FullCommandSpec] {
-      override def idsOf(spec: FullCommandSpec): Seq[IdKey] = spec match {
-        case (command, spec) => Seq(command.id, spec.fold(idOfSpec))
-      }
-    }
-  }
-
-}
-
-case class Command(@id id: IdKey, name: Option[String]) extends WithId
-
-sealed trait CommandSpec extends Product with Serializable with WithId
-
-case class Execution(id: IdKey, cmd: Option[String]) extends CommandSpec
-
-case class Script(id: IdKey, onPomodoro: Option[String], onBreak: Option[String]) extends CommandSpec

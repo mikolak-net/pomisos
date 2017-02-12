@@ -1,6 +1,6 @@
 package net.mikolak.pomisos.crud
 
-import net.mikolak.pomisos.prefs.Command.{IdKey, WithId}
+import net.mikolak.pomisos.data.IdKey
 
 trait Dao[T <: Product with Serializable] {
 

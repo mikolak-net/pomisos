@@ -6,7 +6,7 @@ import java.time.{Instant, LocalDateTime, ZoneOffset}
 import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, PoisonPill, Props}
 import gremlin.scala.{ScalaGraph, _}
 import net.mikolak.pomisos.audio.SamplePlayer
-import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
 import net.mikolak.pomisos.prefs.{CommandDao, PreferenceDao, Preferences}
 import net.mikolak.pomisos.process.ProcessManager
@@ -47,7 +47,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         notifications: Notifications,
                         processMan: ProcessManager,
                         qualityService: QualityService,
-                        db: () => ScalaGraph,
+                        db: DB,
                         preferenceDao: PreferenceDao,
                         glyphs: FontAwesomeGlyphs,
                         glyphRotators: GlyphRotators)

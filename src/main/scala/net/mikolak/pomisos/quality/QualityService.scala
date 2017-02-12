@@ -7,10 +7,12 @@ import gremlin.scala._
 import net.mikolak.pomisos.prefs.PreferenceDao
 import shapeless.tag
 import com.softwaremill.quicklens._
+import net.mikolak.pomisos.data.DB
+
 import scala.concurrent.duration._
 import language.postfixOps
 
-class QualityService(adjusters: List[QualityAdjuster], db: () => ScalaGraph, preferenceDao: PreferenceDao) {
+class QualityService(adjusters: List[QualityAdjuster], db: DB, preferenceDao: PreferenceDao) {
 
   def handleNewPomodoroQuality(quality: Int) = {
     db().addVertex(PomodoroQuality(Instant.now(), tag[Quality](quality)))

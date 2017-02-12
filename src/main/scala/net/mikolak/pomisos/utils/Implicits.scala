@@ -1,8 +1,7 @@
 package net.mikolak.pomisos.utils
 
 import net.mikolak.pomisos.crud.{Idable, MultiDao}
-import net.mikolak.pomisos.data.Pomodoro
-import net.mikolak.pomisos.prefs.Command.{IdKey, WithId}
+import net.mikolak.pomisos.data.{Pomodoro, IdKey, WithId}
 import org.apache.tinkerpop.gremlin.structure.T
 import shapeless.Lens
 

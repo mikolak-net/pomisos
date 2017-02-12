@@ -10,10 +10,10 @@ import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
 import shapeless._
 import ops.coproduct._
 
-import scala.collection.JavaConverters._
 import Command.specToIds
+import net.mikolak.pomisos.data.{DB, IdKey}
 
-class CommandDao(db: () => ScalaGraph) extends MultiDao[FullCommandSpec] {
+class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
 
   override def getAll(): List[FullCommandSpec] = getAllQuery.toList()
 

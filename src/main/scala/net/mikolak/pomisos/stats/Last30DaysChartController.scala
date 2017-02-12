@@ -3,7 +3,7 @@ package net.mikolak.pomisos.stats
 import java.time.{LocalDate, LocalDateTime, ZoneId}
 
 import gremlin.scala.ScalaGraph
-import net.mikolak.pomisos.data.PomodoroRun
+import net.mikolak.pomisos.data.{DB, PomodoroRun}
 
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
@@ -15,14 +15,14 @@ import scalafx.event.ActionEvent
 import scalafx.scene.layout.VBox
 
 @sfxml
-class Last30DaysChartController(val main: VBox,
-                                chart: BarChart[String, Int],
-                                db: () => ScalaGraph) {
+class Last30DaysChartController(val main: VBox, chart: BarChart[String, Int], db: DB) {
 
-
-  lazy val byDayCount = db().V.hasLabel[PomodoroRun].toCC[PomodoroRun]
+  lazy val byDayCount = db().V
+    .hasLabel[PomodoroRun]
+    .toCC[PomodoroRun]
     .toList
-    .groupBy(v => LocalDate.from(LocalDateTime.ofInstant(v.endTime, ZoneId.systemDefault()))).map { case (day, verts) => (day, verts.size) }
+    .groupBy(v => LocalDate.from(LocalDateTime.ofInstant(v.endTime, ZoneId.systemDefault())))
+    .map { case (day, verts) => (day, verts.size) }
     .withDefaultValue(0)
 
   val now = LocalDate.now()
@@ -37,8 +37,7 @@ class Last30DaysChartController(val main: VBox,
 
   chart.data = series
 
-  def closeStats(event: ActionEvent): Unit = {
+  def closeStats(event: ActionEvent): Unit =
     main.visible.value = false
-  }
 
 }

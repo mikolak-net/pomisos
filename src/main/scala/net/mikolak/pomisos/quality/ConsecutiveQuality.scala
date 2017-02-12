@@ -6,15 +6,16 @@ import gremlin.scala.ScalaGraph
 import gremlin.scala._
 import smile.regression._
 import ConsecutiveQuality._
+import net.mikolak.pomisos.data.DB
 
-class ConsecutiveQuality (db: () => ScalaGraph) {
+class ConsecutiveQuality(db: DB) {
   def predict(): Option[Double] = {
     val lastQualities = db().V
-        .hasLabel[PomodoroQuality]
-        .toCC[PomodoroQuality]
-        .toList
-        .sortBy(_.timestamp)(Ordering.fromLessThan(_ isBefore _))
-        .takeRight(LastQualitiesCount)
+      .hasLabel[PomodoroQuality]
+      .toCC[PomodoroQuality]
+      .toList
+      .sortBy(_.timestamp)(Ordering.fromLessThan(_ isBefore _))
+      .takeRight(LastQualitiesCount)
     if (lastQualities.isEmpty) {
       None
     } else {
@@ -33,8 +34,6 @@ class ConsecutiveQuality (db: () => ScalaGraph) {
         )
       }
     }
-
-
 
   }
 }

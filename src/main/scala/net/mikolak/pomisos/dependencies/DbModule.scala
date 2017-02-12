@@ -6,7 +6,7 @@ import org.apache.tinkerpop.gremlin.orientdb.{OrientGraph, OrientGraphFactory}
 import com.softwaremill.macwire._
 import org.apache.commons.configuration.BaseConfiguration
 import gremlin.scala._
-import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun}
+import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun}
 import net.mikolak.pomisos.prefs._
 import org.apache.tinkerpop.gremlin.structure.T
 
@@ -16,7 +16,7 @@ trait DbModule {
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 
-  lazy val scalaDbProvider: () => ScalaGraph = () => {
+  lazy val scalaDbProvider: DB = () => {
     orientGraph.database().activateOnCurrentThread()
     scalaDb
   }

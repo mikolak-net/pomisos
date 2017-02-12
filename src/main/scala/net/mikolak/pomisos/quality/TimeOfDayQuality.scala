@@ -3,16 +3,17 @@ package net.mikolak.pomisos.quality
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import gremlin.scala.{ScalaGraph, _}
+import net.mikolak.pomisos.data.DB
 import smile.regression._
 
-class TimeOfDayQuality(db: () => ScalaGraph) {
+class TimeOfDayQuality(db: DB) {
   def predict(): Option[Double] = {
     val currentHour = toHour(Instant.now())
 
     val lastQualities = db().V
-        .hasLabel[PomodoroQuality]
-        .toCC[PomodoroQuality]
-        .toList
+      .hasLabel[PomodoroQuality]
+      .toCC[PomodoroQuality]
+      .toList
     if (lastQualities.isEmpty) {
       None
     } else {
@@ -32,4 +33,3 @@ class TimeOfDayQuality(db: () => ScalaGraph) {
 
   private def toHour(ins: Instant) = LocalDateTime.ofInstant(ins, ZoneId.systemDefault()).getHour.toDouble
 }
-

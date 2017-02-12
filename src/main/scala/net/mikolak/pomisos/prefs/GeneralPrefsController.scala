@@ -8,6 +8,7 @@ import scalafx.scene.control.{CheckBox, Spinner}
 import scalafxml.core.macros.sfxml
 import gremlin.scala._
 import net.mikolak.pomisos.crud.{Dao, SingletonDao}
+import net.mikolak.pomisos.data.DB
 
 import scala.concurrent.duration._
 import language.postfixOps
@@ -20,7 +21,7 @@ trait GeneralPrefs {
 
 @sfxml
 class GeneralPrefsController(
-    db: () => ScalaGraph, //TODO: switch to DB
+    db: DB,
     val minutesPomodoro: Spinner[Integer],
     val minutesBreakShort: Spinner[Integer],
     val minutesBreakLong: Spinner[Integer],
@@ -68,7 +69,7 @@ object Preferences {
 
 }
 
-class PreferenceDao(db: () => ScalaGraph) extends SingletonDao[Preferences] {
+class PreferenceDao(db: DB) extends SingletonDao[Preferences] {
 
   def get() =
     /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V
