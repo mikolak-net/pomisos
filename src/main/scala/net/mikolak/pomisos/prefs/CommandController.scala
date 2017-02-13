@@ -22,21 +22,21 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
                         commandType: ToggleGroup,
                         val cmdList: ListView[FullCommandSpec],
                         dao: CommandDao,
-                        toggleExecution: RadioButton,
-                        toggleScript: RadioButton,
-                        adminPaneGeneral: VBox,
-                        adminPaneDetail: VBox,
-                        adminViewExecution: VBox,
-                        executionCommand: TextField,
-                        adminViewScript: VBox,
-                        scriptStartup: TextArea,
-                        scriptStop: TextArea,
-                        saveButton: Button) {
+                        val toggleExecution: RadioButton,
+                        val toggleScript: RadioButton,
+                        val adminPaneGeneral: VBox,
+                        val adminPaneDetail: VBox,
+                        val adminViewExecution: VBox,
+                        val executionCommand: TextField,
+                        val adminViewScript: VBox,
+                        val scriptStartup: TextArea,
+                        val scriptStop: TextArea,
+                        val saveButton: Button) {
 
   import CommandUi._
 
-  lazy val cmdSelected: ReadOnlyObjectProperty[FullCommandSpec] =
-    cmdList.getSelectionModel.selectedItemProperty
+  lazy val cmdSelected =
+    (cmdList.getSelectionModel.selectedItemProperty: ReadOnlyObjectProperty[FullCommandSpec]).map(Option.apply)
 
   lazy val cmdSelectedIndex = cmdList.getSelectionModel.selectedIndexProperty()
 
@@ -51,43 +51,42 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
     implicit def forExecution = at[Execution](_ -> List((lens[Execution] >> 'cmd, executionCommand: TextInputControl)))
   }
 
-  adminPaneGeneral.disable <== cmdSelected.map(_ == null).toBoolean
+  adminPaneGeneral.disable <== cmdSelected.map(_.isEmpty).toBoolean
   adminPaneDetail.visible <== !adminPaneGeneral.disable
 
   //just need this one
   adminViewExecution.visible <== cmdSelected
-    .map(s => s != null && s._2.select[Execution].nonEmpty)
+    .map(_.exists(_._2.select[Execution].nonEmpty))
     .toBoolean
   adminViewScript.visible <== !adminViewExecution.visible
 
   cmdSelected.onChange((_, _, newVal) => {
 
     newVal match {
-      case (_, Inl(_: Execution)) => {
-
-        toggleExecution.selected = true
-      }
-      case (_, Inr(Inl(_: Script))) => {
-        toggleScript.selected = true
-      }
-      case _ => //fallthrough for null
+      case Some((_, Inl(_: Execution)))   => toggleExecution.selected = true
+      case Some((_, Inr(Inl(_: Script)))) => toggleScript.selected = true
+      case _                              => //fallthrough for null
     }
 
     loadValues()
   })
 
   commandType.selectedToggle.onChange((_, _, newVal) => {
-    val isExecution    = cmdSelected.value._2.select[Execution].nonEmpty
-    val needsSwitching = ((newVal == toggleScript.delegate) && isExecution) || (newVal == toggleExecution.delegate && !isExecution)
+    for (selected <- cmdSelected.value) {
 
-    if (needsSwitching) {
-      val newSpec       = dao.convertToOther(cmdSelected.value)
-      val selectedIndex = cmdList.getSelectionModel.getSelectedIndices.head
-      cmds.update(selectedIndex, newSpec)
+      val isExecution    = selected._2.select[Execution].nonEmpty
+      val needsSwitching = ((newVal == toggleScript.delegate) && isExecution) || (newVal == toggleExecution.delegate && !isExecution)
 
-      //needs to reselect
-      cmdList.getSelectionModel.select(selectedIndex)
+      if (needsSwitching) {
+        val newSpec       = dao.convertToOther(selected)
+        val selectedIndex = cmdList.getSelectionModel.getSelectedIndices.head
+        cmds.update(selectedIndex, newSpec)
+
+        //needs to reselect
+        cmdList.getSelectionModel.select(selectedIndex)
+      }
     }
+
   })
 
   cmds.onChange(observerFor[FullCommandSpec](dao))
@@ -118,26 +117,28 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
   def saveSpec(actionEvent: ActionEvent) = {
     import shapeless._
 
-    val (curCommand, curSpec) = cmdSelected.value
+    for ((curCommand, curSpec) <- cmdSelected.value) {
 
-    //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
-    object applyValues extends Poly1 {
-      private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
-        case (on, list) =>
-          list.foldLeft(on) { case (current, (lensToUse, field)) => lensToUse.set(current)(Option(field.text.value)) }
+      //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
+      object applyValues extends Poly1 {
+        private def allCases[T <: CommandSpec](arg: SpecWithFields[T]) = arg match {
+          case (on, list) =>
+            list.foldLeft(on) { case (current, (lensToUse, field)) => lensToUse.set(current)(Option(field.text.value)) }
+        }
+
+        implicit def caseScript = at[SpecWithFields[Script]](allCases)
+
+        implicit def caseExecution = at[SpecWithFields[Execution]](allCases)
       }
 
-      implicit def caseScript    = at[SpecWithFields[Script]](allCases)
-      implicit def caseExecution = at[SpecWithFields[Execution]](allCases)
+      val newSpec = curSpec.map(withConfig).map(applyValues)
+      cmds.update(cmdSelectedIndex.intValue(), (curCommand, newSpec))
     }
-
-    val newSpec = curSpec.map(withConfig).map(applyValues)
-    cmds.update(cmdSelectedIndex.intValue(), (curCommand, newSpec))
   }
 
   private def loadValues(): Unit = {
     import shapeless._
-    for ((_, curSpec) <- Option(cmdSelected.value)) {
+    for ((_, curSpec) <- cmdSelected.value) {
 
       //TODO: reduce boilerplate 1. test with Generic[CommandSpec] 2. Ask on SO
       object fillText extends Poly1 {
