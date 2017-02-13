@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
+<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
-    <fx:define>
-        <ToggleGroup fx:id="commandType"/>
-    </fx:define>
    <GridPane>
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
@@ -28,34 +25,41 @@
      <rowConstraints>
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+         <RowConstraints />
      </rowConstraints>
        <children>
-           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.rowIndex="0" GridPane.columnIndex="0"  GridPane.rowSpan="3" />
-           <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="adminPaneGeneral">
+           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="3" />
+           <VBox fx:id="adminPaneGeneral" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <children>
-                <Label text="Type:"/>
-                <RadioButton text="Simple command" fx:id="toggleExecution" toggleGroup="$commandType"/>
-                <RadioButton text="Scripts" fx:id="toggleScript" toggleGroup="$commandType"/>
+                <Label text="Type:" />
+                <RadioButton fx:id="toggleExecution" text="Simple command">
+                  <toggleGroup>
+                     <ToggleGroup fx:id="commandType" />
+                  </toggleGroup></RadioButton>
+                <RadioButton fx:id="toggleScript" text="Scripts" toggleGroup="$commandType" />
             </children>
            </VBox>
-           <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="adminPaneDetail">
+           <VBox fx:id="adminPaneDetail" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <StackPane>
                <children>
                    <VBox fx:id="adminViewExecution">
-                       <Label text="Command"/>
-                       <TextField fx:id="executionCommand"/>
+                       <Label text="Command" />
+                       <TextField fx:id="executionCommand" />
                    </VBox>
                    <VBox fx:id="adminViewScript">
-                       <Label text="Startup script:"/>
-                       <TextArea fx:id="scriptStartup"/>
-                       <Label text="Stop script:"/>
-                       <TextArea fx:id="scriptStop"/>
+                       <Label text="Startup script:" />
+                       <TextArea fx:id="scriptStartup" promptText="#!/bin/bash #code to run when pomodoro starts" />
+                       <Label text="Stop script:" />
+                       <TextArea fx:id="scriptStop"  promptText="#!/bin/bash #code to run when break starts" />
                    </VBox>
                </children>
                </StackPane>
            </VBox>
-           <Button GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="saveButton" text="Save" onAction="#saveSpec"/>
+           <Button fx:id="saveButton" onAction="#saveSpec" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2" />
        </children>
    </GridPane>
+    <fx:define>
+        <ToggleGroup fx:id="commandType" />
+    </fx:define>
 
 </VBox>
