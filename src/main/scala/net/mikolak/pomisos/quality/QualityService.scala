@@ -2,11 +2,11 @@ package net.mikolak.pomisos.quality
 
 import java.time.Instant
 
-import gremlin.scala.ScalaGraph
 import gremlin.scala._
 import net.mikolak.pomisos.prefs.PreferenceDao
 import shapeless.tag
 import com.softwaremill.quicklens._
+import net.mikolak.pomisos.QualityAdjuster
 import net.mikolak.pomisos.data.DB
 
 import scala.concurrent.duration._
