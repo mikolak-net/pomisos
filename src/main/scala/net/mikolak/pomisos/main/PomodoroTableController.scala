@@ -69,14 +69,13 @@ class PomodoroTableController(
         val itemIndex: Int = cell.tableRow.value.indexProperty().intValue()
         if ((0 until items.length).contains(itemIndex)) {
           val cpl = items.get(itemIndex).completed
-          if (cpl) {
+          if (cpl && !cell.styleClass.contains(completeStyle)) {
             cell.styleClass.add(completeStyle)
-          } else {
+          } else if (!cpl) {
             cell.styleClass.remove(completeStyle)
           }
         }
       }
-      //cell.tableRow.onChange(updateComplete())
       items.onChange(updateComplete())
       cell.item.onChange(updateComplete())
       cell
