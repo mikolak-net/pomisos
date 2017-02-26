@@ -7,11 +7,12 @@ import net.mikolak.pomisos.data.DB
 import org.scalacheck.Gen
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FlatSpec, MustMatchers, OptionValues}
+import org.scalatest.{FlatSpec, Ignore, MustMatchers, OptionValues}
 import shapeless.tag
 
 import scala.util.Random
 
+@Ignore
 class ConsecutiveQualitySpec
     extends FlatSpec
     with MustMatchers
