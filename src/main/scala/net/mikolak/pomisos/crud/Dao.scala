@@ -1,6 +1,6 @@
 package net.mikolak.pomisos.crud
 
-import net.mikolak.pomisos.data.IdKey
+import net.mikolak.pomisos.data.DbIdKey
 
 trait Dao[T <: Product with Serializable] {
 
@@ -17,13 +17,13 @@ trait SingletonDao[T <: Product with Serializable] extends Dao[T] {
 }
 
 abstract class MultiDao[T <: Product with Serializable: Idable] extends Dao[T] {
-  def get(id: IdKey): Option[T]
-  def remove(id: IdKey*): Unit
-  def saveWith(transform: T => T)(id: IdKey): Option[T] = get(id).map(transform).map(save)
+  def get(id: DbIdKey): Option[T]
+  def remove(id: DbIdKey*): Unit
+  def saveWith(transform: T => T)(id: DbIdKey): Option[T] = get(id).map(transform).map(save)
 }
 
 trait Idable[T] {
-  def idsOf(t: T): Seq[IdKey]
+  def idsOf(t: T): Seq[DbIdKey]
 }
 
 /**

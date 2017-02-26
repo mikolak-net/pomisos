@@ -1,14 +1,16 @@
 package net.mikolak.pomisos.prefs
 
 import gremlin.scala._
-import net.mikolak.pomisos.crud.SingletonDao
-import net.mikolak.pomisos.data.DB
+import net.mikolak.pomisos.crud.{AddNew, AddNewController, SingletonDao}
+import net.mikolak.pomisos.data.{DB, IdOf}
+import net.mikolak.pomisos.prefs.ColumnType.ColumnType
+import net.mikolak.pomisos.prefs.task.{Board, CardList}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import scalafx.scene.control.{CheckBox, Spinner}
-import scalafxml.core.macros.sfxml
+import scalafxml.core.macros.{nested, sfxml}
 
 trait GeneralPrefs {
 
@@ -19,6 +21,7 @@ trait GeneralPrefs {
 @sfxml
 class GeneralPrefsController(
     db: DB,
+    @nested[TrelloPrefsController] trelloPrefsController: TrelloPrefs,
     val minutesPomodoro: Spinner[Integer],
     val minutesBreakShort: Spinner[Integer],
     val minutesBreakLong: Spinner[Integer],
@@ -47,12 +50,17 @@ class GeneralPrefsController(
           numberOfPomodorosUntilLongBreak.value.value.toInt
         ),
         AudioPreferences(playTick.selected.value),
-        AdaptivePreferences(adaptiveEnabled.selected.value)
-      ))
+        AdaptivePreferences(adaptiveEnabled.selected.value),
+        trelloPrefsController.prefs
+      )
+    )
 
 }
 
-case class Preferences(length: LengthPreferences, audio: AudioPreferences, adaptive: AdaptivePreferences)
+case class Preferences(length: LengthPreferences,
+                       audio: AudioPreferences,
+                       adaptive: AdaptivePreferences,
+                       trello: Option[TrelloPreferences])
 
 case class LengthPreferences(pomodoro: Duration, shortBreak: Duration, longBreak: Duration, pomodorosForLongBreak: Int)
 
@@ -60,9 +68,20 @@ case class AudioPreferences(playTick: Boolean)
 
 case class AdaptivePreferences(enabled: Boolean)
 
+case class TrelloPreferences(authToken: Option[String], board: Option[IdOf[Board]], columns: Map[ColumnType, IdOf[CardList]])
+
+object ColumnType extends Enumeration {
+  type ColumnType = Value
+
+  val ToDo, Doing, Done = Value
+}
+
 object Preferences {
   def Default =
-    Preferences(LengthPreferences(25 minutes, 5 minutes, 20 minutes, 4), AudioPreferences(false), AdaptivePreferences(false))
+    Preferences(LengthPreferences(25 minutes, 5 minutes, 20 minutes, 4),
+                AudioPreferences(false),
+                AdaptivePreferences(false),
+                None)
 
 }
 

@@ -4,6 +4,6 @@ import akka.actor.ActorSystem
 
 trait AkkaModule {
 
-  lazy val actorSystem = ActorSystem("pomisos")
+  implicit lazy val actorSystem = ActorSystem("pomisos")
 
 }

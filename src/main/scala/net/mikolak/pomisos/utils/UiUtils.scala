@@ -1,7 +1,7 @@
 package net.mikolak.pomisos.utils
 
 import net.mikolak.pomisos.crud.{Idable, MultiDao}
-import net.mikolak.pomisos.data.WithId
+import net.mikolak.pomisos.data.WithDbId
 import shapeless.Lens
 
 import scalafx.beans.property.ObjectProperty
@@ -10,7 +10,8 @@ import scalafx.collections.ObservableBuffer.{Add, Remove, Update}
 
 object UiUtils {
 
-  def propFor[Type <: WithId, FieldType](l: Lens[Type, FieldType], o: Type)(saveFunc: Type => Type): ObjectProperty[FieldType] = {
+  def propFor[Type <: WithDbId, FieldType](l: Lens[Type, FieldType], o: Type)(
+      saveFunc: Type => Type): ObjectProperty[FieldType] = {
     var obj = o
 
     val prop = ObjectProperty.apply(l.get(o))

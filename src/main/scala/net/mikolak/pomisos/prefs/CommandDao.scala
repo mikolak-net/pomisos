@@ -2,7 +2,7 @@ package net.mikolak.pomisos.prefs
 
 import gremlin.scala._
 import net.mikolak.pomisos.crud.MultiDao
-import net.mikolak.pomisos.data.{DB, IdKey}
+import net.mikolak.pomisos.data.{DB, DbIdKey}
 import net.mikolak.pomisos.prefs.Command._
 import shapeless._
 
@@ -59,7 +59,7 @@ class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
     detail
   }
 
-  override def get(id: IdKey): Option[FullCommandSpec] = getAllQuery.headOption
+  override def get(id: DbIdKey): Option[FullCommandSpec] = getAllQuery.headOption
 
   private def getAllQuery =
     db().V
@@ -67,7 +67,7 @@ class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
       .outE(SpecEdge)
       .map(e => e.outVertex().toCC[Command] -> vertexToSpec(e.inVertex()))
 
-  override def remove(id: IdKey*): Unit = {
+  override def remove(id: DbIdKey*): Unit = {
     val ids = id.toSet
     getAllQuery.filter { case (command, _) => ids.contains(command.id) }.drop().iterate()
   }

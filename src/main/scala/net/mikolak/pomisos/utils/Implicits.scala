@@ -1,7 +1,7 @@
 package net.mikolak.pomisos.utils
 
 import net.mikolak.pomisos.crud.Idable
-import net.mikolak.pomisos.data.WithId
+import net.mikolak.pomisos.data.WithDbId
 import org.apache.tinkerpop.gremlin.structure.T
 
 import scala.concurrent.duration.Duration
@@ -23,7 +23,7 @@ object Implicits {
 
   }
 
-  implicit def idableWithId[T <: WithId]: Idable[T] = new Idable[T] {
+  implicit def idableWithId[T <: WithDbId]: Idable[T] = new Idable[T] {
     override def idsOf(t: T) = Seq(t.id)
   }
 

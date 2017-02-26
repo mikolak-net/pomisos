@@ -9,7 +9,7 @@
     <StackPane>
       <children>
           <fx:include source="general.fxml" fx:id="prefsView" alignment="TOP_CENTER" />
-          <fx:include source="cmd.fxml" fx:id="appsView" alignment="TOP_CENTER"/>
+          <fx:include source="cmd.fxml" fx:id="appsView" alignment="TOP_CENTER" />
       </children>
     </StackPane>
    <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#toMain" text="OK" />

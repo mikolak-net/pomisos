@@ -2,7 +2,7 @@ package net.mikolak.pomisos.prefs
 
 import gremlin.scala.id
 import net.mikolak.pomisos.crud.Idable
-import net.mikolak.pomisos.data.{IdKey, WithId}
+import net.mikolak.pomisos.data.{DbIdKey, WithDbId}
 import shapeless._
 
 object Command {
@@ -26,7 +26,7 @@ object Command {
     }
 
     new Idable[FullCommandSpec] {
-      override def idsOf(spec: FullCommandSpec): Seq[IdKey] = spec match {
+      override def idsOf(spec: FullCommandSpec): Seq[DbIdKey] = spec match {
         case (command, spec) => Seq(command.id, spec.fold(idOfSpec))
       }
     }
@@ -34,10 +34,10 @@ object Command {
 
 }
 
-case class Command(@id id: IdKey, name: Option[String]) extends WithId
+case class Command(@id id: DbIdKey, name: Option[String]) extends WithDbId
 
-sealed trait CommandSpec extends Product with Serializable with WithId
+sealed trait CommandSpec extends Product with Serializable with WithDbId
 
-case class Execution(id: IdKey, cmd: Option[String]) extends CommandSpec
+case class Execution(id: DbIdKey, cmd: Option[String]) extends CommandSpec
 
-case class Script(id: IdKey, onPomodoro: Option[String], onBreak: Option[String]) extends CommandSpec
+case class Script(id: DbIdKey, onPomodoro: Option[String], onBreak: Option[String]) extends CommandSpec

@@ -8,6 +8,7 @@ import javafx.scene.Scene
 import com.softwaremill.macwire._
 import com.softwaremill.tagging._
 import net.mikolak.pomisos.dependencies._
+import net.mikolak.pomisos.prefs.task.TrelloNetworkService
 
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
@@ -24,6 +25,8 @@ object App extends JFXApp {
   }
 
   lazy val dependencies = new Dependencies with AppModule {
+
+    lazy val trelloService = wire[TrelloNetworkService]
 
     lazy val closeApp = (doExit _).taggedWith[AppCloseFunction]
     lazy val openApp  = (showStage _).taggedWith[AppOpenFunction]
