@@ -6,7 +6,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
-import net.mikolak.pomisos.data.{IdOf, Pomodoro}
+import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
 import net.mikolak.pomisos.prefs.{ColumnType, PreferenceDao, TrelloPreferences}
 import shapeless.tag
@@ -17,6 +17,7 @@ import language.postfixOps
 import scala.concurrent.Await
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
+import net.mikolak.pomisos.utils.Implicits._
 
 class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
 
@@ -70,7 +71,10 @@ class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
       columns.toList
         .flatMap {
           case (columnType, listId) =>
-            lists(listId).map(card => Pomodoro(None, card.name, columnType == ColumnType.Done, Some(card.id)))
+            lists
+              .get(listId)
+              .toList
+              .flatMap(_.map(card => Pomodoro(None, card.name, columnType == ColumnType.Done, Some(card.id))))
         }
     }
 
@@ -109,6 +113,7 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
   import context.dispatcher
 
   var syncSub: Option[Cancellable] = None
+  import TrelloNetworkService.mergeBuffers
 
   override def preStart(): Unit =
     syncSub = Some(system.scheduler.schedule(0 seconds, 15 seconds, self, MasterSync))
@@ -117,10 +122,15 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
 
   override def receive: Receive = {
     case MasterSync =>
+      //thread partioning
+      val boards    = service.boards
+      val lists     = service.lists
+      val pomodoros = service.listPomodorosFromApi
+
       Platform.runLater {
-        service.observableColumns.setAll(service.lists: _*)
-        service.observableList.setAll(service.listPomodorosFromApi: _*)
-        service.observableBoards.setAll(service.boards: _*)
+        mergeBuffers(service.observableBoards, boards, implicitly[GenericIdable[Board]].idOf)
+        mergeBuffers(service.observableColumns, lists, implicitly[GenericIdable[CardList]].idOf)
+        mergeBuffers[Pomodoro, DbId](service.observableList, pomodoros, _.id)
       }
 
       context.system.eventStream.publish(SyncNotify)
@@ -143,4 +153,23 @@ object TrelloNetworkService {
     }
 
   implicit def idReader[TagType]: Reader[IdOf[TagType]] = tagReader[String, TagType]
+
+  def mergeBuffers[Entity: GenericIdable, InternalId](internal: ObservableBuffer[Entity],
+                                                      external: Seq[Entity],
+                                                      internalIdGet: Entity => Option[InternalId]): Unit = {
+
+    val idOf = implicitly[GenericIdable[Entity]].idOf _
+
+    val itemsUniqueToInternal                        = internal.filter(e => internalIdGet(e).isEmpty)
+    val itemsToDownload                              = external.diff(internal)
+    val (itemsToUploadLocally, itemsToDeleteLocally) = itemsUniqueToInternal.partition(idOf(_).isDefined)
+
+    //TODO: manage ordering
+    internal --= itemsToDeleteLocally
+    internal ++= itemsToDownload
+
+    //TODO: upload items to external
+    //TODO: test
+
+  }
 }

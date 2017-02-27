@@ -1,6 +1,6 @@
 package net.mikolak.pomisos.utils
 
-import net.mikolak.pomisos.crud.{Idable, MultiDao}
+import net.mikolak.pomisos.crud.{DbIdable, MultiDao}
 import net.mikolak.pomisos.data.WithDbId
 import shapeless.Lens
 
@@ -23,7 +23,7 @@ object UiUtils {
     prop
   }
 
-  def observerFor[T <: Product with Serializable: Idable](
+  def observerFor[T <: Product with Serializable: DbIdable](
       dao: MultiDao[T]): (ObservableBuffer[_ <: T], Seq[ObservableBuffer.Change[T]]) => Unit =
     (items, rawEvents) => {
 
@@ -43,7 +43,7 @@ object UiUtils {
         }
       }
 
-      val toId = implicitly[Idable[T]]
+      val toId = implicitly[DbIdable[T]]
       events.collect {
         case Update(from, until) =>
           items.slice(from, until).foreach(dao.save)

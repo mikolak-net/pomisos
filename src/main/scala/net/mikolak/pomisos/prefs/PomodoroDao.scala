@@ -17,7 +17,9 @@ class PomodoroDao(db: DB) extends MultiDao[Pomodoro] {
 
   override def remove(id: DbIdKey*): Unit = {
     val rawIds = id.toList.flatMap(_.toList)
-    db().V.hasId(rawIds.head, rawIds.tail: _*).drop().iterate()
+    if (rawIds.nonEmpty) {
+      db().V.hasId(rawIds.head, rawIds.tail: _*).drop().iterate()
+    }
   }
 
   override def save(e: Pomodoro): Pomodoro =

@@ -2,15 +2,19 @@ package net.mikolak.pomisos.main
 
 import javafx.scene.control.TableCell
 
+import akka.actor.ActorSystem
+
 import scalafx.scene.control._
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
 import net.mikolak.pomisos.utils.UiUtils._
+
 import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
 import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.graphics.FontAwesomeGlyphs
 import net.mikolak.pomisos.prefs.PomodoroDao
+import net.mikolak.pomisos.prefs.task.TrelloNetworkService
 import org.controlsfx.glyphfont.FontAwesome
 
 import scalafx.beans.binding.Bindings
@@ -36,12 +40,13 @@ class PomodoroTableController(
     val textColumn: TableColumn[Pomodoro, String],
     val buttonColumn: TableColumn[Pomodoro, Pomodoro],
     dao: PomodoroDao,
-    glyphs: FontAwesomeGlyphs
+    glyphs: FontAwesomeGlyphs,
+    trelloNetworkService: TrelloNetworkService
 ) extends PomodoroTable {
 
   lazy val pomodoroToRun = ObjectProperty[Option[Pomodoro]](None)
 
-  lazy val items = ObservableBuffer[Pomodoro](dao.getAll())
+  lazy val items = trelloNetworkService.observableList //ObservableBuffer[Pomodoro](dao.getAll())
   pomodoroTable.setItems(items)
   pomodoroTable.getSelectionModel.setSelectionMode(SelectionMode.Single)
 

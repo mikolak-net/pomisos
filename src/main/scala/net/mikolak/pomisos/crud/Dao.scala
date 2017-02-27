@@ -16,13 +16,13 @@ trait SingletonDao[T <: Product with Serializable] extends Dao[T] {
   def saveWith(transform: T => T): T = save(transform(get()))
 }
 
-abstract class MultiDao[T <: Product with Serializable: Idable] extends Dao[T] {
+abstract class MultiDao[T <: Product with Serializable: DbIdable] extends Dao[T] {
   def get(id: DbIdKey): Option[T]
   def remove(id: DbIdKey*): Unit
   def saveWith(transform: T => T)(id: DbIdKey): Option[T] = get(id).map(transform).map(save)
 }
 
-trait Idable[T] {
+trait DbIdable[T] {
   def idsOf(t: T): Seq[DbIdKey]
 }
 

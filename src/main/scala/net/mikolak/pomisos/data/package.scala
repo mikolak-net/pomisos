@@ -23,6 +23,14 @@ package object data {
 
   type IdOf[T] = String @@ T
 
+  trait WithGenericId[T] {
+    def id: IdOf[T]
+  }
+
+  trait GenericIdable[T] {
+    def idOf(e: T): Option[IdOf[_]]
+  }
+
   case class Pomodoro(@id id: DbIdKey, name: String, completed: Boolean, cardId: Option[IdOf[Card]]) extends WithDbId
 
   object Pomodoro {

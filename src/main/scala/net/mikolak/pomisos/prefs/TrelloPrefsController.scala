@@ -45,9 +45,9 @@ class TrelloPrefsController(dao: PreferenceDao,
     Map(ToDo -> todoColumn, Doing -> doingColumn, Done -> doneColumn)
   }
 
-  private val initialPrefs = dao.get().trello
+  private def dbPrefs = dao.get().trello
 
-  val authToken = ObjectProperty(initialPrefs.flatMap(_.authToken))
+  val authToken = ObjectProperty(dbPrefs.flatMap(_.authToken))
 
   taskBoard.converter = StringConverter.toStringConverter(_.name)
   taskBoard.getSelectionModel
@@ -59,15 +59,23 @@ class TrelloPrefsController(dao: PreferenceDao,
       actorSystem.eventStream.publish(SyncNotify)
     })
 
-  for (columnBox <- columnControls.values) {
+  for ((columnType, columnBox) <- columnControls) {
     columnBox.converter = StringConverter.toStringConverter(_.name)
+    columnBox.getSelectionModel
+      .selectedItemProperty()
+      .onChange((_, _, newVal) => {
+        import com.softwaremill.quicklens._
+        val newColumn = Option(newVal).map(_.id)
+        dao.saveWith(
+          _.modify(_.trello.each.columns).using(m => newColumn.map(c => m + (columnType -> c)).getOrElse(m - columnType)))
+      })
   }
 
   def doSync(): Unit = {
 
     taskBoard.items = trelloService.observableBoards
     for {
-      pref    <- initialPrefs
+      pref    <- dbPrefs
       boardId <- pref.board
       board   <- trelloService.boards.find(_.id == boardId)
     } {
@@ -79,7 +87,7 @@ class TrelloPrefsController(dao: PreferenceDao,
     }
 
     for {
-      pref                    <- initialPrefs
+      pref                    <- dbPrefs
       (columnType, columnBox) <- columnControls
     } {
       //not in for preamble to preserve null selection safety
@@ -90,11 +98,20 @@ class TrelloPrefsController(dao: PreferenceDao,
     }
   }
 
-  actorSystem.eventStream.subscribe(actorSystem.actorOf(Props(new Actor() {
-    override def receive = {
-      case SyncNotify => Platform.runLater(doSync())
-    }
-  })), SyncNotify.getClass)
+  actorSystem.eventStream.subscribe(
+    actorSystem.actorOf(Props(new Actor() {
+
+      override def preStart(): Unit = {
+        super.preStart()
+        self ! SyncNotify
+      }
+
+      override def receive = {
+        case SyncNotify => Platform.runLater(doSync())
+      }
+    })),
+    SyncNotify.getClass
+  )
 
   prefPane.visible <== authToken.map(_.nonEmpty).toBoolean
   syncButton.visible <== !prefPane.visible

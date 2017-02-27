@@ -1,7 +1,7 @@
 package net.mikolak.pomisos.prefs
 
 import gremlin.scala.id
-import net.mikolak.pomisos.crud.Idable
+import net.mikolak.pomisos.crud.DbIdable
 import net.mikolak.pomisos.data.{DbIdKey, WithDbId}
 import shapeless._
 
@@ -16,7 +16,7 @@ object Command {
 
   val SpecEdge = "specced"
 
-  implicit val specToIds: Idable[FullCommandSpec] = {
+  implicit val specToIds: DbIdable[FullCommandSpec] = {
     import shapeless._
 
     object idOfSpec extends Poly1 {
@@ -25,7 +25,7 @@ object Command {
 
     }
 
-    new Idable[FullCommandSpec] {
+    new DbIdable[FullCommandSpec] {
       override def idsOf(spec: FullCommandSpec): Seq[DbIdKey] = spec match {
         case (command, spec) => Seq(command.id, spec.fold(idOfSpec))
       }

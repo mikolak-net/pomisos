@@ -1,8 +1,7 @@
 package net.mikolak.pomisos.utils
 
-import net.mikolak.pomisos.crud.Idable
-import net.mikolak.pomisos.data.WithDbId
-import org.apache.tinkerpop.gremlin.structure.T
+import net.mikolak.pomisos.crud.DbIdable
+import net.mikolak.pomisos.data._
 
 import scala.concurrent.duration.Duration
 import scala.language.implicitConversions
@@ -23,8 +22,16 @@ object Implicits {
 
   }
 
-  implicit def idableWithId[T <: WithDbId]: Idable[T] = new Idable[T] {
+  implicit def dbIdableWithId[T <: WithDbId]: DbIdable[T] = new DbIdable[T] {
     override def idsOf(t: T) = Seq(t.id)
+  }
+
+  implicit def genericIdableWithId[T <: WithGenericId[T]]: GenericIdable[T] = new GenericIdable[T] {
+    override def idOf(e: T) = Some(e.id)
+  }
+
+  implicit def genericIdableForPomodoro: GenericIdable[Pomodoro] = new GenericIdable[Pomodoro] {
+    override def idOf(e: Pomodoro): Option[IdOf[_]] = e.cardId
   }
 
 }
