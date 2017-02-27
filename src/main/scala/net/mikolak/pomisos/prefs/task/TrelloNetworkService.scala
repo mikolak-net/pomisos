@@ -6,9 +6,10 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
+import net.mikolak.pomisos
 import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
-import net.mikolak.pomisos.prefs.{ColumnType, PreferenceDao, TrelloPreferences}
+import net.mikolak.pomisos.prefs.{ColumnType, PreferenceDao, TrelloPreferences, task}
 import shapeless.tag
 import shapeless.tag.@@
 
@@ -51,7 +52,8 @@ class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
             queryBuilder ++= params
             queryBuilder ++= authQueryPart
             //TODO: log sanitized request
-            HttpRequest(uri = uri.withQuery(queryBuilder.result()), method = method)
+            val request = HttpRequest(uri = uri.withQuery(queryBuilder.result()), method = method)
+            request
           }
           .flatMap(r => Unmarshal(r.entity).to[T]),
         30 seconds
@@ -97,6 +99,15 @@ class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
       targetListId <- prefs.columns.get(targetType)
     } yield task.cardId.map(taskId => apiQuery[String](_ => Some(s"/cards/$taskId/$targetListId"), PUT))
 
+  def addTask(task: Pomodoro): Option[Pomodoro] =
+    for {
+      pref   <- prefs
+      listId <- pref.columns.get(StartColumn)
+      card   <- apiQuery[Card](_ => Some(s"/cards"), POST, "name" -> task.name, "idList" -> listId)
+    } yield {
+      card.toPomodoro(Some(task))
+    }
+
   def authorizeUrl =
     s"$baseUrl/authorize?response_type=token&scope=read,write&expiration=never&name=$AppName&key=$AppKey"
 
@@ -130,7 +141,7 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
       Platform.runLater {
         mergeBuffers(service.observableBoards, boards, implicitly[GenericIdable[Board]].idOf)
         mergeBuffers(service.observableColumns, lists, implicitly[GenericIdable[CardList]].idOf)
-        mergeBuffers[Pomodoro, DbId](service.observableList, pomodoros, _.id)
+        mergeBuffers[Pomodoro, DbId](service.observableList, pomodoros, _.id, Some(service.addTask _))
       }
 
       context.system.eventStream.publish(SyncNotify)
@@ -142,6 +153,8 @@ object TrelloNetworkService {
   val AppKey = "b5e64f28291bbbc26be894df57a2bbf5"
 
   val AppName = "pomisos"
+
+  val StartColumn = ColumnType.ToDo
 
   type UnmarshallerFor[T] = Unmarshaller[ResponseEntity, T]
 
@@ -156,19 +169,33 @@ object TrelloNetworkService {
 
   def mergeBuffers[Entity: GenericIdable, InternalId](internal: ObservableBuffer[Entity],
                                                       external: Seq[Entity],
-                                                      internalIdGet: Entity => Option[InternalId]): Unit = {
+                                                      internalIdGet: Entity => Option[InternalId],
+                                                      uploadService: Option[Entity => Option[Entity]] = None): Unit = {
 
     val idOf = implicitly[GenericIdable[Entity]].idOf _
 
-    val itemsUniqueToInternal                        = internal.filter(e => internalIdGet(e).isEmpty)
-    val itemsToDownload                              = external.diff(internal)
-    val (itemsToUploadLocally, itemsToDeleteLocally) = itemsUniqueToInternal.partition(idOf(_).isDefined)
+    val internalSet = internal.toSet
+    val externalSet = external.toSet
+
+    def toExternalIdSet(s: Set[Entity]) = s.map(idOf).flatMap(_.toList)
+
+    val downloadedIds   = toExternalIdSet(internalSet)
+    val itemsToDownload = externalSet.filterNot(e => idOf(e).exists(downloadedIds.contains))
+
+    val idsOnExternal        = toExternalIdSet(externalSet)
+    val itemsToDeleteLocally = internalSet.filterNot(e => idOf(e).exists(idsOnExternal.contains))
+
+    for {
+      upload       <- uploadService
+      itemToUpload <- internalSet.filter(e => idOf(e).isEmpty)
+      uploaded     <- upload(itemToUpload)
+    } {
+      internal.update(internal.indexOf(itemToUpload), uploaded)
+    }
 
     //TODO: manage ordering
     internal --= itemsToDeleteLocally
     internal ++= itemsToDownload
-
-    //TODO: upload items to external
     //TODO: test
 
   }
