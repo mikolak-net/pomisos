@@ -133,15 +133,10 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
 
   override def receive: Receive = {
     case MasterSync =>
-      //thread partioning
-      val boards    = service.boards
-      val lists     = service.lists
-      val pomodoros = service.listPomodorosFromApi
-
       Platform.runLater {
-        mergeBuffers(service.observableBoards, boards, implicitly[GenericIdable[Board]].idOf)
-        mergeBuffers(service.observableColumns, lists, implicitly[GenericIdable[CardList]].idOf)
-        mergeBuffers[Pomodoro, DbId](service.observableList, pomodoros, _.id, Some(service.addTask _))
+        mergeBuffers(service.observableBoards, service.boards, implicitly[GenericIdable[Board]].idOf)
+        mergeBuffers(service.observableColumns, service.lists, implicitly[GenericIdable[CardList]].idOf)
+        mergeBuffers[Pomodoro, DbId](service.observableList, service.listPomodorosFromApi, _.id, Some(service.addTask _))
       }
 
       context.system.eventStream.publish(SyncNotify)
