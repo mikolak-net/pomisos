@@ -12,8 +12,9 @@ import net.mikolak.pomisos.process.ProcessManager
 import net.mikolak.pomisos.quality.QualityService
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
-
 import gremlin.scala._
+import net.mikolak.pomisos.prefs.NotifySound.NotificationSound
+
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scalafx.Includes._
@@ -105,6 +106,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
     if (!isRunning.value && timerStack.isEmpty) {
       runningPomodoro.value = None
       notifications.show("Break done, pick a new Pomodoro!")
+      playNotifyIfNeeded()
       qualityService.handleNewPomodoroQuality(qualitySlider.value.value.toInt)
     }
   })
@@ -122,6 +124,9 @@ class RunViewController(val currentPomodoroDisplay: Text,
       }
 
       notifications.show(text)
+      if (onBreak) {
+        playNotifyIfNeeded()
+      }
     }
   })
 
@@ -159,6 +164,15 @@ class RunViewController(val currentPomodoroDisplay: Text,
       val run = db().addVertex(PomodoroRun(Instant.now(), period.duration))
       pomodoro.addEdge("ranAt", run)
     }
+
+  private def playNotifyIfNeeded() =
+    for (sound <- preferenceDao.get().audio.notificationSound) {
+      val player = new SamplePlayer(soundFor(sound))
+      player.play()
+    }
+
+  private def soundFor(notifySound: NotificationSound) =
+    s"/net/mikolak/pomisos/audio/${notifySound.toString.toLowerCase.replace(" ", "_")}.wav"
 
 }
 

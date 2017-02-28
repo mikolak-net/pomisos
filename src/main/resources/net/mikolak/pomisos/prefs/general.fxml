@@ -13,6 +13,7 @@
 
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <VBox fx:controller="net.mikolak.pomisos.prefs.GeneralPrefsController" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity"
       xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
 
@@ -29,6 +30,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="ALWAYS" />
         </rowConstraints>
         <children>
@@ -37,14 +39,16 @@
             <Label text="Minutes for long break:" GridPane.rowIndex="2" />
             <Label text="Pomodoros until long break:" GridPane.rowIndex="3" />
             <Label text="Play tick sound:" GridPane.rowIndex="4" />
-            <Label text="Enable adaptive length (EXPERIMENTAL):" GridPane.rowIndex="5" />
+            <Label text="Pomodoro/break end sound:" GridPane.rowIndex="5" />
+            <Label text="Enable adaptive length (EXPERIMENTAL):" GridPane.rowIndex="6" />
             <Spinner fx:id="minutesPomodoro" prefHeight="26.0" prefWidth="171.0" GridPane.columnIndex="1" />
             <Spinner fx:id="minutesBreakShort" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Spinner fx:id="minutesBreakLong" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Spinner fx:id="numberOfPomodorosUntilLongBreak" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <CheckBox fx:id="playTick" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <CheckBox fx:id="adaptiveEnabled" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <fx:include source="trello.fxml" GridPane.rowIndex="6" GridPane.columnSpan="2" fx:id="trelloPrefs"/>
+            <ComboBox fx:id="notificationSound" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <CheckBox fx:id="adaptiveEnabled" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <fx:include source="trello.fxml" GridPane.rowIndex="7" GridPane.columnSpan="2" fx:id="trelloPrefs"/>
         </children>
     </GridPane>
 
