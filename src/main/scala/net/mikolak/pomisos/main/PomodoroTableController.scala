@@ -46,7 +46,7 @@ class PomodoroTableController(
 
   lazy val pomodoroToRun = ObjectProperty[Option[Pomodoro]](None)
 
-  lazy val items = trelloNetworkService.observableList //ObservableBuffer[Pomodoro](dao.getAll())
+  lazy val items = trelloNetworkService.observableList
   pomodoroTable.setItems(items)
   pomodoroTable.getSelectionModel.setSelectionMode(SelectionMode.Single)
 

@@ -9,7 +9,7 @@ import akka.stream.ActorMaterializer
 import net.mikolak.pomisos
 import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
-import net.mikolak.pomisos.prefs.{ColumnType, PreferenceDao, TrelloPreferences, task}
+import net.mikolak.pomisos.prefs._
 import shapeless.tag
 import shapeless.tag.@@
 
@@ -20,7 +20,7 @@ import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
 import net.mikolak.pomisos.utils.Implicits._
 
-class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
+class TrelloNetworkService(dao: PreferenceDao, pomodoroDao: PomodoroDao)(implicit system: ActorSystem) {
 
   import TrelloNetworkService._
   import HttpMethods._
@@ -61,7 +61,7 @@ class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
 
     }
 
-  lazy val observableList    = ObservableBuffer[Pomodoro]()
+  lazy val observableList    = ObservableBuffer[Pomodoro](pomodoroDao.getAll())
   lazy val observableColumns = ObservableBuffer[CardList]()
   lazy val observableBoards  = ObservableBuffer[Board]()
 
@@ -92,6 +92,13 @@ class TrelloNetworkService(dao: PreferenceDao)(implicit system: ActorSystem) {
     apiQuery[List[CardList]](_.board.map(boardId => s"/boards/$boardId/lists"), GET).toList.flatten
 
   private def prefs = dao.get().trello
+
+  def syncReady =
+    prefs
+      .map { curPrefs =>
+        curPrefs.authToken.nonEmpty && curPrefs.board.nonEmpty && curPrefs.columns.values.nonEmpty
+      }
+      .getOrElse(false)
 
   def moveTask(task: Pomodoro, targetType: ColumnType) =
     for {
@@ -178,7 +185,7 @@ object TrelloNetworkService {
     val itemsToDownload = externalSet.filterNot(e => idOf(e).exists(downloadedIds.contains))
 
     val idsOnExternal        = toExternalIdSet(externalSet)
-    val itemsToDeleteLocally = internalSet.filterNot(e => idOf(e).exists(idsOnExternal.contains))
+    val itemsToDeleteLocally = internalSet.filterNot(e => idOf(e).forall(idsOnExternal.contains))
 
     for {
       upload       <- uploadService
