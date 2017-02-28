@@ -39,11 +39,11 @@ case class ExecutionProcess(execution: Execution) extends CommandProcess {
 
   val cmd = execution.cmd.getOrElse("")
 
-  private def running_?() = (s"pgrep '$cmd'" !) == 0
+  private def running_?() = (s"pgrep $cmd" !) == 0
 
-  def kill() = Future(while (running_?()) { s"pkill '$cmd'" ! })
+  def kill() = Future(while (running_?()) { s"pkill $cmd" ! })
 
-  def create() = Future(if (!running_?()) { s"nohup '$cmd'" ! })
+  def create() = Future(if (!running_?()) { s"nohup $cmd" ! })
 
 }
 
