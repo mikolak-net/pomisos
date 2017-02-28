@@ -68,8 +68,8 @@ class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
       .map(e => e.outVertex().toCC[Command] -> vertexToSpec(e.inVertex()))
 
   override def remove(id: DbIdKey*): Unit = {
-    val ids = id.toSet
-    getAllQuery.filter { case (command, _) => ids.contains(command.id) }.drop().iterate()
+    val ids = id.flatMap(_.toList)
+    ids.headOption.foreach(firstId => db().V.hasId(firstId, ids.tail: _*).drop().iterate())
   }
 
   override def removeAll(): Unit = getAllQuery.drop().iterate()
