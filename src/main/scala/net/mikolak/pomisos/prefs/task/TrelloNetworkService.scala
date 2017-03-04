@@ -95,10 +95,9 @@ class TrelloNetworkService(dao: PreferenceDao, pomodoroDao: PomodoroDao)(implici
 
   def syncReady =
     prefs
-      .map { curPrefs =>
+      .exists { curPrefs =>
         curPrefs.authToken.nonEmpty && curPrefs.board.nonEmpty && curPrefs.columns.values.nonEmpty
       }
-      .getOrElse(false)
 
   def moveTask(task: Pomodoro, targetType: ColumnType) =
     for {
