@@ -179,9 +179,10 @@ class TrelloPrefsController(dao: PreferenceDao,
 object TrelloPrefsControllerUtils {
 
   def extractAuthText(document: Node): Option[String] =
-    (document \\ "BODY").headOption
-      .flatMap(_.child.grouped(3).collectFirst {
-        case List(titleNode, _, textNode) if titleNode.text.contains("token") && textNode.label.toLowerCase.contains("pre") =>
+    document.child
+      .find(_.label.toLowerCase() == "body")
+      .flatMap(_.child.filterNot(_.isAtom).sliding(2, 1).map(_.toList).collectFirst {
+        case List(titleNode, textNode) if titleNode.text.contains("token") && textNode.label.toLowerCase.contains("pre") =>
           textNode.text.trim()
       })
 }

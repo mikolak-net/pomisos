@@ -8,22 +8,23 @@ class TrelloPrefsControllerSpec extends FlatSpec with MustMatchers {
 
   val tested = TrelloPrefsControllerUtils.extractAuthText _
 
-  //TOOD: fix test
-  ignore /*"The document extractor"*/ must "extract the authcode from the confirmation page" in {
+  "The document extractor" must "extract the authcode from the confirmation page" in {
 
     val authToken = "33333333333333333333333333333333"
 
-    val validPage = <HTML><HEAD/><BODY>
-      <P>
-        You have granted  access to your Trello information.
-      </P>
-      <P>
-        To complete the process, please give this token:
-      </P>
-      <PRE>  {authToken}
-      </PRE>
-
-    </BODY></HTML>
+    val validPage = <html>
+      <BODY>
+        <p>
+          You have granted  access to your Trello information.
+        </p>
+        <p>
+          To complete the process, please give  this token:
+        </p>
+        <pre>
+          {authToken}
+        </pre>
+      </BODY>
+    </html>
 
     tested(validPage).value must be(authToken)
   }
