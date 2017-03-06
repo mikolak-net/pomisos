@@ -17,4 +17,5 @@ object GensMore {
     generator(current)
       .flatMap(elem =>
         lzy(if (left == 0) const(List.empty) else iterateList(generator)(step(elem))(step)(left - 1)).map(List(elem) ++ _))
+
 }

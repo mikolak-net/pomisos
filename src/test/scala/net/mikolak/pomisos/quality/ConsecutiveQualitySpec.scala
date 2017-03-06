@@ -2,17 +2,13 @@ package net.mikolak.pomisos.quality
 
 import java.time.Instant
 
-import com.fortysevendeg.scalacheck.datetime.jdk8.GenJdk8
 import net.mikolak.pomisos.data.DB
 import org.scalacheck.Gen
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FlatSpec, Ignore, MustMatchers, OptionValues}
+import org.scalatest.{FlatSpec, MustMatchers, OptionValues}
 import shapeless.tag
 
-import scala.util.Random
-
-@Ignore
 class ConsecutiveQualitySpec
     extends FlatSpec
     with MustMatchers
@@ -22,12 +18,17 @@ class ConsecutiveQualitySpec
 
   val tested = new ConsecutiveQualityAdjuster(mock[DB])
 
-  import com.fortysevendeg.scalacheck.datetime.jdk8._
-  //TODO: this doesn't work as it should (is nonmonotonic for some reason)
-  def genInstant = Gen.posNum[Long].flatMap(previous => Gen.chooseNum(previous, Long.MaxValue)).map(Instant.ofEpochMilli)
-  def genQualityList(qualityGen: Gen[Int]) =
-    Gen
-      .nonEmptyListOf(Gen.zip(genInstant, qualityGen.map(tag[Quality].apply)).map((PomodoroQuality.apply _).tupled))
+  import Gen._
+  import net.mikolak.pomisos.testutils.GensMore._
+
+  def genInstant             = structuredList(0l)(p => chooseNum[Long](p, Long.MaxValue))(_ + 1).map(_.map(Instant.ofEpochMilli))
+  def genQuality(start: Int) = structuredList[Int, Int](start) _
+
+  def genQualityList(start: Int, gen: Int => Gen[Int], qualityStep: Int => Int) = sized { size =>
+    zip(resize(size, genInstant), resize(size, genQuality(start)(gen)(qualityStep))).map {
+      case (dates, qualities) => dates.zip(qualities.map(tag[Quality].apply)).map((PomodoroQuality.apply _).tupled)
+    }
+  }
 
   it must "return None for empty input" in {
     tested.predictWithData(List.empty[PomodoroQuality]) must be(None)
@@ -35,60 +36,26 @@ class ConsecutiveQualitySpec
 
   it must "decrease monotonically with lower ratings" in {
 
-    val Min = 1
-    val Max = 10
-    //TODO: merge XQuality with XQualityAdjuster, adjust test
-
-    def monotonicDecrease = Gen.chooseNum[Int](Min, Max).flatMap(previous => Gen.chooseNum[Int](Min, previous))
-    forAll(genQualityList(monotonicDecrease), minSuccessful(40)) { qualityList =>
-      whenever(qualityList.size > 10) {
-        val prediction = tested.predictWithData(qualityList)
-        println(prediction)
-        prediction.value must be < (Max - Min) / 2.0
-      }
+    forAll(genQualityList(Quality.Max, i => choose(Quality.Min, i), i => (i - 1).max(Quality.Min)), minSuccessful(40)) {
+      qualityList =>
+        whenever(qualityList.size > 10) {
+          val prediction = tested.predictWithData(qualityList)
+          prediction.value must be <= qualityList.head.quality.toDouble
+        }
     }
 
   }
 
   it must "increase monotonically with higher ratings" in {
 
-    val Min = 1
-    val Max = 10
-
-    def monotonicIncrease = Gen.chooseNum[Int](Min, Max).flatMap(previous => Gen.chooseNum[Int](previous, Max))
-    forAll(genQualityList(monotonicIncrease), minSuccessful(40)) { qualityList =>
-      whenever(qualityList.size > 10) {
-        val prediction = tested.predictWithData(qualityList)
-        println(prediction)
-        prediction.value must be > (Max - Min) / 2.0
-      }
+    forAll(genQualityList(Quality.Min, i => choose(i, Quality.Max), i => (i + 1).min(Quality.Max)), minSuccessful(40)) {
+      qualityList =>
+        whenever(qualityList.size > 10) {
+          val prediction = tested.predictWithData(qualityList)
+          prediction.value must be >= qualityList.head.quality.toDouble
+        }
     }
 
-  }
-
-}
-
-object Test extends App {
-
-  import org.scalacheck.Gen._
-
-  val consequentNumber = {
-
-    val random      = Random
-    var previousNum = random.nextInt()
-
-    () =>
-      {
-        val current = random.nextInt(Int.MaxValue - previousNum) + previousNum
-        previousNum = current
-        current
-      }
-  }
-
-  val testGen = delay(consequentNumber())
-
-  for (_ <- 1 to 10) {
-    println(testGen.sample)
   }
 
 }

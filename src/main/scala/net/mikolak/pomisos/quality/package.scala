@@ -5,9 +5,12 @@ import net.mikolak.pomisos.prefs.LengthPreferences
 package object quality {
   sealed trait Quality
 
-  val MinQuality = 0
-  val MaxQuality = 10
+  object Quality {
 
+    val Min = 0
+    val Max = 10
+
+  }
 }
 
 abstract class QualityAdjuster extends ((LengthPreferences) => Option[Int]) {
