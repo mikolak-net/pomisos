@@ -6,7 +6,6 @@ import gremlin.scala._
 import net.mikolak.pomisos.prefs.PreferenceDao
 import shapeless.tag
 import com.softwaremill.quicklens._
-import net.mikolak.pomisos.QualityAdjuster
 import net.mikolak.pomisos.data.DB
 
 import scala.concurrent.duration._

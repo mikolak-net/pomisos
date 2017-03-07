@@ -1,47 +1,37 @@
 package net.mikolak.pomisos.quality
 
-import java.time.{Instant, LocalDateTime, ZoneId}
+import java.time.{Clock, Instant, LocalDateTime}
 
-import net.mikolak.pomisos.QualityAdjuster
-import net.mikolak.pomisos.data.DB
-import net.mikolak.pomisos.prefs.LengthPreferences
-import smile.regression.ols
 import gremlin.scala._
+import net.mikolak.pomisos.data.DB
+import smile.regression.ols
 
-class TimeOfDayQualityAdjuster(db: DB) extends QualityAdjuster {
-  import TimeOfDayQualityAdjuster._
+import scala.util.Try
 
-  def predict(): Option[Double] = {
-    val currentHour = toHour(Instant.now())
-
-    val lastQualities = db().V
+class TimeOfDayQualityAdjuster(db: DB, clock: Clock) extends QualityAdjuster {
+  protected[quality] def getData(): List[PomodoroQuality] =
+    db().V
       .hasLabel[PomodoroQuality]
       .toCC[PomodoroQuality]
       .toList
+
+  protected[quality] def predictWithData(lastQualities: List[PomodoroQuality]): Option[Double] = {
+    val currentHour = toHour(Instant.now(clock))
     if (lastQualities.isEmpty) {
       None
     } else {
-
-      val OLS = ols(
-        lastQualities.map(a => Array(toHour(a.timestamp))).toArray,
-        lastQualities.map(_.quality.toDouble).toArray
-      )
-      Some(
+      Try { //TODO: fragile for some values
+        val OLS = ols(
+          lastQualities.map(a => Array(toHour(a.timestamp))).toArray,
+          lastQualities.map(_.quality.toDouble).toArray
+        )
         OLS.predict(
           Array(currentHour)
         )
-      )
-
+      }.toOption
     }
   }
 
-  private def toHour(ins: Instant) = LocalDateTime.ofInstant(ins, ZoneId.systemDefault()).getHour.toDouble
-
-}
-
-object TimeOfDayQualityAdjuster {
-
-  val Neutral     = 7
-  val FudgeFactor = 1.0
+  private[quality] def toHour(ins: Instant) = LocalDateTime.ofInstant(ins, clock.getZone).getHour.toDouble
 
 }
