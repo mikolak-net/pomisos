@@ -17,6 +17,9 @@
 <VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
+    <fx:define>
+        <ToggleGroup fx:id="commandType" />
+    </fx:define>
    <GridPane>
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
@@ -32,10 +35,7 @@
            <VBox fx:id="adminPaneGeneral" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <children>
                 <Label text="Type:" />
-                <RadioButton fx:id="toggleExecution" text="Simple command">
-                  <toggleGroup>
-                     <ToggleGroup fx:id="commandType" />
-                  </toggleGroup></RadioButton>
+                <RadioButton fx:id="toggleExecution" text="Simple command" toggleGroup="$commandType"/>
                 <RadioButton fx:id="toggleScript" text="Scripts" toggleGroup="$commandType" />
             </children>
            </VBox>
@@ -58,8 +58,5 @@
            <Button fx:id="saveButton" onAction="#saveSpec" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2" />
        </children>
    </GridPane>
-    <fx:define>
-        <ToggleGroup fx:id="commandType" />
-    </fx:define>
 
 </VBox>
