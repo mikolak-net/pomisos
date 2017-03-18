@@ -7,12 +7,13 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, Props}
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
-import net.mikolak.pomisos.prefs.{CommandDao, PreferenceDao}
-import net.mikolak.pomisos.process.ProcessManager
+import net.mikolak.pomisos.prefs.PreferenceDao
+import net.mikolak.pomisos.process.{OnBreak, OnPomodoro, ProcessManager}
 import net.mikolak.pomisos.quality.QualityService
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
 import gremlin.scala._
+import net.mikolak.pomisos.dependencies.ActorRefContainer
 import net.mikolak.pomisos.prefs.NotifySound.NotificationSound
 
 import scala.concurrent.duration._
@@ -43,9 +44,8 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         val qualityAppQueryView: VBox,
                         val qualitySlider: Slider,
                         val actorSystem: ActorSystem,
-                        commandDao: CommandDao,
                         notifications: Notifications,
-                        processMan: ProcessManager,
+                        processMan: ActorRefContainer[ProcessManager],
                         qualityService: QualityService,
                         db: DB,
                         preferenceDao: PreferenceDao,
@@ -96,8 +96,6 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, preferenceDao))
 
-  private def processes = commandDao.getAll().map { case (_, spec) => processMan.processFor(spec) }.toList
-
   remainingSeconds.onChange((_, _, currentSeconds) => {
     if (currentSeconds.intValue() == 0) {
       popStack()
@@ -116,11 +114,11 @@ class RunViewController(val currentPomodoroDisplay: Text,
       val onBreak = period.name == BreakText
       val text    = if (onBreak) "You're on a break" else period.name
 
-      if (onBreak) { //TODO: TEMP
-        processes.foreach(_.create())
+      if (onBreak) {
+        processMan.get ! OnBreak
       } else {
         pomodoroCounter += 1
-        processes.foreach(_.kill())
+        processMan.get ! OnPomodoro
       }
 
       notifications.show(text)

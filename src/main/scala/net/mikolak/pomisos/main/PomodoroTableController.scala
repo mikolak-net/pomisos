@@ -33,7 +33,7 @@ trait PomodoroTable {
   def addItem(newName: String)
 
 }
-//TODO: add pomodoro list sync
+
 @sfxml
 class PomodoroTableController(
     val pomodoroTable: TableView[Pomodoro],

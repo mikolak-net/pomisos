@@ -11,7 +11,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 
 val gremlinVersion = "3.2.3."
 val sfxVersion     = "0.3"
-val macwireVersion = "2.2.4"
+val macwireVersion = "2.3.0"
 
 libraryDependencies ++= Seq(
   "org.scalafx"                %% "scalafx"                     % "8.0.102-R11",
@@ -26,11 +26,13 @@ libraryDependencies ++= Seq(
   "com.michaelpollmeier"       % "orientdb-gremlin"             % (gremlinVersion + "0"),
   "com.softwaremill.macwire"   %% "macros"                      % macwireVersion % "provided",
   "com.softwaremill.macwire"   %% "util"                        % macwireVersion,
+  "com.softwaremill.macwire"   %% "macrosakka"                  % macwireVersion,
   "com.github.haifengl"        % "smile-core"                   % "1.2.0",
   "com.github.haifengl"        % "smile-math"                   % "1.2.0",
   "com.github.haifengl"        %% "smile-scala"                 % "1.2.0",
   "com.softwaremill.quicklens" %% "quicklens"                   % "1.4.8",
   "com.chuusai"                %% "shapeless"                   % "2.3.2",
+  "com.typesafe.akka"          %% "akka-testkit"                % "2.4.17" % "test",
   "org.scalatest"              %% "scalatest"                   % "3.0.1" % "test",
   "org.mockito"                % "mockito-all"                  % "1.9.0" % "test",
   "org.scalacheck"             %% "scalacheck"                  % "1.13.4" % "test",

@@ -6,12 +6,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
+import com.softwaremill.tagging.@@
 import net.mikolak.pomisos
 import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
 import net.mikolak.pomisos.prefs._
-import shapeless.tag
-import shapeless.tag.@@
 
 import scala.concurrent.duration._
 import language.postfixOps
@@ -20,7 +19,9 @@ import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
 import net.mikolak.pomisos.utils.Implicits._
 
-class TrelloNetworkService(dao: PreferenceDao, pomodoroDao: PomodoroDao)(implicit system: ActorSystem) {
+class TrelloNetworkService(dao: PreferenceDao,
+                           pomodoroDao: PomodoroDao,
+                           syncProps: (TrelloNetworkService) => Props @@ TrelloSyncActor)(implicit system: ActorSystem) {
 
   import TrelloNetworkService._
   import HttpMethods._
@@ -28,7 +29,7 @@ class TrelloNetworkService(dao: PreferenceDao, pomodoroDao: PomodoroDao)(implici
   implicit val materializer = ActorMaterializer()
 
   import system.dispatcher
-  system.actorOf(Props(classOf[TrelloSyncActor], this))
+  system.actorOf(syncProps(this))
 
   import de.heikoseeberger.akkahttpupickle.UpickleSupport._
 
@@ -160,6 +161,9 @@ object TrelloNetworkService {
   type UnmarshallerFor[T] = Unmarshaller[ResponseEntity, T]
 
   import upickle.default.Reader
+
+  import shapeless.tag
+  import shapeless.tag.@@
 
   implicit def tagReader[MainType, TagType](implicit baseReader: Reader[MainType]): Reader[MainType @@ TagType] =
     Reader[MainType @@ TagType] {

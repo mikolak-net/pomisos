@@ -1,7 +1,7 @@
 package net.mikolak.pomisos.dependencies
 
+import com.softwaremill.macwire.wire
 import net.mikolak.pomisos.main.Tray
-import com.softwaremill.macwire._
 
 trait AppModule extends AppLifecycleModule {
 
