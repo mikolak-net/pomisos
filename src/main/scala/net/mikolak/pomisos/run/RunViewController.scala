@@ -28,6 +28,7 @@ import scalafx.scene.control.{Button, Slider}
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
+import net.mikolak.pomisos.utils.Implicits._
 
 trait RunView {
 
@@ -70,8 +71,9 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private var pomodoroCounter = 0
   val BreakText               = "Break"
 
-  qualityAppQueryView.visible <== Bindings.createBooleanBinding(() => currentPomodoroDisplay.text.value == BreakText,
-                                                                currentPomodoroDisplay.text)
+  qualityAppQueryView.visible <== currentPomodoroDisplay.text
+    .map(_ == BreakText && preferenceDao.get().adaptive.enabled)
+    .toBoolean
 
   def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
