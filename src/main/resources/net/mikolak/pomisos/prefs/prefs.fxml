@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox stylesheets="@../style.css" fx:id="mainPane" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.PrefsController">
+<VBox fx:id="mainPane" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.PrefsController">
     <StackPane>
       <children>
-          <fx:include source="general.fxml" fx:id="prefsView" alignment="TOP_CENTER" />
-          <fx:include source="cmd.fxml" fx:id="appsView" alignment="TOP_CENTER" />
+          <fx:include fx:id="prefsView" alignment="TOP_CENTER" source="general.fxml" />
+          <fx:include fx:id="appsView" alignment="TOP_CENTER" source="cmd.fxml" />
       </children>
     </StackPane>
-   <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#toMain" text="OK" />
+   <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#toMain" text="OK">
+      <VBox.margin>
+         <Insets top="10.0" />
+      </VBox.margin></Button>
 </VBox>

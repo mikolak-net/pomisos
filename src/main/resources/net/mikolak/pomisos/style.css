@@ -3,6 +3,14 @@
     -fx-font-style: oblique;
 }
 
+.text {
+    -fx-font-smoothing-type: lcd;
+}
+
+.button {
+    -fx-padding: 5px;
+}
+
 .timeDisplay {
     -fx-font-size: 40;
 }

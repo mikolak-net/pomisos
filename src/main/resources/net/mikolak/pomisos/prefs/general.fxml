@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
-<VBox fx:controller="net.mikolak.pomisos.prefs.GeneralPrefsController" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity"
+<VBox  stylesheets="@../style.css" fx:controller="net.mikolak.pomisos.prefs.GeneralPrefsController" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity"
       xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
 
     <Text text="General Preferences" styleClass="header"/>

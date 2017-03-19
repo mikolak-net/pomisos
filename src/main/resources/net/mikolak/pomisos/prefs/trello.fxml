@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.TrelloPrefsController">
+<StackPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.TrelloPrefsController">
    <children>
       <GridPane fx:id="prefPane">
         <columnConstraints>

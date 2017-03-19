@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -14,12 +15,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
+<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
-    <fx:define>
-        <ToggleGroup fx:id="commandType" />
-    </fx:define>
    <GridPane>
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
@@ -28,12 +26,18 @@
      <rowConstraints>
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
-         <RowConstraints />
+       <RowConstraints />
      </rowConstraints>
        <children>
            <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="3" />
            <VBox fx:id="adminPaneGeneral" GridPane.columnIndex="1" GridPane.rowIndex="0">
+           <GridPane.margin>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+           </GridPane.margin>
             <children>
+                <fx:define>
+                    <ToggleGroup fx:id="commandType" />
+                </fx:define>
                 <Label text="Type:" />
                 <RadioButton fx:id="toggleExecution" text="Simple command" toggleGroup="$commandType"/>
                 <RadioButton fx:id="toggleScript" text="Scripts" toggleGroup="$commandType" />
@@ -50,13 +54,16 @@
                        <Label text="Startup script:" />
                        <TextArea fx:id="scriptStartup" promptText="#!/bin/bash #code to run when pomodoro starts" />
                        <Label text="Stop script:" />
-                       <TextArea fx:id="scriptStop"  promptText="#!/bin/bash #code to run when break starts" />
+                       <TextArea fx:id="scriptStop" promptText="#!/bin/bash #code to run when break starts" />
                    </VBox>
                </children>
                </StackPane>
            </VBox>
-           <Button fx:id="saveButton" onAction="#saveSpec" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+           <Button fx:id="saveButton" onAction="#saveSpec" text="Save" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+            <GridPane.margin>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+           </Button>
        </children>
    </GridPane>
-
 </VBox>

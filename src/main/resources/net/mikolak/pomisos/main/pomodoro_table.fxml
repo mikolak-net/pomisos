@@ -3,7 +3,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 
-<TableView fx:id="pomodoroTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.main.PomodoroTableController">
+<TableView fx:id="pomodoroTable" prefHeight="500" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.main.PomodoroTableController">
   <columns>
     <TableColumn fx:id="textColumn" prefWidth="346.0" resizable="false" sortable="false" text="Pomodoro" />
     <TableColumn fx:id="buttonColumn" prefWidth="154.0" resizable="false" sortable="false" text="Manage" />
