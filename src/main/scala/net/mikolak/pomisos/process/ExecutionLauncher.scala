@@ -12,7 +12,7 @@ class ExecutionLauncher(execution: Execution) extends Actor with ActorLogging wi
 
   private val cmd = execution.cmd
 
-  private def running_?() = cmd.exists(c => (s"pgrep -f $c" !) == 0)
+  private def running_?() = cmd.exists(c => s"pgrep -f $c".!(devnullProcessLogger) == 0)
 
   protected def main: Receive = {
     case OnBreak => if (!running_?()) { cmd.foreach(c => context.actorOf(Props[DeferredExecutor]) ! s"nohup $c") }
@@ -39,4 +39,5 @@ object ExecutionLauncher {
 
   val KillsToTry = 10
 
+  def devnullProcessLogger = ProcessLogger(_ => (), _ => ())
 }
