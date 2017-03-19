@@ -27,7 +27,7 @@ class QualityService(adjusters: List[QualityAdjuster], db: DB, preferenceDao: Pr
       val result = (adjusters.map(_(current).getOrElse(current.pomodoro.toMinutes.toInt)).sum / adjusters.size.toDouble).toInt
 
       preferenceDao.saveWith(_.modify(_.length.pomodoro).setTo(result minutes))
-      log.info(s"Adjusted pomodoro type by: $result")
+      log.info(s"Adjusted pomodoro length to: $result")
     } else {
       log.info("Adaptive adjustment disabled, length unchanged")
     }

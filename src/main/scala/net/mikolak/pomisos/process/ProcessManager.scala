@@ -36,7 +36,7 @@ class ProcessManager(commandDao: CommandDao,
 
     lazy val processMap = commandDao.getAll().map(_._2.unify).groupBy(_.getClass.getSimpleName).mapValues(_.size)
 
-    log.info(s"Performing executions/scripts for $actionType; types: (${processMap.mkString(", ")})")
+    log.info(s"Performing ${processMap.size} executions/scripts for $actionType; types: (${processMap.mkString(", ")})")
     log.debug(s"Launching executions and scripts: ${commandDao.getAll}")
 
   }

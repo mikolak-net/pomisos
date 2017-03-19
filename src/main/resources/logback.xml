@@ -1,6 +1,6 @@
 <configuration>
 
-    <appender level="ERROR" name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="net.mikolak.pomisos.logging.SpuriousErrorLogFilter" />
 
         <encoder>
@@ -23,7 +23,7 @@
         </encoder>
     </appender>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
