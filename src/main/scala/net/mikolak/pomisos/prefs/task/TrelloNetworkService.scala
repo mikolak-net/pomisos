@@ -1,7 +1,7 @@
 package net.mikolak.pomisos.prefs.task
 
 import akka.actor.Actor.Receive
-import akka.actor.{Actor, ActorSystem, Cancellable, Props}
+import akka.actor.{Actor, ActorLogging, ActorSystem, Cancellable, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
@@ -125,7 +125,7 @@ class TrelloNetworkService(dao: PreferenceDao,
 import scala.concurrent.duration._
 import language.postfixOps
 
-class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
+class TrelloSyncActor(service: TrelloNetworkService) extends Actor with ActorLogging {
 
   import context.system
   import context.dispatcher
@@ -140,6 +140,7 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor {
 
   override def receive: Receive = {
     case MasterSync =>
+      log.debug("Syncing with Trello.")
       Platform.runLater {
         mergeBuffers(service.observableBoards, service.boards, implicitly[GenericIdable[Board]].idOf)
         mergeBuffers(service.observableColumns, service.lists, implicitly[GenericIdable[CardList]].idOf)
@@ -201,7 +202,6 @@ object TrelloNetworkService {
     //TODO: manage ordering
     internal --= itemsToDeleteLocally
     internal ++= itemsToDownload
-    //TODO: test
 
   }
 }

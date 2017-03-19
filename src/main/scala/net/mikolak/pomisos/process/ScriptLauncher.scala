@@ -17,6 +17,7 @@ class ScriptLauncher(script: Script) extends Actor with ActorLogging with Launch
                                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--"))) //execute perm
         Files.write(tempFile, text.split("\n").toIterable.asJava)
         val command = tempFile.toAbsolutePath.toString
+        log.debug(s"Launching script from temporary file $command")
         context.actorOf(Props[DeferredExecutor]) ! s"nohup $command"
       })
 

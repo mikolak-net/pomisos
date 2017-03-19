@@ -15,9 +15,16 @@ class ExecutionLauncher(execution: Execution) extends Actor with ActorLogging wi
   private def running_?() = cmd.exists(c => s"pgrep -f $c".!(devnullProcessLogger) == 0)
 
   protected def main: Receive = {
-    case OnBreak => if (!running_?()) { cmd.foreach(c => context.actorOf(Props[DeferredExecutor]) ! s"nohup $c") }
+    case OnBreak =>
+      if (!running_?()) {
+        cmd.foreach(c => {
+          log.debug(s"Launching command: $c")
+          context.actorOf(Props[DeferredExecutor]) ! s"nohup $c"
+        })
+      }
     case OnPomodoro =>
       var killsLeft = KillsToTry
+      log.debug(s"Attempting to kill process for: $cmd")
       while (running_?() && killsLeft > 0) {
         cmd.foreach { c =>
           execute(s"pkill -f $c")
@@ -26,6 +33,8 @@ class ExecutionLauncher(execution: Execution) extends Actor with ActorLogging wi
       }
       if (running_?() && killsLeft == 0) {
         reportError(s"Failed to kill process $cmd after $KillsToTry attempts.")
+      } else {
+        log.debug(s"Successfully killed process for: $cmd")
       }
   }
 

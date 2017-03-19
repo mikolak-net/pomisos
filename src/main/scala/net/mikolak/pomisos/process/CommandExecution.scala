@@ -1,15 +1,17 @@
 package net.mikolak.pomisos.process
 
+import akka.actor.ActorLogging
 import akka.actor.Status.Success
 import net.mikolak.pomisos.process.ExecutionLauncher.CommandStatus
 
-import scala.sys.process.ProcessLogger
-import scala.util.Try
+import scala.language.postfixOps
 import scala.sys.process._
-import language.postfixOps
+import scala.util.Try
 
-trait CommandExecution {
+trait CommandExecution { this: ActorLogging =>
   protected final def execute(fullCommand: String): CommandStatus = {
+    log.debug(s"Attempting to execute command $fullCommand")
+
     val stdOut = new StringBuffer()
     val stdErr = new StringBuffer()
 

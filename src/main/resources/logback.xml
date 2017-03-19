@@ -1,0 +1,30 @@
+<configuration>
+
+    <appender level="ERROR" name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="net.mikolak.pomisos.logging.SpuriousErrorLogFilter" />
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{30} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="net.mikolak.pomisos.logging.SpuriousErrorLogFilter" />
+
+        <file>pomisos.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>pomisos.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%date{ISO8601} %-4relative [%thread] %-5level %logger{30} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

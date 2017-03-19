@@ -3,7 +3,8 @@ package net.mikolak.pomisos.run
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneOffset}
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Cancellable, Props}
+import com.typesafe.scalalogging.Logger
 import net.mikolak.pomisos.audio.SamplePlayer
 import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
@@ -52,6 +53,8 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         glyphs: FontAwesomeGlyphs,
                         glyphRotators: GlyphRotators)
     extends RunView {
+
+  val log = Logger[RunViewController]
 
   stopButton.graphic = glyphs(FontAwesome.Glyph.STOP)
   val pauseResumeGlyphs = glyphRotators(FontAwesome.Glyph.PAUSE, FontAwesome.Glyph.PLAY)
@@ -130,7 +133,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   runningPomodoro.onChange((obs, _, newVal) =>
     for (newPomodoro <- newVal if newVal.isDefined) {
-      println(s"Running Pomodoro $newPomodoro")
+      log.info(s"Running Pomodoro $newPomodoro")
       val currentPrefs = preferenceDao.get()
       val breakDuration =
         if (pomodoroCounter > 1 && (pomodoroCounter - 1) % currentPrefs.length.pomodorosForLongBreak == 0)
@@ -174,26 +177,30 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
 }
 
-case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceDao) extends Actor {
+case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceDao) extends Actor with ActorLogging {
   var currentSchedule: Option[Cancellable] = None
 
   var ticker: Option[ActorRef] = None
 
   override def receive = {
     case Start =>
+      log.debug("Pomodoro started")
       toggleScheduler()
       if (preferenceDao.get().audio.playTick) {
         ticker = Some(context.actorOf(Props[TickPlayer]))
       }
     case Stop =>
+      log.debug("Pomodoro stopped")
       handleUpdate(0)
       ticker.foreach { t =>
         t ! Stop
       }
     case Tick =>
+      log.debug("Pomodoro tick")
       handleUpdate(remainingSeconds.value - 1)
       ticker.foreach(_ ! Tick)
     case PauseResume =>
+      log.debug("Pomodoro paused/resumed")
       toggleScheduler()
   }
 

@@ -1,10 +1,10 @@
 package net.mikolak.pomisos.process
 
-import akka.actor.{Actor, Cancellable, PoisonPill}
+import akka.actor.{Actor, ActorLogging, Cancellable, PoisonPill}
 
 import scala.concurrent.Future
 
-class DeferredExecutor extends Actor with CommandExecution {
+class DeferredExecutor extends Actor with ActorLogging with CommandExecution {
   import ExecutionLauncher._
 
   import language.postfixOps

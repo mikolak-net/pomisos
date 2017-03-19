@@ -9,11 +9,15 @@ import gremlin.scala._
 import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun}
 import net.mikolak.pomisos.prefs._
 import org.apache.tinkerpop.gremlin.structure.T
-import shapeless.the
 
 trait DbModule {
-  //switch to memory:pomisos for debug
-  lazy val orientGraph = new OrientGraphFactory("plocal:./pomisos").getNoTx
+
+  lazy val orientGraph = {
+    overrideLoggingToSlf4j()
+
+    //switch to memory:pomisos for debug
+    new OrientGraphFactory("plocal:./pomisos").getNoTx
+  }
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 
@@ -27,6 +31,14 @@ trait DbModule {
   lazy val preferenceDao = wire[PreferenceDao]
 
   lazy val commandDao = wire[CommandDao]
+
+  private def overrideLoggingToSlf4j() = {
+    import org.slf4j.bridge.SLF4JBridgeHandler
+    SLF4JBridgeHandler.removeHandlersForRootLogger()
+    SLF4JBridgeHandler.install()
+    val logger = java.util.logging.Logger.getLogger("com.orientechnologies")
+    logger.setLevel(java.util.logging.Level.ALL)
+  }
 }
 
 object DbModule {

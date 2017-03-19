@@ -12,13 +12,16 @@ resolvers += "jitpack" at "https://jitpack.io"
 val gremlinVersion = "3.2.3."
 val sfxVersion     = "0.3"
 val macwireVersion = "2.3.0"
+val akkaVersion    = "2.4.17"
+val logbackVersion = "1.2.2"
 
 libraryDependencies ++= Seq(
   "org.scalafx"                %% "scalafx"                     % "8.0.102-R11",
   "org.scalafx"                %% "scalafxml-core-sfx8"         % sfxVersion,
   "org.scalafx"                %% "scalafxml-macwire-sfx8"      % sfxVersion,
   "org.controlsfx"             % "controlsfx"                   % "8.40.12",
-  "com.typesafe.akka"          %% "akka-actor"                  % "2.4.17",
+  "com.typesafe.akka"          %% "akka-actor"                  % akkaVersion,
+  "com.typesafe.akka"          %% "akka-slf4j"                  % akkaVersion,
   "com.typesafe.akka"          %% "akka-http"                   % "10.0.3",
   "de.heikoseeberger"          %% "akka-http-upickle"           % "1.12.0",
   "com.lihaoyi"                %% "upickle"                     % "0.4.3",
@@ -32,6 +35,10 @@ libraryDependencies ++= Seq(
   "com.github.haifengl"        %% "smile-scala"                 % "1.2.0",
   "com.softwaremill.quicklens" %% "quicklens"                   % "1.4.8",
   "com.chuusai"                %% "shapeless"                   % "2.3.2",
+  "com.typesafe.scala-logging" %% "scala-logging"               % "3.5.0",
+  "ch.qos.logback"             % "logback-core"                 % logbackVersion,
+  "ch.qos.logback"             % "logback-classic"              % logbackVersion,
+  "org.slf4j"                  % "jul-to-slf4j"                 % "1.7.25",
   "com.typesafe.akka"          %% "akka-testkit"                % "2.4.17" % "test",
   "org.scalatest"              %% "scalatest"                   % "3.0.1" % "test",
   "org.mockito"                % "mockito-all"                  % "1.9.0" % "test",
