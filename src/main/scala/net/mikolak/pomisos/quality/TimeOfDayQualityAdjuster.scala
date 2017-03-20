@@ -3,17 +3,18 @@ package net.mikolak.pomisos.quality
 import java.time.{Clock, Instant, LocalDateTime}
 
 import gremlin.scala._
-import net.mikolak.pomisos.data.DB
+import net.mikolak.pomisos.data.ScalaGraphAccess
 import smile.regression.ols
 
 import scala.util.Try
 
-class TimeOfDayQualityAdjuster(db: DB, clock: Clock) extends QualityAdjuster {
+class TimeOfDayQualityAdjuster(db: ScalaGraphAccess, clock: Clock) extends QualityAdjuster {
   protected[quality] def getData(): List[PomodoroQuality] =
-    db().V
-      .hasLabel[PomodoroQuality]
-      .toCC[PomodoroQuality]
-      .toList
+    db(
+      _.V
+        .hasLabel[PomodoroQuality]
+        .toCC[PomodoroQuality]
+        .toList)
 
   protected[quality] def predictWithData(lastQualities: List[PomodoroQuality]): Option[Double] = {
     val currentHour = toHour(Instant.now(clock))

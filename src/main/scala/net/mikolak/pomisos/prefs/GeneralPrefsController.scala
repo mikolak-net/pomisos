@@ -1,8 +1,8 @@
 package net.mikolak.pomisos.prefs
 
 import gremlin.scala._
-import net.mikolak.pomisos.crud.{AddNew, AddNewController, SingletonDao}
-import net.mikolak.pomisos.data.{DB, IdOf}
+import net.mikolak.pomisos.crud.{AddNew, SingletonDao}
+import net.mikolak.pomisos.data.{IdOf, ScalaGraphAccess}
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
 import net.mikolak.pomisos.prefs.NotifySound.NotificationSound
 import net.mikolak.pomisos.prefs.task.{Board, CardList}
@@ -24,7 +24,6 @@ trait GeneralPrefs {
 
 @sfxml
 class GeneralPrefsController(
-    db: DB,
     @nested[TrelloPrefsController] trelloPrefsController: TrelloPrefs,
     val minutesPomodoro: Spinner[Integer],
     val minutesBreakShort: Spinner[Integer],
@@ -45,7 +44,7 @@ class GeneralPrefsController(
   playTick.selected.value = preferences.audio.playTick
   notificationSound.converter = StringConverter.toStringConverter(_.map(_.toString).getOrElse("NONE"))
   private val soundValues = List[Option[NotificationSound]](None) ++ NotifySound.values.toList
-      .map(e => Option[NotificationSound](e))
+    .map(e => Option[NotificationSound](e))
   notificationSound.items = ObservableBuffer(soundValues)
   notificationSound.getSelectionModel.select(preferences.audio.notificationSound)
   adaptiveEnabled.selected.value = preferences.adaptive.enabled
@@ -106,25 +105,28 @@ object Preferences {
 
 }
 
-class PreferenceDao(db: DB) extends SingletonDao[Preferences] {
+class PreferenceDao(db: ScalaGraphAccess) extends SingletonDao[Preferences] {
 
   def get() =
-    /* Preference.Default.copy(5 seconds, 10 seconds) */ db().V
-      .hasLabel[Preferences]
-      .toCC[Preferences]
-      .headOption()
-      .getOrElse {
-        val default = Preferences.Default
-        db().addVertex(default)
-        default
-      }
+    db(
+      db =>
+        db.V
+          .hasLabel[Preferences]
+          .toCC[Preferences]
+          .headOption()
+          .getOrElse {
+            val default = Preferences.Default
+            db.addVertex(default)
+            default
+        })
 
   def save(preferences: Preferences) =
-    db().V
-      .hasLabel[Preferences]
-      .head()
-      .updateWith[Preferences](preferences)
-      .toCC[Preferences]
+    db(
+      _.V
+        .hasLabel[Preferences]
+        .head()
+        .updateWith[Preferences](preferences)
+        .toCC[Preferences])
 
-  override def removeAll(): Unit = db().V.hasLabel[Preferences].drop.iterate()
+  override def removeAll(): Unit = db[Unit](_.V.hasLabel[Preferences].drop.iterate())
 }

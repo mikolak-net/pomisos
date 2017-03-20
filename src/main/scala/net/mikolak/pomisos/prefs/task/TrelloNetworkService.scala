@@ -141,10 +141,14 @@ class TrelloSyncActor(service: TrelloNetworkService) extends Actor with ActorLog
   override def receive: Receive = {
     case MasterSync =>
       log.debug("Syncing with Trello.")
+      val currentBoards = service.boards
+      val currentLists  = service.lists
+      val currentTasks  = service.listPomodorosFromApi
+
       Platform.runLater {
-        mergeBuffers(service.observableBoards, service.boards, implicitly[GenericIdable[Board]].idOf)
-        mergeBuffers(service.observableColumns, service.lists, implicitly[GenericIdable[CardList]].idOf)
-        mergeBuffers[Pomodoro, DbId](service.observableList, service.listPomodorosFromApi, _.id, Some(service.addTask _))
+        mergeBuffers(service.observableBoards, currentBoards, implicitly[GenericIdable[Board]].idOf)
+        mergeBuffers(service.observableColumns, currentLists, implicitly[GenericIdable[CardList]].idOf)
+        mergeBuffers[Pomodoro, DbId](service.observableList, currentTasks, _.id, Some(service.addTask _))
       }
 
       context.system.eventStream.publish(SyncNotify)

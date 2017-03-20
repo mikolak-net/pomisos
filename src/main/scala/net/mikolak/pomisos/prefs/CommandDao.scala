@@ -2,13 +2,13 @@ package net.mikolak.pomisos.prefs
 
 import gremlin.scala._
 import net.mikolak.pomisos.crud.MultiDao
-import net.mikolak.pomisos.data.{DB, DbIdKey}
+import net.mikolak.pomisos.data.{DbIdKey, ScalaGraphAccess}
 import net.mikolak.pomisos.prefs.Command._
 import shapeless._
 
-class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
+class CommandDao(db: ScalaGraphAccess) extends MultiDao[FullCommandSpec] {
 
-  override def getAll(): List[FullCommandSpec] = getAllQuery.toList()
+  override def getAll(): List[FullCommandSpec] = db(getAllQuery.andThen(_.toList()))
 
   /**
     * Rather hacky conversion function. Will be able to be improved once toCC goes with the planned macro to shapeless switched,
@@ -40,37 +40,38 @@ class CommandDao(db: DB) extends MultiDao[FullCommandSpec] {
     e match {
       case (command, spec) =>
         val vCommand =
-          command.id.flatMap(id => db().V.hasId(id).headOption().map(_.updateWith(command))).getOrElse(db().addVertex(command))
+          command.id.flatMap(id => db(_.V.hasId(id).headOption()).map(_.updateWith(command))).getOrElse(db(_.addVertex(command)))
 
         (vCommand.toCC[Command], updateSpecDetail(vCommand, spec))
     }
 
-  private def updateSpecDetail(vCommand: Vertex, detail: SpecEither) = {
-    //remove previous spec detail, if any
-    db().V.hasId(vCommand.id()).outE(SpecEdge).drop().iterate()
+  private def updateSpecDetail(vCommand: Vertex, detail: SpecEither) =
+    db { db =>
+      //remove previous spec detail, if any
+      db.V.hasId(vCommand.id()).outE(SpecEdge).drop().iterate()
 
-    val vSpec = detail match {
-      case Inl(execution: Execution) => db().addVertex(execution)
-      case Inr(Inl(script: Script))  => db().addVertex(script)
+      val vSpec = detail match {
+        case Inl(execution: Execution) => db.addVertex(execution)
+        case Inr(Inl(script: Script))  => db.addVertex(script)
+      }
+
+      vCommand.addEdge(SpecEdge, vSpec)
+
+      detail
     }
 
-    vCommand.addEdge(SpecEdge, vSpec)
+  override def get(id: DbIdKey): Option[FullCommandSpec] = db(getAllQuery.andThen(_.headOption))
 
-    detail
-  }
-
-  override def get(id: DbIdKey): Option[FullCommandSpec] = getAllQuery.headOption
-
-  private def getAllQuery =
-    db().V
+  private val getAllQuery = (db: ScalaGraph) =>
+    db.V
       .hasLabel[Command]
       .outE(SpecEdge)
       .map(e => e.outVertex().toCC[Command] -> vertexToSpec(e.inVertex()))
 
   override def remove(id: DbIdKey*): Unit = {
     val ids = id.flatMap(_.toList)
-    ids.headOption.foreach(firstId => db().V.hasId(firstId, ids.tail: _*).drop().iterate())
+    ids.headOption.foreach(firstId => db[Unit](_.V.hasId(firstId, ids.tail: _*).drop().iterate()))
   }
 
-  override def removeAll(): Unit = getAllQuery.drop().iterate()
+  override def removeAll(): Unit = db[Unit](getAllQuery.andThen(_.drop().iterate()))
 }

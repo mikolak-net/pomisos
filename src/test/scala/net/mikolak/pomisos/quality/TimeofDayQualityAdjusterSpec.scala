@@ -2,16 +2,16 @@ package net.mikolak.pomisos.quality
 
 import java.time.{Clock, Instant, ZoneId}
 
-import net.mikolak.pomisos.data.DB
 import org.scalacheck.Gen
 import com.fortysevendeg.scalacheck.datetime.jdk8.GenJdk8
 import com.fortysevendeg.scalacheck.datetime.jdk8.granularity.minutes
+import net.mikolak.pomisos.data.ScalaGraphAccess
 
 class TimeofDayQualityAdjusterSpec extends QualitySpec {
 
   private val testClock = Clock.fixed(Instant.now(), ZoneId.of("UTC"))
 
-  protected lazy val tested = new TimeOfDayQualityAdjuster(mock[DB], testClock)
+  protected lazy val tested = new TimeOfDayQualityAdjuster(mock[ScalaGraphAccess], testClock)
 
   import Gen._
 

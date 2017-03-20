@@ -6,7 +6,7 @@ import java.time.{Instant, LocalDateTime, ZoneOffset}
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Cancellable, Props}
 import com.typesafe.scalalogging.Logger
 import net.mikolak.pomisos.audio.SamplePlayer
-import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun, TimerPeriod}
+import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, ScalaGraphAccess, TimerPeriod}
 import net.mikolak.pomisos.graphics.{FontAwesomeGlyphs, GlyphRotators}
 import net.mikolak.pomisos.prefs.PreferenceDao
 import net.mikolak.pomisos.process.{OnBreak, OnPomodoro, ProcessManager}
@@ -50,7 +50,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         notifications: Notifications,
                         processMan: ActorRefContainer[ProcessManager],
                         qualityService: QualityService,
-                        db: DB,
+                        db: ScalaGraphAccess,
                         preferenceDao: PreferenceDao,
                         glyphs: FontAwesomeGlyphs,
                         glyphRotators: GlyphRotators)
@@ -159,10 +159,12 @@ class RunViewController(val currentPomodoroDisplay: Text,
   private def storeRun(period: TimerPeriod) =
     for {
       pomId    <- period.id
-      pomodoro <- db().V.hasLabel[Pomodoro].hasId(pomId).headOption()
+      pomodoro <- db(_.V.hasLabel[Pomodoro].hasId(pomId).headOption())
     } {
-      val run = db().addVertex(PomodoroRun(Instant.now(), period.duration))
-      pomodoro.addEdge("ranAt", run)
+      db { db =>
+        val run = db.addVertex(PomodoroRun(Instant.now(), period.duration))
+        pomodoro.addEdge("ranAt", run)
+      }
     }
 
   private def playNotifyIfNeeded() =

@@ -2,23 +2,24 @@ package net.mikolak.pomisos.quality
 
 import java.time.Instant
 
-import net.mikolak.pomisos.data.DB
 import smile.regression.ols
 import gremlin.scala._
+import net.mikolak.pomisos.data.ScalaGraphAccess
 
 import scala.util.Try
 
-class ConsecutiveQualityAdjuster(db: DB) extends QualityAdjuster {
+class ConsecutiveQualityAdjuster(db: ScalaGraphAccess) extends QualityAdjuster {
 
   import ConsecutiveQualityAdjuster._
 
   protected[quality] def getData(): List[PomodoroQuality] =
-    db().V
-      .hasLabel[PomodoroQuality]
-      .toCC[PomodoroQuality]
-      .toList
-      .sortBy(_.timestamp)(Ordering.fromLessThan(_ isBefore _))
-      .takeRight(LastQualitiesCount)
+    db(
+      _.V
+        .hasLabel[PomodoroQuality]
+        .toCC[PomodoroQuality]
+        .toList
+        .sortBy(_.timestamp)(Ordering.fromLessThan(_ isBefore _))
+        .takeRight(LastQualitiesCount))
 
   protected[quality] def predictWithData(lastQualities: List[PomodoroQuality]): Option[Double] =
     if (lastQualities.isEmpty) {

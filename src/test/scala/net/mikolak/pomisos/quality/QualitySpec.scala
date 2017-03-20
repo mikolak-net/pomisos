@@ -45,7 +45,7 @@ abstract class QualitySpec
         whenever(qualityList.size > 10) {
           val prediction = tested.predictWithData(qualityList)
           if (prediction.nonEmpty) { //TODO: defragile
-            prediction.value must be <= qualityList.head.quality.toDouble
+            prediction.value.floor must be <= qualityList.head.quality.toDouble
           }
         }
       }
@@ -59,7 +59,7 @@ abstract class QualitySpec
         whenever(qualityList.size > 10) {
           val prediction = tested.predictWithData(qualityList)
           if (prediction.nonEmpty) { //TODO: defragile
-            prediction.value must be >= qualityList.head.quality.toDouble
+            prediction.value.ceil must be >= qualityList.head.quality.toDouble
           }
         }
       }

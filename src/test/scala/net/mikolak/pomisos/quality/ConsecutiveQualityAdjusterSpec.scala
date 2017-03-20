@@ -2,12 +2,12 @@ package net.mikolak.pomisos.quality
 
 import java.time.Instant
 
-import net.mikolak.pomisos.data.DB
+import net.mikolak.pomisos.data.ScalaGraphAccess
 import org.scalacheck.Gen
 
 class ConsecutiveQualityAdjusterSpec extends QualitySpec {
 
-  protected lazy val tested = new ConsecutiveQualityAdjuster(mock[DB])
+  protected lazy val tested = new ConsecutiveQualityAdjuster(mock[ScalaGraphAccess])
 
   import Gen._
   import net.mikolak.pomisos.testutils.GensMore._

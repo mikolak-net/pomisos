@@ -6,13 +6,13 @@ import gremlin.scala._
 import net.mikolak.pomisos.prefs.PreferenceDao
 import shapeless.tag
 import com.softwaremill.quicklens._
-import net.mikolak.pomisos.data.DB
 
 import scala.concurrent.duration._
 import language.postfixOps
 import com.typesafe.scalalogging.Logger
+import net.mikolak.pomisos.data.ScalaGraphAccess
 
-class QualityService(adjusters: List[QualityAdjuster], db: DB, preferenceDao: PreferenceDao) {
+class QualityService(adjusters: List[QualityAdjuster], db: ScalaGraphAccess, preferenceDao: PreferenceDao) {
 
   val log = Logger[QualityService]
 
@@ -20,7 +20,7 @@ class QualityService(adjusters: List[QualityAdjuster], db: DB, preferenceDao: Pr
     if (preferenceDao.get().adaptive.enabled) {
       log.info(s"Obtained new quality rating: $quality")
 
-      db().addVertex(PomodoroQuality(Instant.now(), tag[Quality](quality)))
+      db[Unit](_.addVertex(PomodoroQuality(Instant.now(), tag[Quality](quality))))
 
       val current = preferenceDao.get().length
 

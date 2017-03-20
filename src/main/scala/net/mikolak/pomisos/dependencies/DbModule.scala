@@ -1,18 +1,16 @@
 package net.mikolak.pomisos.dependencies
 
 import com.orientechnologies.orient.core.metadata.schema.{OClass, OType}
-import gremlin.scala.{Key, ScalaGraph}
+import gremlin.scala.{Key, ScalaGraph, _}
 import org.apache.tinkerpop.gremlin.orientdb.{OrientGraph, OrientGraphFactory}
 import com.softwaremill.macwire._
 import org.apache.commons.configuration.BaseConfiguration
-import gremlin.scala._
-import net.mikolak.pomisos.data.{DB, Pomodoro, PomodoroRun}
+import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, ScalaGraphAccess}
 import net.mikolak.pomisos.prefs._
-import org.apache.tinkerpop.gremlin.structure.T
 
 trait DbModule {
 
-  lazy val orientGraph = {
+  private lazy val orientGraph = {
     overrideLoggingToSlf4j()
 
     //switch to memory:pomisos for debug
@@ -21,10 +19,7 @@ trait DbModule {
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 
-  lazy val scalaDbProvider: DB = () => {
-    orientGraph.database().activateOnCurrentThread()
-    scalaDb
-  }
+  lazy val graphAccess = wire[ScalaGraphAccess]
 
   lazy val pomodoroDao = wire[PomodoroDao]
 
@@ -51,6 +46,7 @@ object DbModule {
       vertexClassObj <- Vertices
       vertexClass = vertexClassObj.getSimpleName
     } {
+      import org.apache.tinkerpop.gremlin.structure.T
       val key    = Key[String](T.label.getAccessor)
       val config = new BaseConfiguration()
       config.setProperty("type", OClass.INDEX_TYPE.UNIQUE.name())

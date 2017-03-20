@@ -11,8 +11,6 @@ import scala.concurrent.duration.Duration
 
 package object data {
 
-  type DB = () => ScalaGraph
-
   type DbId = ORecordId
 
   type DbIdKey = Option[DbId]
