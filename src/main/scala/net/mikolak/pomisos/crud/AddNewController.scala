@@ -2,14 +2,15 @@ package net.mikolak.pomisos.crud
 
 import java.util.function.Predicate
 
-import org.controlsfx.validation.{Severity, ValidationSupport, Validator}
+import org.controlsfx.validation.{Severity, ValidationResult, ValidationSupport, Validator}
 
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{ObjectProperty, ReadOnlyObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, TextField}
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
+import net.mikolak.pomisos.utils.Implicits._
 
 trait AddNew {
   def newName: ObjectProperty[Option[String]]
@@ -30,7 +31,7 @@ class AddNewController(
   }
 
   private def setUpValidation() = {
-    val textEmpty = Bindings.createBooleanBinding(() => addNewArea.text.value.trim().isEmpty, addNewArea.text)
+    val textEmpty = addNewArea.text.mapToBoolean(_.trim().isEmpty)
     addNewButton.disable <== textEmpty
 
     val createItemHandle = addNewArea.onAction.value
@@ -44,17 +45,9 @@ class AddNewController(
     validationSupport.registerValidator(addNewArea, textValidator)
     validationSupport.initInitialDecoration()
 
-    val onAction = Bindings.createObjectBinding(
-      () => {
-        val validationResult = Option(validationSupport.validationResultProperty().getValue)
-        val allowAdd         = validationResult.exists(_.getWarnings.isEmpty)
+    val validationResult: ReadOnlyObjectProperty[ValidationResult] = validationSupport.validationResultProperty()
 
-        if (allowAdd) createItemHandle else null
-      },
-      validationSupport.validationResultProperty()
-    )
-
-    addNewArea.onAction <== onAction
+    addNewArea.onAction <== validationResult.mapNullable(vR => if (vR.exists(_.getWarnings.isEmpty)) createItemHandle else null)
   }
 
 }

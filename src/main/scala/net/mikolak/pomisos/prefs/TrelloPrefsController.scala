@@ -113,7 +113,7 @@ class TrelloPrefsController(dao: PreferenceDao,
     SyncNotify.getClass
   )
 
-  prefPane.visible <== authToken.map(_.nonEmpty).toBoolean
+  prefPane.visible <== authToken.mapToBoolean(_.nonEmpty)
   syncButton.visible <== !prefPane.visible
 
   override def prefs: Option[TrelloPreferences] =

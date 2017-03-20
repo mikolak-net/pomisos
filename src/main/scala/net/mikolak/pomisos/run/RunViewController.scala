@@ -21,7 +21,6 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scalafx.Includes._
 import scalafx.application.Platform
-import scalafx.beans.binding.{Bindings, BooleanBinding}
 import scalafx.beans.property.{LongProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, Slider}
@@ -29,6 +28,8 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
 import net.mikolak.pomisos.utils.Implicits._
+
+import scalafx.beans.binding.BooleanBinding
 
 trait RunView {
 
@@ -65,15 +66,14 @@ class RunViewController(val currentPomodoroDisplay: Text,
   lazy val runningPomodoro                                    = ObjectProperty[Option[Pomodoro]](None)
 
   lazy val remainingSeconds = LongProperty(0)
-  lazy val isRunning        = new BooleanBinding(remainingSeconds =!= 0)
+  lazy val isRunning        = remainingSeconds.mapToBoolean(_ != 0)
 
   private var timerStack      = List.empty[TimerPeriod]
   private var pomodoroCounter = 0
   val BreakText               = "Break"
 
   qualityAppQueryView.visible <== currentPomodoroDisplay.text
-    .map(_ == BreakText && preferenceDao.get().adaptive.enabled)
-    .toBoolean
+    .mapToBoolean(_ == BreakText && preferenceDao.get().adaptive.enabled)
 
   def updateRunning(item: Option[TimerPeriod]) = {
     runningPeriod.value = item
@@ -91,13 +91,10 @@ class RunViewController(val currentPomodoroDisplay: Text,
     timerActor ! PauseResume
   }
 
-  currentPomodoroDisplay.text <== Bindings.createStringBinding(() => runningPeriod.value.map(_.name).getOrElse(""),
-                                                               runningPeriod)
+  currentPomodoroDisplay.text <== runningPeriod.mapToString(_.map(_.name).getOrElse(""))
 
   lazy val formatter = DateTimeFormatter.ofPattern("mm:ss")
-  timerText.text <== Bindings.createStringBinding(
-    () => formatter.format(LocalDateTime.ofEpochSecond(remainingSeconds.toLong, 0, ZoneOffset.UTC)),
-    remainingSeconds)
+  timerText.text <== remainingSeconds.mapToString(rS => formatter.format(LocalDateTime.ofEpochSecond(rS, 0, ZoneOffset.UTC)))
 
   private lazy val timerActor = actorSystem.actorOf(Props(classOf[TimerActor], remainingSeconds, preferenceDao))
 

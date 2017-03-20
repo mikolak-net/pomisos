@@ -51,14 +51,14 @@ class CommandController(@nested[AddNewController] addNewCmdController: AddNew,
     implicit def forExecution = at[Execution](_ -> List((lens[Execution] >> 'cmd, executionCommand: TextInputControl)))
   }
 
-  saveButton.visible <== cmdSelected.map(_.nonEmpty).toBoolean
-  adminPaneGeneral.disable <== cmdSelected.map(_.isEmpty).toBoolean
+  saveButton.visible <== cmdSelected.mapToBoolean(_.nonEmpty)
+  adminPaneGeneral.disable <== cmdSelected.mapToBoolean(_.isEmpty)
   adminPaneDetail.visible <== !adminPaneGeneral.disable
 
   //just need this one
   adminViewExecution.visible <== cmdSelected
-    .map(_.exists(_._2.select[Execution].nonEmpty))
-    .toBoolean
+    .mapToBoolean(_.exists(_._2.select[Execution].nonEmpty))
+
   adminViewScript.visible <== !adminViewExecution.visible
 
   cmdSelected.onChange((_, _, newVal) => {

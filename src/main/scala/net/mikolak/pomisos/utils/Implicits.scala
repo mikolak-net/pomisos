@@ -5,8 +5,7 @@ import net.mikolak.pomisos.data._
 
 import scala.concurrent.duration.Duration
 import scala.language.implicitConversions
-import scalafx.beans.binding.{Bindings, BooleanBinding, ObjectBinding}
-import scalafx.beans.property.ReadOnlyObjectProperty
+import scalafx.beans.binding.{Bindings, BooleanBinding, ObjectBinding, StringBinding}
 import scalafx.beans.value.ObservableValue
 
 object Implicits {
@@ -14,12 +13,22 @@ object Implicits {
 
   implicit class MappableObjectBinding[T <: AnyRef](prop: ObservableValue[T, _]) {
     def map[X](f: T => X): ObjectBinding[X] = Bindings.createObjectBinding(() => f(prop.value), prop)
+
+    def mapNullable[X](f: Option[T] => X): ObjectBinding[X] = Bindings.createObjectBinding(() => f(Option(prop.value)), prop)
+
+    def mapToBoolean(f: T => Boolean): BooleanBinding = Bindings.createBooleanBinding(() => f(prop.value), prop)
+
+    def mapToString(f: T => String): StringBinding = Bindings.createStringBinding(() => f(prop.value), prop)
   }
 
-  implicit class ObjectToBooleanBinding(bind: ObjectBinding[Boolean]) {
+  implicit class MappableLongBinding(prop: ObservableValue[Long, _]) {
+    def map[X](f: Long => X): ObjectBinding[X] = Bindings.createObjectBinding(() => f(prop.value), prop)
 
-    def toBoolean: BooleanBinding = Bindings.createBooleanBinding(() => bind.value, bind)
+    def mapNullable[X](f: Option[Long] => X): ObjectBinding[X] = Bindings.createObjectBinding(() => f(Option(prop.value)), prop)
 
+    def mapToBoolean(f: Long => Boolean): BooleanBinding = Bindings.createBooleanBinding(() => f(prop.value), prop)
+
+    def mapToString(f: Long => String): StringBinding = Bindings.createStringBinding(() => f(prop.value), prop)
   }
 
   implicit def dbIdableWithId[T <: WithDbId]: DbIdable[T] = new DbIdable[T] {
