@@ -4,7 +4,7 @@ import sbt.Keys._
 import scala.util.Try
 
 name := "pomisos"
-version := "1.0"
+version := "0.8-alpha"
 scalaVersion := "2.11.8"
 
 resolvers += "jitpack" at "https://jitpack.io"
@@ -62,6 +62,32 @@ val makeIcons = taskKey[Seq[File]]("make them icons")
 
 resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
+
+enablePlugins(JavaAppPackaging, JDKPackagerPlugin)
+
+maintainer := "Mikołaj Koziarkiewicz"
+packageSummary := "Pomisos Pomodoro App"
+packageDescription := "A pomodoro app with several cool features"
+
+bashScriptExtraDefines +=
+  s"""BASE_DATA_PATH=$${XDG_DATA_HOME:-$$HOME/.local/share}
+     |DATA_PATH=$$BASE_DATA_PATH/${name.value}
+     |mkdir -p $$DATA_PATH
+     |cd $$DATA_PATH
+  """.stripMargin
+
+lazy val iconGlob = sys.props("os.name").toLowerCase match {
+  case os if os.contains("mac") => "icon.icns"
+  case os if os.contains("win") => "icon.ico"
+  case _                        => "icon.png"
+}
+
+//FIXME: config currently incomplete, use universal packaging instead
+jdkAppIcon := (sourceDirectory.value ** iconGlob).getPaths.headOption.map(file)
+jdkPackagerType := "deb"
+jdkPackagerJVMArgs := Seq("-Xmx512m")
+jdkPackagerProperties := Map("app.name" -> name.value, "app.version" -> version.value)
+jdkPackagerAppArgs := Seq(maintainer.value, packageSummary.value, packageDescription.value)
 
 makeIcons := {
   val generatorCmd = "inkscape"

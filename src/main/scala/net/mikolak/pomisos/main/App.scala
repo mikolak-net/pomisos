@@ -1,7 +1,5 @@
 package net.mikolak.pomisos.main
 
-import java.io.IOException
-
 import scalafx.application.Platform
 import javafx.scene.Scene
 
