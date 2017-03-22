@@ -21,15 +21,6 @@ import scalafxml.macwire.MacWireDependencyResolver
 
 object App extends JFXApp {
 
-  private def initializeDataPath() = {
-    val path = getPathForSystem()
-    Files.createDirectories(path)
-
-    val pathString = path.toString + File.separator
-    initializeFileLoger(pathString)
-    path
-  }
-
   val rootDataPath = initializeDataPath()
 
   lazy val logger = Logger("main")
@@ -79,6 +70,15 @@ object App extends JFXApp {
     logger.info("Pomisos is shutting down")
     dependencies.actorSystem.terminate()
     Platform.exit()
+  }
+
+  private def initializeDataPath() = {
+    val path = getPathForSystem()
+    Files.createDirectories(path)
+
+    val pathString = path.toString + File.separator
+    initializeFileLoger(pathString)
+    path
   }
 
   private def getPathForSystem() = {
