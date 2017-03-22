@@ -19,7 +19,7 @@ class ExecutionLauncher(execution: Execution) extends Actor with ActorLogging wi
       if (!running_?()) {
         cmd.foreach(c => {
           log.debug(s"Launching command: $c")
-          context.actorOf(Props[DeferredExecutor]) ! s"nohup $c"
+          context.actorOf(Props[DeferredExecutor]) ! (s"nohup $c", CodesToIgnore)
         })
       }
     case OnPomodoro =>
@@ -47,6 +47,10 @@ object ExecutionLauncher {
   type CommandStatus = Either[ErrorInfo, Success]
 
   val KillsToTry = 10
+
+  private val SigTermCode = 128 + 15
+
+  val CodesToIgnore = Set(SigTermCode)
 
   def devnullProcessLogger = ProcessLogger(_ => (), _ => ())
 }

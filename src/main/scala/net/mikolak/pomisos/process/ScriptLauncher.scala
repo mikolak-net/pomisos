@@ -18,7 +18,7 @@ class ScriptLauncher(script: Script) extends Actor with ActorLogging with Launch
         Files.write(tempFile, text.split("\n").toIterable.asJava)
         val command = tempFile.toAbsolutePath.toString
         log.debug(s"Launching script from temporary file $command")
-        context.actorOf(Props[DeferredExecutor]) ! s"nohup $command"
+        context.actorOf(Props[DeferredExecutor]) ! (s"nohup $command", Set.empty[Int])
       })
 
   protected def main: Receive = {

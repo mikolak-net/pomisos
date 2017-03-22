@@ -31,6 +31,16 @@ class ExecutionLauncherSpec extends LauncherSpec {
 
   }
 
+  it must "ignore the SIGTERM exit status" in {
+    val statusCode = 143
+    init(numKills = 1, statusCode = statusCode)
+
+    tested ! OnBreak
+    expectNoReport {
+      tested ! OnPomodoro
+    }
+  }
+
   it must "stop the given command on pomodoro" in {
     val numKills = 1
     init(numKills)

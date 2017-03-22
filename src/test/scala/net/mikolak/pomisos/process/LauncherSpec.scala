@@ -25,13 +25,19 @@ abstract class LauncherSpec
 
   protected var tested: ActorRef = _
 
-  protected def expectReport(blockToExecute: => Unit)(cond: PartialFunction[Any, Boolean]) = {
+  protected def expectReport(blockToExecute: => Unit)(cond: PartialFunction[Any, Boolean]) =
+    setupExpectReport(blockToExecute).expectMsgPF(max = DefaultTimeout)(cond) must be(true)
+
+  protected def expectNoReport(blockToExecute: => Unit) =
+    setupExpectReport(blockToExecute).expectNoMsg(max = DefaultTimeout)
+
+  private def setupExpectReport(blockToExecute: => Unit) = {
     val probe = TestProbe()
     system.eventStream.subscribe(probe.ref, classOf[ReportingNotification])
 
     blockToExecute
 
-    probe.expectMsgPF(max = DefaultTimeout)(cond) must be(true)
+    probe
   }
 
   after {
