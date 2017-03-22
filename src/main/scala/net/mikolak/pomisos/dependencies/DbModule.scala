@@ -1,5 +1,7 @@
 package net.mikolak.pomisos.dependencies
 
+import java.nio.file.Path
+
 import com.orientechnologies.orient.core.metadata.schema.{OClass, OType}
 import gremlin.scala.{Key, ScalaGraph, _}
 import org.apache.tinkerpop.gremlin.orientdb.{OrientGraph, OrientGraphFactory}
@@ -10,11 +12,15 @@ import net.mikolak.pomisos.prefs._
 
 trait DbModule {
 
+  def dataPath: Path
+
   private lazy val orientGraph = {
     overrideLoggingToSlf4j()
 
     //switch to memory:pomisos for debug
-    new OrientGraphFactory("plocal:./pomisos").getNoTx
+    val dbPathString = dataPath.resolve("db").toString
+
+    new OrientGraphFactory(s"plocal:$dbPathString").getNoTx
   }
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]

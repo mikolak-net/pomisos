@@ -3,7 +3,7 @@ package net.mikolak.pomisos.dependencies
 import akka.actor.ActorRef
 import com.softwaremill.tagging.@@
 
-class Dependencies
+abstract class Dependencies
     extends AkkaModule
     with DbModule
     with TimeModule

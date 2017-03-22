@@ -13,6 +13,7 @@ class SpuriousErrorLogFilter extends Filter[ILoggingEvent] {
 
   val SpuriousStrings = Set("smile.",
                             "scanning through all elements without using an index for Traversal",
+                            "db}} created class ",
                             "MaxDirectMemorySize JVM option is not set")
 
   override def decide(event: ILoggingEvent): FilterReply =

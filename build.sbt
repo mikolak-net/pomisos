@@ -69,6 +69,7 @@ maintainer := "Mikołaj Koziarkiewicz"
 packageSummary := "Pomisos Pomodoro App"
 packageDescription := "A pomodoro app with several cool features"
 
+//sets data dir as a fallback in case something fails in-app
 bashScriptExtraDefines +=
   s"""BASE_DATA_PATH=$${XDG_DATA_HOME:-$$HOME/.local/share}
      |DATA_PATH=$$BASE_DATA_PATH/${name.value}
@@ -76,15 +77,14 @@ bashScriptExtraDefines +=
      |cd $$DATA_PATH
   """.stripMargin
 
-lazy val iconGlob = sys.props("os.name").toLowerCase match {
-  case os if os.contains("mac") => "icon.icns"
-  case os if os.contains("win") => "icon.ico"
-  case _                        => "icon.png"
+lazy val iconGlob = sys.props("os.name") match {
+  case os if os.contains("Mac OS") => "icon.icns"
+  case os if os.contains("Win")    => "icon.ico"
+  case _                           => "icon.png"
 }
 
-//FIXME: config currently incomplete, use universal packaging instead
 jdkAppIcon := (sourceDirectory.value ** iconGlob).getPaths.headOption.map(file)
-jdkPackagerType := "deb"
+jdkPackagerType := "installer"
 jdkPackagerJVMArgs := Seq("-Xmx512m")
 jdkPackagerProperties := Map("app.name" -> name.value, "app.version" -> version.value)
 jdkPackagerAppArgs := Seq(maintainer.value, packageSummary.value, packageDescription.value)

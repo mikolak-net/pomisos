@@ -11,9 +11,9 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="net.mikolak.pomisos.logging.SpuriousErrorLogFilter" />
 
-        <file>pomisos.log</file>
+        <file>${pomisos_log_path:-}pomisos.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>pomisos.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${pomisos_log_path:-}pomisos.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>60</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
