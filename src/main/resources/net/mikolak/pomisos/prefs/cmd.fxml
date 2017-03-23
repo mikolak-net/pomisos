@@ -51,9 +51,9 @@
                        <TextField fx:id="executionCommand" />
                    </VBox>
                    <VBox fx:id="adminViewScript">
-                       <Label text="Startup script:" />
+                       <Label text="Pomodoro script:" />
                        <TextArea fx:id="scriptStartup" promptText="#!/bin/bash #code to run when pomodoro starts" />
-                       <Label text="Stop script:" />
+                       <Label text="Break script:" />
                        <TextArea fx:id="scriptStop" promptText="#!/bin/bash #code to run when break starts" />
                    </VBox>
                </children>
