@@ -48,9 +48,10 @@ object ExecutionLauncher {
 
   val KillsToTry = 10
 
-  private val SigTermCode = 128 + 15
-
-  val CodesToIgnore = Set(SigTermCode)
+  private val RootSigReturnCode = 128
+  private val SigTermCode       = RootSigReturnCode + 15
+  private val KillCode          = RootSigReturnCode + 9
+  val CodesToIgnore             = Set(SigTermCode, KillCode)
 
   def devnullProcessLogger = ProcessLogger(_ => (), _ => ())
 }
