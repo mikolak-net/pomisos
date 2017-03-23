@@ -4,7 +4,7 @@ import sbt.Keys._
 import scala.util.Try
 
 name := "pomisos"
-version := "0.8-alpha"
+version := "0.8.alpha"
 scalaVersion := "2.11.8"
 
 resolvers += "jitpack" at "https://jitpack.io"
@@ -76,6 +76,9 @@ bashScriptExtraDefines +=
      |mkdir -p $$DATA_PATH
      |cd $$DATA_PATH
   """.stripMargin
+
+rpmVendor := "mikolak.net"
+rpmLicense := Some("Apache License, Version 2.0")
 
 lazy val iconGlob = sys.props("os.name") match {
   case os if os.contains("Mac OS") => "icon.icns"
