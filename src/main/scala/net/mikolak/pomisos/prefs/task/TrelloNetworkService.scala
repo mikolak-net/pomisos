@@ -1,32 +1,32 @@
 package net.mikolak.pomisos.prefs.task
 
-import akka.actor.Actor.Receive
 import akka.actor.{Actor, ActorLogging, ActorSystem, Cancellable, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
 import com.softwaremill.tagging.@@
-import net.mikolak.pomisos
+import com.typesafe.scalalogging.Logger
 import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
 import net.mikolak.pomisos.prefs._
+import net.mikolak.pomisos.utils.Implicits._
 
-import scala.concurrent.duration._
-import language.postfixOps
 import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.language.postfixOps
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
-import net.mikolak.pomisos.utils.Implicits._
 
 class TrelloNetworkService(dao: PreferenceDao,
                            pomodoroDao: PomodoroDao,
-                           syncProps: (TrelloNetworkService) => Props @@ TrelloSyncActor)(implicit system: ActorSystem) {
+                           syncProps: (TrelloNetworkService) => Props @@ TrelloSyncActor)(implicit system: ActorSystem,
+                                                                                          materializer: ActorMaterializer) {
 
-  import TrelloNetworkService._
   import HttpMethods._
+  import TrelloNetworkService._
 
-  implicit val materializer = ActorMaterializer()
+  val logger = Logger[TrelloNetworkService]
 
   import system.dispatcher
   system.actorOf(syncProps(this))
@@ -52,8 +52,8 @@ class TrelloNetworkService(dao: PreferenceDao,
             val queryBuilder = Uri.Query.newBuilder
             queryBuilder ++= params
             queryBuilder ++= authQueryPart
-            //TODO: log sanitized request
             val request = HttpRequest(uri = uri.withQuery(queryBuilder.result()), method = method)
+            logger.debug(request.toString)
             request
           }
           .flatMap(r => Unmarshal(r.entity).to[T]),
@@ -123,12 +123,11 @@ class TrelloNetworkService(dao: PreferenceDao,
 }
 
 import scala.concurrent.duration._
-import language.postfixOps
+import scala.language.postfixOps
 
 class TrelloSyncActor(service: TrelloNetworkService) extends Actor with ActorLogging {
 
-  import context.system
-  import context.dispatcher
+  import context.{dispatcher, system}
 
   var syncSub: Option[Cancellable] = None
   import TrelloNetworkService.mergeBuffers
@@ -165,10 +164,9 @@ object TrelloNetworkService {
 
   type UnmarshallerFor[T] = Unmarshaller[ResponseEntity, T]
 
-  import upickle.default.Reader
-
   import shapeless.tag
   import shapeless.tag.@@
+  import upickle.default.Reader
 
   implicit def tagReader[MainType, TagType](implicit baseReader: Reader[MainType]): Reader[MainType @@ TagType] =
     Reader[MainType @@ TagType] {
