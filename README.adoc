@@ -1,0 +1,18 @@
+= pomisos
+
+== What is it?
+
+Pomisos (POH-MEE-SAUCE) is an open-source desktop app for working with the https://en.wikipedia.org/wiki/Pomodoro_Technique[Pomodoro Technique].
+
+What makes is distinguish itself from a myriad of other similar apps are two features:
+
+- fully configurable, automatic shutdown of distracting programs (mail and chat clients etc.) during pomodoros (and startup on breaks),
+- optional adaptive adjustment of pomodoro length depending on the user's concentration level.
+
+== Download
+
+Release packages coming soon
+
+== Issues
+
+Pomisos is currently in the pre-alpha stage. A comprehensive issue list is coming soon.
