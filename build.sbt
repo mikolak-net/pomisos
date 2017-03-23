@@ -4,7 +4,7 @@ import sbt.Keys._
 import scala.util.Try
 
 name := "pomisos"
-version := "0.8.alpha"
+version := "0.8-alpha"
 scalaVersion := "2.11.8"
 
 resolvers += "jitpack" at "https://jitpack.io"
@@ -65,10 +65,6 @@ fork in run := true //so that OrientDB runs correctly
 
 enablePlugins(JavaAppPackaging, JDKPackagerPlugin)
 
-maintainer := "Mikołaj Koziarkiewicz"
-packageSummary := "Pomisos Pomodoro App"
-packageDescription := "A pomodoro app with several cool features"
-
 //sets data dir as a fallback in case something fails in-app
 bashScriptExtraDefines +=
   s"""BASE_DATA_PATH=$${XDG_DATA_HOME:-$$HOME/.local/share}
@@ -77,8 +73,12 @@ bashScriptExtraDefines +=
      |cd $$DATA_PATH
   """.stripMargin
 
-rpmVendor := "mikolak.net"
-rpmLicense := Some("Apache License, Version 2.0")
+maintainer := "Mikołaj Koziarkiewicz"
+packageSummary := "Pomisos Pomodoro App"
+packageDescription := "A pomodoro app with several cool features"
+
+maintainer in JDKPackager := "mikolak.net"
+version in JDKPackager := (version in Compile).value.replaceAll("\\-", ".")
 
 lazy val iconGlob = sys.props("os.name") match {
   case os if os.contains("Mac OS") => "icon.icns"
@@ -87,10 +87,40 @@ lazy val iconGlob = sys.props("os.name") match {
 }
 
 jdkAppIcon := (sourceDirectory.value ** iconGlob).getPaths.headOption.map(file)
-jdkPackagerType := "installer"
+jdkPackagerType := "all"
 jdkPackagerJVMArgs := Seq("-Xmx512m")
-jdkPackagerProperties := Map("app.name" -> name.value, "app.version" -> version.value)
+jdkPackagerProperties := Map("app.name"      -> name.value,
+                             "app.version"   -> version.value,
+                             "info.license"  -> "Apache License, Version 2.0",
+                             "info.category" -> "Office")
 jdkPackagerAppArgs := Seq(maintainer.value, packageSummary.value, packageDescription.value)
+
+//rewrite ant task to actually use the info keys
+antBuildDefn in JDKPackager := {
+  val origTask = (antBuildDefn in JDKPackager).value
+
+  val InfoLabel = "info"
+  val KeyRegex  = s"$InfoLabel\\.(.+)".r
+
+  import scala.xml._
+  import scala.xml.transform._
+  val infoRewrite = new RewriteRule {
+    override def transform(n: Node) = n match {
+      case e: Elem if e.prefix == "fx" && e.label == InfoLabel =>
+        val attribMap = jdkPackagerProperties.value.collect {
+          case (KeyRegex(infoKey), value) =>
+            (infoKey, value)
+        }
+
+        attribMap.foldRight(e) {
+          case ((key, value), infoElem) => infoElem % Attribute("", key, value, Null)
+        }
+      case other => other
+    }
+  }
+
+  new RuleTransformer(infoRewrite)(origTask)
+}
 
 makeIcons := {
   val generatorCmd = "inkscape"
