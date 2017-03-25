@@ -4,7 +4,6 @@ import sbt.Keys._
 import scala.util.Try
 
 name := "pomisos"
-version := "0.8-alpha"
 scalaVersion := "2.11.8"
 
 resolvers += "jitpack" at "https://jitpack.io"
