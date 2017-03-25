@@ -1,7 +1,9 @@
+import java.nio.file.Files
+
 import sbt._
 import sbt.Keys._
+import sbtdynver.NoProcessLogger
 
-import scala.util.Try
 
 name := "pomisos"
 scalaVersion := "2.11.8"
@@ -122,53 +124,68 @@ antBuildDefn in JDKPackager := {
 }
 
 makeIcons := {
-  val generatorCmd = "inkscape"
-
   val inputFileName = "icon.svg"
-  val inputFile     = new File(inputFileName)
-
   val inputName = inputFileName.split('.').head
-
-  val outputFiles = List(("_small", 24, 24), ("", 64, 64))
-
+  val inputFile     = new File(inputFileName)
   val outputBasePath = (resourceDirectory in Compile).value
 
-  val filesToRefresh = {
-    val filesWithTargets = outputFiles.map { configTuple =>
-      (outputBasePath / s"$inputName${configTuple._1}.png", configTuple._2, configTuple._3)
-    }
+  case class ImgSpec(suffix: String, size: Int, format: String) {
+    val outputFile = outputBasePath / s"$inputName$suffix.$format"
+  }
 
-    filesWithTargets.filter { config =>
-      val out = config._1
+  val commandChecks = List("inkscape --version", "convert", "png2icns")
+
+  def generateCmd(spec: ImgSpec)(outFile: File = spec.outputFile): List[List[String]] = if(spec.format == "png") {
+    List(List("inkscape",
+      s"--file=${baseDirectory.value / inputFileName}",
+      s"--export-${spec.format}=${outFile.absolutePath}",
+      s"-w${spec.size}",
+      s"-h${spec.size}",
+      "--export-area-page")) }
+else {
+      val tempExtension = "png"
+      val tempFile = Files.createTempFile("", s".$tempExtension").toFile
+      Files.delete(tempFile.toPath)
+
+      val otherCommand = if(spec.format == "icns") {
+        List("png2icns",
+          spec.outputFile.absolutePath,
+          tempFile.absolutePath
+        )
+      } else {
+        List("convert",tempFile.absolutePath, spec.outputFile.absolutePath)
+      }
+
+      generateCmd(spec.copy(format = tempExtension))(tempFile) :+
+        otherCommand
+  }
+
+  val outputFiles = List(ImgSpec("_small", 24, "png"), ImgSpec("", 64, "png"), ImgSpec("", 64, "ico"), ImgSpec("", 128, "icns"))
+
+  val filesToRefresh = outputFiles.filter { spec =>
+      val out = spec.outputFile
       !out.exists() || (out.lastModified < inputFile.lastModified)
-    }
   }
 
   def doRefresh() = {
     import sys.process._
     import language.postfixOps
 
-    for ((out, width, height) <- filesToRefresh) yield {
-      val cmd =
-        Process(
-          generatorCmd,
-          List(s"--file=${baseDirectory.value / inputFileName}",
-               s"--export-png=$out",
-               s"-w$width",
-               s"-h$height",
-               "--export-area-page")
-        )
-      streams.value.log.info(cmd !!)
+    for (spec <- filesToRefresh) yield {
+      val out = spec.outputFile
+
+      generateCmd(spec)().foreach(cmd => streams.value.log.info(Process(cmd) !!))
+
       out
     }
   }
 
-  if (Try(s"$generatorCmd --version").isSuccess) {
+  if (commandChecks.forall(_.!(NoProcessLogger) != 127)) {
     doRefresh()
   } else {
     if (filesToRefresh.nonEmpty) {
       streams.value.log
-        .warn(s"Icons need to be updated, but $generatorCmd is missing. Install $generatorCmd to allow regeneration.")
+        .warn(s"Icons need to be updated, but either of ${commandChecks.mkString(", ")} is missing. Install to allow regeneration.")
     }
     Seq.empty[File]
   }
