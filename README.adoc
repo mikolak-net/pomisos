@@ -9,10 +9,21 @@ What makes is distinguish itself from a myriad of other similar apps are two fea
 - fully configurable, automatic shutdown of distracting programs (mail and chat clients etc.) during pomodoros (and startup on breaks),
 - optional adaptive adjustment of pomodoro length depending on the user's concentration level.
 
+Pomisos additionally includes more standard nice-to-haves like:
+
+- configurable Trello integration,
+- completed pomodoro statistics,
+- configurable audio cues, including an optional "timer tick" sound.
+
 == Download
 
-Release packages coming soon
+Release packages coming soon.
 
 == Issues
 
-Pomisos is currently in the pre-alpha stage. A comprehensive issue list is coming soon.
+Pomisos is currently in the pre-alpha stage. A list of issues is https://github.com/mikolak-net/pomisos/issues[available here].
+
+== Contributing
+
+Contribution to this project is very much welcome. Either take a look https://github.com/mikolak-net/pomisos/issues[at the outstanding issues]
+ or suggest your own improvement by creating a new one.
