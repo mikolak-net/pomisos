@@ -25,7 +25,6 @@ class ConsecutiveQualityAdjuster(db: ScalaGraphAccess) extends QualityAdjuster {
     if (lastQualities.isEmpty) {
       None
     } else {
-      //TODO clean this up - breaks for LastQualitiesCount identical consecutive values (esp. 10)
       if (lastQualities.map(_.quality).distinct.length == 1) {
         Some(lastQualities.head.quality)
       } else {

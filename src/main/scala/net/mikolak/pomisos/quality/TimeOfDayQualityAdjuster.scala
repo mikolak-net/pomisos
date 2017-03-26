@@ -21,7 +21,7 @@ class TimeOfDayQualityAdjuster(db: ScalaGraphAccess, clock: Clock) extends Quali
     if (lastQualities.isEmpty) {
       None
     } else {
-      Try { //TODO: fragile for some values
+      Try {
         val OLS = ols(
           lastQualities.map(a => Array(toHour(a.timestamp))).toArray,
           lastQualities.map(_.quality.toDouble).toArray

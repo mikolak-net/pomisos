@@ -44,7 +44,7 @@ abstract class QualitySpec
       forAll(genQualityList(Quality.Max, i => choose(Quality.Min, i), _.max(Quality.Min)), minSuccessful(Tries)) { qualityList =>
         whenever(qualityList.size > 10) {
           val prediction = tested.predictWithData(qualityList)
-          if (prediction.nonEmpty) { //TODO: defragile
+          if (prediction.nonEmpty) {
             prediction.value.floor must be <= qualityList.head.quality.toDouble
           }
         }
@@ -58,7 +58,7 @@ abstract class QualitySpec
       forAll(genQualityList(Quality.Min, i => choose(i, Quality.Max), _.min(Quality.Max)), minSuccessful(Tries)) { qualityList =>
         whenever(qualityList.size > 10) {
           val prediction = tested.predictWithData(qualityList)
-          if (prediction.nonEmpty) { //TODO: defragile
+          if (prediction.nonEmpty) {
             prediction.value.ceil must be >= qualityList.head.quality.toDouble
           }
         }

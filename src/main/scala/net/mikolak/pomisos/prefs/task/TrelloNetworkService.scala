@@ -201,7 +201,6 @@ object TrelloNetworkService {
       internal.update(internal.indexOf(itemToUpload), uploaded)
     }
 
-    //TODO: manage ordering
     internal --= itemsToDeleteLocally
     internal ++= itemsToDownload
 

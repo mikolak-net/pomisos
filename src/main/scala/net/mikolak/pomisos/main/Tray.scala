@@ -23,7 +23,7 @@ case class Tray(showApp: (() => Unit) @@ AppOpenFunction, exitApp: (() => Unit) 
   trayIcon.addActionListener(new ActionListener {
     override def actionPerformed(e: ActionEvent) = Platform.runLater(showApp())
   })
-  //FIXME: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
+  //Blocked: systray issue https://bugs.kde.org/show_bug.cgi?id=362941
   //  trayIcon.addMouseListener(new MouseAdapter {
   //    override def mouseClicked(e: MouseEvent) = {
   //      log.debug("Click")

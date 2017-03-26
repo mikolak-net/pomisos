@@ -84,7 +84,7 @@ class PomodoroTableController(
       items.onChange(updateComplete())
       cell.item.onChange(updateComplete())
       cell
-    }) //TODO: this should parse w/o .value and be editable
+    })
 
   textColumn.onEditCommit = (e: CellEditEvent[Pomodoro, String]) => {
     dao.saveWith(_.copy(name = e.newValue))(e.rowValue.id)

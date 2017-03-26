@@ -2,7 +2,6 @@ package net.mikolak.pomisos.audio
 
 import javax.sound.sampled._
 
-//TODO: refactor to actor
 class SamplePlayer(sampleAtStr: String) {
 
   private lazy val sampleAt = getClass.getResource(sampleAtStr)
