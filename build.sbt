@@ -65,6 +65,8 @@ val makeIcons = taskKey[Seq[File]]("make them icons")
 
 resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
+testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-u", sys.env.getOrElse("CIRCLE_TEST_REPORTS", target.value) + "/test-reports")
+
 
 enablePlugins(JavaAppPackaging, JDKPackagerPlugin)
 
