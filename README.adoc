@@ -1,5 +1,7 @@
 = pomisos
 
+image:icon.svg[height=128, alt="pomisos logo", align="center"]
+
 == What is it?
 
 Pomisos (POH-MEE-SAUCE) is an open-source desktop app for working with the https://en.wikipedia.org/wiki/Pomodoro_Technique[Pomodoro Technique].
