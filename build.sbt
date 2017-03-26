@@ -4,6 +4,8 @@ import sbt._
 import sbt.Keys._
 import sbtdynver.NoProcessLogger
 
+import scala.util.Try
+
 
 name := "pomisos"
 scalaVersion := "2.11.8"
@@ -180,7 +182,7 @@ else {
     }
   }
 
-  if (commandChecks.forall(_.!(NoProcessLogger) != 127)) {
+  if (commandChecks.forall(cmd => Try(cmd.!(NoProcessLogger)).isSuccess)) {
     doRefresh()
   } else {
     if (filesToRefresh.nonEmpty) {
