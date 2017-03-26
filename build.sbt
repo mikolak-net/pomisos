@@ -164,7 +164,7 @@ else {
         otherCommand
   }
 
-  val outputFiles = List(ImgSpec("_small", 24, "png"), ImgSpec("", 64, "png"), ImgSpec("", 64, "ico"), ImgSpec("", 128, "icns"))
+  val outputFiles = List(ImgSpec("_small", 24, "png"), ImgSpec("", 64, "png"), ImgSpec("_large", 128, "png"), ImgSpec("", 64, "ico"), ImgSpec("", 128, "icns"))
 
   val filesToRefresh = outputFiles.filter { spec =>
       val out = spec.outputFile

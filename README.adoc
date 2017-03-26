@@ -1,6 +1,6 @@
 = pomisos
 
-image:icon.svg[height=128, alt="pomisos logo", align="center"]
+image:src/main/resources/icon_large.png[height=128, alt="pomisos logo", align="center"]
 
 == What is it?
 
