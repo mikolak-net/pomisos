@@ -1,6 +1,21 @@
-= pomisos
+= pomisos!
+:projectName: pomisos
+:baseUrl: https://github.com/mikolak-net/{projectName}
+:baseReleaseUrl: {baseUrl}/releases/download/
+:version: 0.8-alpha
+:currentReleaseUrl: {baseReleaseUrl}v{version}/{projectName}-
+:versionDistribution: 0.8.alpha
+:versionWindows: 0.8.0
 
 image:src/main/resources/icon_large.png[height=128, alt="pomisos logo", align="center"]
+
+== Download
+
+- Windows: {currentReleaseUrl}{versionWindows}.msi[installer]
+- Mac: {currentReleaseUrl}{versionDistribution}.dmg[installer]
+- Ubuntu/Mint/Debian: {currentReleaseUrl}{versionDistribution}.deb[package]
+- Red Hat/Fedora/Other RPM: {currentReleaseUrl}{versionDistribution}-1.x86_64.rpm[package]
+- Other: {currentReleaseUrl}{version}.zip[archive to unzip] _(requires Java JRE preinstalled)_
 
 == What is it?
 
@@ -17,15 +32,17 @@ Pomisos additionally includes more standard nice-to-haves like:
 - completed pomodoro statistics,
 - configurable audio cues, including an optional "timer tick" sound.
 
-== Download
-
-Release packages coming soon.
-
 == Issues
 
-Pomisos is currently in the pre-alpha stage. A list of issues is https://github.com/mikolak-net/pomisos/issues[available here].
+Pomisos is currently in the alpha stage. A list of issues is https://github.com/mikolak-net/pomisos/issues[available here].
 
 == Contributing
 
 Contribution to this project is very much welcome. Either take a look https://github.com/mikolak-net/pomisos/issues[at the outstanding issues]
  or suggest your own improvement by creating a new one.
+
+== Kudos
+
+- https://github.com/michalkarolik[Michał K] for building the initial Mac installer.
+- https://github.com/mmatloka[Michał M] for building the initial Windows installer.
+- https://github.com/bandrzejczak[Bartek] for co-contributing the adaptive length adjuster.
