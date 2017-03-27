@@ -41,6 +41,10 @@ Pomisos is currently in the alpha stage. A list of issues is https://github.com/
 Contribution to this project is very much welcome. Either take a look https://github.com/mikolak-net/pomisos/issues[at the outstanding issues]
  or suggest your own improvement by creating a new one.
 
+== License
+
+Pomisos is distributed with the Apache License, Version 2.0 .
+
 == Kudos
 
 - https://github.com/michalkarolik[Michał K] for building the initial Mac installer.
