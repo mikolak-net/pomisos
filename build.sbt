@@ -8,7 +8,7 @@ import scala.util.Try
 
 
 name := "pomisos"
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.2"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
@@ -17,6 +17,7 @@ val sfxVersion     = "0.3"
 val macwireVersion = "2.3.0"
 val akkaVersion    = "2.4.17"
 val logbackVersion = "1.2.2"
+val smileVersion   = "1.3.1"
 
 libraryDependencies ++= Seq(
   "org.scalafx"                %% "scalafx"                     % "8.0.102-R11",
@@ -28,14 +29,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"          %% "akka-http"                   % "10.0.3",
   "de.heikoseeberger"          %% "akka-http-upickle"           % "1.12.0",
   "com.lihaoyi"                %% "upickle"                     % "0.4.3",
-  "com.michaelpollmeier"       %% "gremlin-scala"               % (gremlinVersion + "1"),
+  "com.michaelpollmeier"       %% "gremlin-scala"               % (gremlinVersion + "4"),
   "com.michaelpollmeier"       % "orientdb-gremlin"             % (gremlinVersion + "0"),
   "com.softwaremill.macwire"   %% "macros"                      % macwireVersion % "provided",
   "com.softwaremill.macwire"   %% "util"                        % macwireVersion,
   "com.softwaremill.macwire"   %% "macrosakka"                  % macwireVersion,
-  "com.github.haifengl"        % "smile-core"                   % "1.2.0",
-  "com.github.haifengl"        % "smile-math"                   % "1.2.0",
-  "com.github.haifengl"        %% "smile-scala"                 % "1.2.0",
+  "com.github.haifengl"        %% "smile-scala"                 % smileVersion,
   "com.softwaremill.quicklens" %% "quicklens"                   % "1.4.8",
   "com.chuusai"                %% "shapeless"                   % "2.3.2",
   "com.typesafe.scala-logging" %% "scala-logging"               % "3.5.0",
