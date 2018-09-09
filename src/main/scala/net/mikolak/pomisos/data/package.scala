@@ -4,7 +4,6 @@ import java.time.Instant
 
 import com.orientechnologies.orient.core.id.ORecordId
 import gremlin.scala.{ScalaGraph, id}
-import longevity.model.annotations.{domainModel, persistent}
 import net.mikolak.pomisos.prefs.task.Card
 import shapeless.tag.@@
 

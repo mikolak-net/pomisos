@@ -2,13 +2,13 @@ import java.nio.file.Files
 
 import sbt._
 import sbt.Keys._
-import sbtdynver.NoProcessLogger
+import sbtdynver.impl.NoProcessLogger
+import sys.process._
 
 import scala.util.Try
 
-
 name := "pomisos"
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.6"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
@@ -64,8 +64,9 @@ val makeIcons = taskKey[Seq[File]]("make them icons")
 
 resourceGenerators in Compile += makeIcons.taskValue
 fork in run := true //so that OrientDB runs correctly
-testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-u", sys.env.getOrElse("CIRCLE_TEST_REPORTS", target.value) + "/test-reports")
-
+testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest,
+                                      "-u",
+                                      sys.env.getOrElse("CIRCLE_TEST_REPORTS", target.value) + "/test-reports")
 
 enablePlugins(JavaAppPackaging, JDKPackagerPlugin)
 
@@ -127,10 +128,11 @@ antBuildDefn in JDKPackager := {
 }
 
 makeIcons := {
-  val inputFileName = "icon.svg"
-  val inputName = inputFileName.split('.').head
-  val inputFile     = new File(inputFileName)
+  val inputFileName  = "icon.svg"
+  val inputName      = inputFileName.split('.').head
+  val inputFile      = new File(inputFileName)
   val outputBasePath = (resourceDirectory in Compile).value
+  val log            = streams.value.log
 
   case class ImgSpec(suffix: String, size: Int, format: String) {
     val outputFile = outputBasePath / s"$inputName$suffix.$format"
@@ -138,36 +140,41 @@ makeIcons := {
 
   val commandChecks = List("inkscape --version", "convert", "png2icns")
 
-  def generateCmd(spec: ImgSpec)(outFile: File = spec.outputFile): List[List[String]] = if(spec.format == "png") {
-    List(List("inkscape",
-      s"--file=${baseDirectory.value / inputFileName}",
-      s"--export-${spec.format}=${outFile.absolutePath}",
-      s"-w${spec.size}",
-      s"-h${spec.size}",
-      "--export-area-page")) }
-else {
+  def generateCmd(spec: ImgSpec)(outFile: File = spec.outputFile): List[List[String]] =
+    if (spec.format == "png") {
+      List(
+        List(
+          "inkscape",
+          s"--file=${baseDirectory.value / inputFileName}",
+          s"--export-${spec.format}=${outFile.absolutePath}",
+          s"-w${spec.size}",
+          s"-h${spec.size}",
+          "--export-area-page"
+        ))
+    } else {
       val tempExtension = "png"
-      val tempFile = Files.createTempFile("", s".$tempExtension").toFile
+      val tempFile      = Files.createTempFile("", s".$tempExtension").toFile
       Files.delete(tempFile.toPath)
 
-      val otherCommand = if(spec.format == "icns") {
-        List("png2icns",
-          spec.outputFile.absolutePath,
-          tempFile.absolutePath
-        )
+      val otherCommand = if (spec.format == "icns") {
+        List("png2icns", spec.outputFile.absolutePath, tempFile.absolutePath)
       } else {
-        List("convert",tempFile.absolutePath, spec.outputFile.absolutePath)
+        List("convert", tempFile.absolutePath, spec.outputFile.absolutePath)
       }
 
       generateCmd(spec.copy(format = tempExtension))(tempFile) :+
         otherCommand
-  }
+    }
 
-  val outputFiles = List(ImgSpec("_small", 24, "png"), ImgSpec("", 64, "png"), ImgSpec("_large", 128, "png"), ImgSpec("", 64, "ico"), ImgSpec("", 128, "icns"))
+  val outputFiles = List(ImgSpec("_small", 24, "png"),
+                         ImgSpec("", 64, "png"),
+                         ImgSpec("_large", 128, "png"),
+                         ImgSpec("", 64, "ico"),
+                         ImgSpec("", 128, "icns"))
 
   val filesToRefresh = outputFiles.filter { spec =>
-      val out = spec.outputFile
-      !out.exists() || (out.lastModified < inputFile.lastModified)
+    val out = spec.outputFile
+    !out.exists() || (out.lastModified < inputFile.lastModified)
   }
 
   def doRefresh() = {
@@ -177,7 +184,7 @@ else {
     for (spec <- filesToRefresh) yield {
       val out = spec.outputFile
 
-      generateCmd(spec)().foreach(cmd => streams.value.log.info(Process(cmd) !!))
+      generateCmd(spec)().foreach(cmd => log.info(Process(cmd) !!))
 
       out
     }
@@ -187,8 +194,8 @@ else {
     doRefresh()
   } else {
     if (filesToRefresh.nonEmpty) {
-      streams.value.log
-        .warn(s"Icons need to be updated, but either of ${commandChecks.mkString(", ")} is missing. Install to allow regeneration.")
+      log.warn(
+        s"Icons need to be updated, but either of ${commandChecks.mkString(", ")} is missing. Install to allow regeneration.")
     }
     Seq.empty[File]
   }
