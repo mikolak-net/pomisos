@@ -83,7 +83,14 @@ packageSummary := "Pomisos Pomodoro App"
 packageDescription := "A pomodoro app with several cool features"
 
 maintainer in JDKPackager := "mikolak.net"
-version in JDKPackager := (version in Compile).value.replaceAll("\\-", ".")
+version in JDKPackager :=  {
+  val baseDynVersion = (version in Compile).value.replaceAll("\\-", ".")
+  if(!baseDynVersion.matches("^[0-9].*")) {
+    s"0.$baseDynVersion"
+  } else {
+    baseDynVersion
+  }
+}
 
 lazy val iconGlob = sys.props("os.name") match {
   case os if os.contains("Mac OS") => "icon.icns"
