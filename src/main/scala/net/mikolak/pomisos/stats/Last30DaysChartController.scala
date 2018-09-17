@@ -14,7 +14,7 @@ import scalafx.event.ActionEvent
 import scalafx.scene.layout.VBox
 
 @sfxml
-class Last30DaysChartController(val main: VBox, chart: BarChart[String, Int], db: ScalaGraphAccess) {
+class Last30DaysChartController(chart: BarChart[String, Int], db: ScalaGraphAccess) {
 
   lazy val byDayCount = db(
     _.V
@@ -36,8 +36,5 @@ class Last30DaysChartController(val main: VBox, chart: BarChart[String, Int], db
   lazy val series = XYChart.Series[String, Int](buffer)
 
   chart.data = series
-
-  def closeStats(event: ActionEvent): Unit =
-    main.visible.value = false
 
 }

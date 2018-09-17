@@ -1,25 +1,20 @@
 package net.mikolak.pomisos.main
 
 import javafx.scene.control.TableCell
-
-import akka.actor.ActorSystem
-
+import com.jfoenix.controls.JFXButton
 import scalafx.scene.control._
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
 import net.mikolak.pomisos.utils.UiUtils._
-
 import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
-import scalafx.collections.ObservableBuffer
 import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.graphics.FontAwesomeGlyphs
 import net.mikolak.pomisos.prefs.PomodoroDao
 import net.mikolak.pomisos.prefs.task.TrelloNetworkService
 import org.controlsfx.glyphfont.FontAwesome
-
 import scalafx.beans.binding.Bindings
 import scalafx.event.{ActionEvent, Event}
-import scalafx.geometry.Pos
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn.CellEditEvent
 import scalafx.scene.control.cell.TextFieldTableCell
 import scalafx.scene.input.{KeyCode, KeyEvent}
@@ -63,8 +58,7 @@ class PomodoroTableController(
     Option(selectedIndex.value).filter(_ => k.code == KeyCode.Delete).foreach(i => items.remove(i.toInt))
   }
 
-  textColumn.cellValueFactory = { p =>
-    Bindings.createStringBinding(() => p.value.name, p.tableView.getItems)
+  textColumn.cellValueFactory = { p => Bindings.createStringBinding(() => p.value.name, p.tableView.getItems)
   }
   textColumn.cellFactory = TextFieldTableCell
     .forTableColumn[Pomodoro]()
@@ -90,8 +84,7 @@ class PomodoroTableController(
     dao.saveWith(_.copy(name = e.newValue))(e.rowValue.id)
   }
 
-  buttonColumn.cellValueFactory = { p =>
-    ObjectProperty[Pomodoro](p.value)
+  buttonColumn.cellValueFactory = { p => ObjectProperty[Pomodoro](p.value)
   }
   buttonColumn.cellFactory = _ => new ButtonCell(pomodoroToRun, glyphs)
 
@@ -104,6 +97,8 @@ class ButtonCell(runningPomodoro: ObjectProperty[Option[Pomodoro]], glyphs: Font
     visible = false
     hgrow = Priority.Always
     alignmentInParent = Pos.Center
+    alignment = Pos.Center
+    spacing = 10.0
   }
 
   this.onMouseEntered = (x: Event) => graphic.visible = true
@@ -114,12 +109,14 @@ class ButtonCell(runningPomodoro: ObjectProperty[Option[Pomodoro]], glyphs: Font
     newRow.onMouseExited <== this.onMouseExited
   })
 
-  val playButton = new Button("", glyphs(FontAwesome.Glyph.PLAY)) {
+  private def underlyingButton(glyph: FontAwesome.Glyph) = new JFXButton("", glyphs(glyph))
+
+  val playButton = new Button(underlyingButton(FontAwesome.Glyph.PLAY)) {
     tooltip = "Run this pomodoro"
     onAction = (_: ActionEvent) => runningPomodoro.value = Some(getItem)
   }
 
-  val completeButton = new Button("", glyphs(FontAwesome.Glyph.CHECK)) {
+  val completeButton = new Button(underlyingButton(FontAwesome.Glyph.CHECK)) {
     tooltip = "Mark this pomodoro as completed"
     onAction = (_: ActionEvent) => getTableColumn.getTableView.getItems.update(getIndex, getItem.copy(completed = true))
   }

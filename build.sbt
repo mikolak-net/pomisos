@@ -11,6 +11,7 @@ name := "pomisos"
 scalaVersion := "2.12.6"
 
 resolvers += "jitpack" at "https://jitpack.io"
+resolvers += Resolver.bintrayRepo("jerady", "maven")
 
 val gremlinVersion = "3.2.3."
 val sfxVersion     = "0.3"
@@ -23,6 +24,8 @@ libraryDependencies ++= Seq(
   "org.scalafx"                %% "scalafx"                     % "8.0.102-R11",
   "org.scalafx"                %% "scalafxml-core-sfx8"         % sfxVersion,
   "org.scalafx"                %% "scalafxml-macwire-sfx8"      % sfxVersion,
+  "de.jensd"                   % "fontawesomefx-fontawesome"    % "4.7.0-5",
+  "com.jfoenix"                % "jfoenix"                      % "8.0.4",
   "org.controlsfx"             % "controlsfx"                   % "8.40.12",
   "com.typesafe.akka"          %% "akka-actor"                  % akkaVersion,
   "com.typesafe.akka"          %% "akka-slf4j"                  % akkaVersion,
@@ -83,9 +86,9 @@ packageSummary := "Pomisos Pomodoro App"
 packageDescription := "A pomodoro app with several cool features"
 
 maintainer in JDKPackager := "mikolak.net"
-version in JDKPackager :=  {
+version in JDKPackager := {
   val baseDynVersion = (version in Compile).value.replaceAll("\\-", ".")
-  if(!baseDynVersion.matches("^[0-9].*")) {
+  if (!baseDynVersion.matches("^[0-9].*")) {
     s"0.$baseDynVersion"
   } else {
     baseDynVersion

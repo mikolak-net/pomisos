@@ -1,6 +1,22 @@
+.root {
+    -fx-background-color: rgba(255, 250, 250, 1);
+}
+
+.jfx-tab-pane .tab-header-area {
+    -fx-alignment: center;
+}
+
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: rgba(240, 120, 120, 1);
+}
+
+.jfx-tab-pane .headers-region .tab-selected-line {
+    -fx-background-color: rgb(0, 223, 67);
+}
+
 .header {
     -fx-font-size: 20;
-    -fx-font-style: oblique;
+    -fx-font-weight: bold;
 }
 
 .text {
@@ -8,7 +24,11 @@
 }
 
 .button {
-    -fx-padding: 5px;
+    -fx-padding: 7px;
+}
+
+.largeButton {
+    -fx-padding: 20px;
 }
 
 .timeDisplay {
@@ -26,4 +46,147 @@
 .hint-text {
     -fx-font-size: 8;
     -fx-font-style: oblique;
+}
+
+.jfx-button {
+    -jfx-button-type: RAISED;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.jfx-text-field {
+    -fx-background-color: white;
+}
+
+.jfx-text-area {
+    -fx-background-color: white;
+    -fx-prompt-text-fill: gray;
+}
+
+.preferences .label {
+    -fx-font-weight: bold;
+}
+
+.preferenceView {
+    -fx-spacing: 8px;
+}
+
+.spinner,
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+}
+
+.spinner .text-field,
+.spinner .text-field:focused,
+.spinner .text-field:editable,
+.spinner .text-field:editable:focused{
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0px;
+    -fx-alignment: center;
+}
+
+/* table from https://github.com/TurekBot/JFXTableView_CSS/blob/master/src/main/resources/tech/ugma/education/jfoenixtableview/jfx-table-view.css
+TODO: add license
+*/
+
+.table-view {
+    -fx-table-color: rgba(82, 100, 174, 0.4);
+    -fx-table-rippler-color: rgba(82, 100, 174, 0.6);
+}
+
+:focused {
+    -fx-background-insets: -1.4, 0, 1;
+    -fx-background-radius: 1.4, 0, 0;
+    /*....*/
+    -fx-padding: 1; /* 0.083333em; */
+}
+
+.table-view:focused .table-row-cell:selected {
+    -fx-text-fill: BLACK;
+}
+
+.table-view:focused .table-row-cell:selected .table-cell {
+    -fx-text-fill: BLACK;
+}
+
+.table-view .column-header,
+.table-view .column-header-background,
+.table-view .column-header-background .filler {
+    -fx-background-color: TRANSPARENT;
+}
+
+.table-view .column-header {
+    -fx-border-width: 0 1 0 1;
+    -fx-border-color: #F3F3F3;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #949494;
+    -fx-padding: 16 0 16 0;
+}
+
+.table-view .column-header .arrow, .table-view .column-header .sort-order-dot {
+    -fx-background-color: #949494;
+}
+
+.table-view .column-header:last-visible {
+    -fx-border-width: 0 2 0 1;
+}
+
+.table-view .column-header-background {
+    -fx-border-width: 0 0.0 1 0;
+    -fx-border-color: #F3F3F3;
+}
+
+.table-view .table-cell {
+    -fx-border-width: 0 0 0 0;
+    -fx-padding: 4 0 4 5;
+}
+
+.table-view .column-overlay {
+    -fx-background-color: -fx-table-color;
+}
+
+.table-view .column-resize-line, .table-view .column-drag-header {
+    -fx-background-color: -fx-table-rippler-color;
+}
+
+.table-row-cell > .disclosure-node > .arrow {
+    -fx-background-color: -fx-text-fill;
+    -fx-padding: 0.333333em 0.229em 0.333333em 0.229em; /* 4 */
+    -fx-shape: "M 0 -3.5 L 4 0 L 0 3.5 z";
+}
+
+.table-row-cell .jfx-text-field {
+    -fx-focus-color: rgb(82, 100, 174);
+}
+
+.table-row-cell .jfx-text-field:error {
+    -jfx-focus-color: #D34336;
+    -jfx-unfocus-color: #D34336;
+}
+
+.table-row-cell .jfx-text-field .error-label {
+    -fx-text-fill: #D34336;
+    -fx-font-size: 0.75em;
+}
+
+.table-row-cell .jfx-text-field .error-icon {
+    -fx-fill: #D34336;
+    -fx-font-size: 1.0em;
+}
+
+.table-row-cell:grouped {
+    -fx-background-color: rgb(230, 230, 230);
+}
+
+.table-view .menu-item:focused {
+    -fx-background-color: -fx-table-color;
+
+}
+
+.table-view .menu-item .label {
+    -fx-padding: 5 0 5 0;
 }

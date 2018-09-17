@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,13 +10,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+<VBox alignment="TOP_CENTER" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.CommandController">
     <Text styleClass="header" text="Applications to start/stop" />
     <fx:include fx:id="addNewCmd" source="../crud/addnew.fxml" />
-   <GridPane>
+   <GridPane styleClass="preferences">
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
-       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0"/>
      </columnConstraints>
      <rowConstraints>
        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
@@ -29,8 +29,8 @@
        <RowConstraints />
      </rowConstraints>
        <children>
-           <ListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="3" />
-           <VBox fx:id="adminPaneGeneral" GridPane.columnIndex="1" GridPane.rowIndex="0">
+           <JFXListView fx:id="cmdList" editable="true" onKeyPressed="#listKeyPressed" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="3" />
+           <VBox fx:id="adminPaneGeneral" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="preferenceView">
            <GridPane.margin>
                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
            </GridPane.margin>
@@ -39,31 +39,31 @@
                     <ToggleGroup fx:id="commandType" />
                 </fx:define>
                 <Label text="Type:" />
-                <RadioButton fx:id="toggleExecution" text="Simple command" toggleGroup="$commandType"/>
-                <RadioButton fx:id="toggleScript" text="Scripts" toggleGroup="$commandType" />
+                <JFXRadioButton fx:id="toggleExecution" text="Simple command" toggleGroup="$commandType"/>
+                <JFXRadioButton fx:id="toggleScript" text="Scripts" toggleGroup="$commandType" />
             </children>
            </VBox>
            <VBox fx:id="adminPaneDetail" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <StackPane>
                <children>
-                   <VBox fx:id="adminViewExecution">
+                   <VBox fx:id="adminViewExecution" styleClass="preferenceView">
                        <Label text="Command" />
-                       <TextField fx:id="executionCommand" />
+                       <JFXTextField fx:id="executionCommand" />
                    </VBox>
-                   <VBox fx:id="adminViewScript">
+                   <VBox fx:id="adminViewScript" styleClass="preferenceView">
                        <Label text="Pomodoro script:" />
-                       <TextArea fx:id="scriptStartup" promptText="#!/bin/bash #code to run when pomodoro starts" />
+                       <JFXTextArea fx:id="scriptStartup" promptText="#!/bin/bash #code to run when pomodoro starts" />
                        <Label text="Break script:" />
-                       <TextArea fx:id="scriptStop" promptText="#!/bin/bash #code to run when break starts" />
+                       <JFXTextArea fx:id="scriptStop" promptText="#!/bin/bash #code to run when break starts" />
                    </VBox>
                </children>
                </StackPane>
            </VBox>
-           <Button fx:id="saveButton" onAction="#saveSpec" text="Save" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+           <JFXButton fx:id="saveButton" onAction="#saveSpec" styleClass="largeButton" text="Save" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
             <GridPane.margin>
-               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               <Insets left="5.0" right="5.0" top="10.0" />
             </GridPane.margin>
-           </Button>
+           </JFXButton>
        </children>
    </GridPane>
 </VBox>

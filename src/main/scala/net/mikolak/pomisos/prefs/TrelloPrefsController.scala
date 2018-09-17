@@ -3,7 +3,6 @@ package net.mikolak.pomisos.prefs
 import akka.actor.{Actor, ActorSystem, Props}
 import com.sun.org.apache.xalan.internal.xsltc.trax.DOM2SAX
 import net.mikolak.pomisos.prefs.task.{Board, CardList, SyncNotify, TrelloNetworkService}
-
 import scalafx.beans.property.{ObjectProperty, ReadOnlyObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control._
@@ -16,13 +15,15 @@ import scala.xml.Node
 import scala.xml.parsing.NoBindingFactoryAdapter
 import scalafx.Includes._
 import scalafx.application.Platform
+import scalafx.beans.binding.Bindings
+import scalafx.beans.value.ObservableValue
 import scalafx.scene.web.WebView
 import scalafx.util.StringConverter
 import shapeless._
 
 trait TrelloPrefs {
 
-  def prefs: Option[TrelloPreferences]
+  def prefs: ObservableValue[Option[TrelloPreferences], _]
 
 }
 
@@ -116,16 +117,20 @@ class TrelloPrefsController(dao: PreferenceDao,
   prefPane.visible <== authToken.mapToBoolean(_.nonEmpty)
   syncButton.visible <== !prefPane.visible
 
-  override def prefs: Option[TrelloPreferences] =
-    authToken.value.map(
-      token =>
-        TrelloPreferences(
-          Some(token),
-          Option(taskBoard.getSelectionModel.getSelectedItem).map(_.id),
-          columnControls.mapValues(_.getSelectionModel.getSelectedItem).collect {
-            case (column, CardList(id, _)) => (column, id)
-          }
-      ))
+  override lazy val prefs: ObservableValue[Option[TrelloPreferences], _] = Bindings.createObjectBinding(
+    () => {
+      authToken.value.map(
+        token =>
+          TrelloPreferences(
+            Some(token),
+            Option(taskBoard.getSelectionModel.getSelectedItem).map(_.id),
+            columnControls.mapValues(_.getSelectionModel.getSelectedItem).collect {
+              case (column, CardList(id, _)) => (column, id)
+            }
+        ))
+    },
+    (List(taskBoard) ++ columnControls.values).map(_.selectionModel): _*
+  )
 
   def doSync(event: ActionEvent): Unit = {
 

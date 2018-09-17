@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <StackPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.prefs.TrelloPrefsController">
    <children>
       <GridPane fx:id="prefPane">
@@ -32,6 +33,6 @@
             <ComboBox fx:id="doneColumn" prefWidth="150.0" promptText="Choose Column" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
       </GridPane>
-      <Button mnemonicParsing="false" text="Sync with Trello" fx:id="syncButton" onAction="#doSync"/>
+      <JFXButton mnemonicParsing="false" text="Sync with Trello" fx:id="syncButton" onAction="#doSync"/>
    </children>
 </StackPane>

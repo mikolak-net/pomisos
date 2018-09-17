@@ -1,16 +1,11 @@
 package net.mikolak.pomisos.crud
 
-import java.util.function.Predicate
-
-import org.controlsfx.validation.{Severity, ValidationResult, ValidationSupport, Validator}
-
-import scalafx.beans.property.{ObjectProperty, ReadOnlyObjectProperty}
+import com.jfoenix.controls.JFXTextField
+import net.mikolak.pomisos.utils.Implicits._
+import scalafx.beans.property.ObjectProperty
 import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, TextField}
 import scalafxml.core.macros.sfxml
-import scalafx.Includes._
-import scalafx.beans.binding.Bindings
-import net.mikolak.pomisos.utils.Implicits._
 
 trait AddNew {
   def newName: ObjectProperty[Option[String]]
@@ -30,24 +25,17 @@ class AddNewController(
     addNewArea.text.value = ""
   }
 
-  private def setUpValidation() = {
-    val textEmpty = addNewArea.text.mapToBoolean(_.trim().isEmpty)
+  private def setUpValidation(): Unit = {
+    val textEmpty = addNewArea.text.mapToBoolean(t => t == null || t.trim().isEmpty)
     addNewButton.disable <== textEmpty
 
-    val createItemHandle = addNewArea.onAction.value
+    val jfxAddNewArea = addNewArea.delegate.asInstanceOf[JFXTextField] //required in lieu of custom wrapper
+    jfxAddNewArea
+      .textProperty()
+      .addListener((_, oldVal, newVal) => {
+        if (oldVal != newVal) jfxAddNewArea.validate
+      })
 
-    def textValidator =
-      Validator.createPredicateValidator(new Predicate[String] {
-        override def test(t: String) = !textEmpty.value
-      }, "Name must not be empty", Severity.WARNING)
-
-    val validationSupport = new ValidationSupport()
-    validationSupport.registerValidator(addNewArea, textValidator)
-    validationSupport.initInitialDecoration()
-
-    val validationResult: ReadOnlyObjectProperty[ValidationResult] = validationSupport.validationResultProperty()
-
-    addNewArea.onAction <== validationResult.mapNullable(vR => if (vR.exists(_.getWarnings.isEmpty)) createItemHandle else null)
   }
 
 }

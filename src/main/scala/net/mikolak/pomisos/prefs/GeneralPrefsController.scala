@@ -1,6 +1,7 @@
 package net.mikolak.pomisos.prefs
 
 import gremlin.scala._
+import javafx.fxml.FXML
 import net.mikolak.pomisos.crud.{AddNew, SingletonDao}
 import net.mikolak.pomisos.data.{IdOf, ScalaGraphAccess}
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
@@ -8,13 +9,14 @@ import net.mikolak.pomisos.prefs.NotifySound.NotificationSound
 import net.mikolak.pomisos.prefs.task.{Board, CardList}
 
 import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.language.{postfixOps, reflectiveCalls}
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
-import scalafx.scene.control.{CheckBox, ComboBox, Spinner}
+import scalafx.scene.control.{CheckBox, ComboBox, Spinner, ToggleButton}
 import scalafx.util.StringConverter
 import scalafxml.core.macros.{nested, sfxml}
 import scalafx.Includes._
+import scalafx.beans.value.ObservableValue
 
 trait GeneralPrefs {
 
@@ -29,9 +31,9 @@ class GeneralPrefsController(
     val minutesBreakShort: Spinner[Integer],
     val minutesBreakLong: Spinner[Integer],
     val numberOfPomodorosUntilLongBreak: Spinner[Integer],
-    val playTick: CheckBox,
+    val playTick: ToggleButton,
     val notificationSound: ComboBox[Option[NotificationSound]],
-    val adaptiveEnabled: CheckBox,
+    val adaptiveEnabled: ToggleButton,
     val preferenceDao: PreferenceDao
 ) extends GeneralPrefs {
 
@@ -49,6 +51,20 @@ class GeneralPrefsController(
   notificationSound.getSelectionModel.select(preferences.audio.notificationSound)
   adaptiveEnabled.selected.value = preferences.adaptive.enabled
 
+  {
+    val allInputs = List[{ def value: ObservableValue[_, _] }](minutesPomodoro,
+                                                               minutesBreakShort,
+                                                               minutesBreakLong,
+                                                               numberOfPomodorosUntilLongBreak,
+                                                               notificationSound)
+
+    val allToggles = List(playTick, adaptiveEnabled)
+
+    allInputs.foreach(_.value.onChange(commit()))
+    allToggles.foreach(_.selected.onChange(commit()))
+    trelloPrefsController.prefs.onChange(commit())
+  }
+
   def commit() =
     preferenceDao.save(
       Preferences(
@@ -60,7 +76,7 @@ class GeneralPrefsController(
         ),
         AudioPreferences(playTick.selected.value, notificationSound.getSelectionModel.getSelectedItem),
         AdaptivePreferences(adaptiveEnabled.selected.value),
-        trelloPrefsController.prefs
+        trelloPrefsController.prefs.value
       )
     )
 

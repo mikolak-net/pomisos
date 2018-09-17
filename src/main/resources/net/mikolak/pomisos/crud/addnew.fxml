@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.validation.RequiredFieldValidator?>
 <GridPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.crud.AddNewController">
   <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="475.0" minWidth="254.0" prefWidth="333.0" />
@@ -16,8 +17,13 @@
       <RowConstraints vgrow="NEVER" />
   </rowConstraints>
     <children>
-        <TextField fx:id="addNewArea" onAction="#addItem" prefHeight="26.0" prefWidth="418.0" promptText="Enter new" />
-        <Button fx:id="addNewButton" mnemonicParsing="false" onAction="#addItem" text="Add" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+        <JFXTextField fx:id="addNewArea" onAction="#addItem" prefHeight="40.0" prefWidth="418.0" promptText="Enter new">
+            <validators>
+                <RequiredFieldValidator>
+                </RequiredFieldValidator>
+            </validators>
+        </JFXTextField>
+        <JFXButton fx:id="addNewButton" mnemonicParsing="false" onAction="#addItem" text="Add" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
     </children>
    <padding>
       <Insets bottom="10.0" top="10.0" />

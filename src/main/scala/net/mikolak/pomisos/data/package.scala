@@ -2,6 +2,7 @@ package net.mikolak.pomisos
 
 import java.time.Instant
 
+import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject
 import com.orientechnologies.orient.core.id.ORecordId
 import gremlin.scala.{ScalaGraph, id}
 import net.mikolak.pomisos.prefs.task.Card
@@ -29,11 +30,13 @@ package object data {
     def idOf(e: T): Option[IdOf[_]]
   }
 
-  case class Pomodoro(@id id: DbIdKey, name: String, completed: Boolean, cardId: Option[IdOf[Card]]) extends WithDbId
+  case class Pomodoro(@id id: DbIdKey, name: String, completed: Boolean, cardId: Option[IdOf[Card]]) extends RecursiveTreeObject[Pomodoro] with WithDbId
 
   object Pomodoro {
 
-    def apply(name: String): Pomodoro = apply(None, name, completed = false, None)
+    def apply(name: String): Pomodoro = {
+      apply(None, name, completed = false, None)
+    }
 
   }
 

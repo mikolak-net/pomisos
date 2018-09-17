@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600" minWidth="500" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.mikolak.pomisos.main.MainController">
-<StackPane minHeight="400" minWidth="500">
-    <children>
-        <VBox fx:id="management">
-            <MenuBar>
-                <menus>
-                    <Menu text="Settings">
-                        <items>
-                            <MenuItem mnemonicParsing="false" onAction="#generalPrefMenu" text="General..." />
-                            <MenuItem mnemonicParsing="false" onAction="#appMenu" text="Apps to Start/Stop..." />
-                        </items>
-                    </Menu>
-                    <Menu text="Statistics">
-                        <items>
-                            <MenuItem mnemonicParsing="false" onAction="#stats30" text="Last 30 days..." />
-                        </items>
-                    </Menu>
-                </menus>
-            </MenuBar>
-            <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
-                <children>
-                    <fx:include fx:id="newPomodoro" source="../crud/addnew.fxml" GridPane.columnSpan="2" GridPane.rowIndex="0" />
-                    <fx:include fx:id="pomodoroTable" source="pomodoro_table.fxml" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                </children>
-             <columnConstraints>
-                <ColumnConstraints maxWidth="455.0" minWidth="254.0" prefWidth="332.0" />
-                <ColumnConstraints maxWidth="251.0" minWidth="50.0" prefWidth="173.0" />
-             </columnConstraints>
-             <rowConstraints>
-                <RowConstraints fillHeight="false" vgrow="NEVER" />
-                <RowConstraints vgrow="ALWAYS"/>
-             </rowConstraints>
-            </GridPane>
-        </VBox>
-        <fx:include fx:id="runStatus" alignment="CENTER" source="run_view.fxml" visible="false" />
-        <fx:include fx:id="prefs" alignment="CENTER" source="../prefs/prefs.fxml" visible="false" />
-        <fx:include fx:id="stats" alignment="CENTER" source="../stats/last30Days.fxml" visible="false" />
-    </children>
-</StackPane>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.text.Text?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700" minWidth="700" stylesheets="@../style.css"
+      xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="net.mikolak.pomisos.main.MainController">
+    <StackPane minHeight="700" minWidth="700">
+        <children>
+            <JFXTabPane side="RIGHT">
+                <tabs>
+                    <Tab text="Pomodoro">
+                        <VBox fx:id="management">
+                            <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                                      minWidth="-Infinity">
+                                <children>
+                                    <Text styleClass="header" text="Pomodoro" GridPane.columnSpan="2"
+                                                GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+                                    <fx:include fx:id="newPomodoro" source="../crud/addnew.fxml" GridPane.columnSpan="2"
+                                                GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
+                                    <fx:include fx:id="pomodoroTable" source="pomodoro_table.fxml"
+                                                GridPane.columnSpan="2" GridPane.rowIndex="2"/>
+                                </children>
+                                <rowConstraints>
+                                    <RowConstraints fillHeight="false" vgrow="NEVER"/>
+                                    <RowConstraints fillHeight="false" vgrow="NEVER"/>
+                                    <RowConstraints vgrow="ALWAYS"/>
+                                </rowConstraints>
+                            </GridPane>
+                        </VBox>
+                    </Tab>
+                    <Tab text="Apps">
+                        <fx:include fx:id="cmd" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" source="../prefs/cmd.fxml"/>
+                    </Tab>
+                    <Tab text="Prefs">
+                        <fx:include fx:id="prefs" alignment="TOP_CENTER" VBox.vgrow="ALWAYS"
+                                    source="../prefs/general.fxml"/>
+                    </Tab>
+                    <Tab text="Stats">
+                        <fx:include fx:id="stats" alignment="TOP_CENTER" VBox.vgrow="ALWAYS"
+                                    source="../stats/last30Days.fxml"/>
+                    </Tab>
+                </tabs>
+            </JFXTabPane>
+            <fx:include fx:id="runStatus" alignment="CENTER" source="run_view.fxml" visible="false"/>
+        </children>
+    </StackPane>
 </VBox>
