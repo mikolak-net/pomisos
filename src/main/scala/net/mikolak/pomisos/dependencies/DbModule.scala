@@ -20,8 +20,10 @@ trait DbModule {
     //switch to memory:pomisos for debug
     val dbPathString = dataPath.resolve("db").toString
 
-    new OrientGraphFactory(s"plocal:$dbPathString").getNoTx
+    new OrientGraphFactory(s"$storageEngine:$dbPathString").getNoTx
   }
+
+  private def storageEngine = Option(System.getenv("STORAGE_ENGINE")).getOrElse("plocal")
 
   private lazy val scalaDb: ScalaGraph = wire[ScalaGraph]
 
