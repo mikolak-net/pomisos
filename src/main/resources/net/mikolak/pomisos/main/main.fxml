@@ -22,7 +22,7 @@
                                 <children>
                                     <Text styleClass="header" text="Pomodoro" GridPane.columnSpan="2"
                                                 GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-                                    <fx:include fx:id="newPomodoro" source="../crud/addnew.fxml" GridPane.columnSpan="2"
+                                    <fx:include fx:id="newPomodoro" source="../crud/addnewpomodoro.fxml" GridPane.columnSpan="2"
                                                 GridPane.rowIndex="1" GridPane.halignment="RIGHT"/>
                                     <fx:include fx:id="pomodoroTable" source="pomodoro_table.fxml"
                                                 GridPane.columnSpan="2" GridPane.rowIndex="2"/>

@@ -40,6 +40,7 @@ libraryDependencies ++= Seq(
   "com.github.haifengl"        %% "smile-scala"                 % smileVersion,
   "com.softwaremill.quicklens" %% "quicklens"                   % "1.4.8",
   "com.chuusai"                %% "shapeless"                   % "2.3.2",
+  "org.typelevel"              %% "cats-core"                   % "1.4.0",
   "com.typesafe.scala-logging" %% "scala-logging"               % "3.5.0",
   "ch.qos.logback"             % "logback-core"                 % logbackVersion,
   "ch.qos.logback"             % "logback-classic"              % logbackVersion,

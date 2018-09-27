@@ -5,9 +5,10 @@
 <?import javafx.scene.control.TableColumn?>
 <TableView fx:id="pomodoroTable" prefHeight="800" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
            minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="net.mikolak.pomisos.main.PomodoroTableController">
+           fx:controller="net.mikolak.pomisos.main.PomodoroTableController" >
     <columns>
-        <TableColumn fx:id="textColumn" prefWidth="520.0" resizable="false" sortable="false" text="Pomodoro"/>
-        <TableColumn fx:id="buttonColumn" prefWidth="155.0" resizable="false" sortable="false" text="Manage"/>
+        <TableColumn fx:id="textColumn" prefWidth="500.0" resizable="false" sortable="false" text="Description"/>
+        <TableColumn fx:id="commitmentColumn" styleClass="commitmentColumn" prefWidth="60.0" resizable="false" sortable="false" text="#"/>
+        <TableColumn fx:id="buttonColumn" prefWidth="115.0" resizable="false" sortable="false" text="Do"/>
     </columns>
 </TableView>

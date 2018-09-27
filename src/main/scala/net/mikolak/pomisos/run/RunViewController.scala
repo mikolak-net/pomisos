@@ -14,6 +14,7 @@ import net.mikolak.pomisos.quality.QualityService
 import net.mikolak.pomisos.utils.Notifications
 import org.controlsfx.glyphfont.FontAwesome
 import gremlin.scala._
+import net.mikolak.pomisos.crud.PomodoroDao
 import net.mikolak.pomisos.dependencies.ActorRefContainer
 import net.mikolak.pomisos.prefs.NotifySound.NotificationSound
 
@@ -28,7 +29,6 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.Text
 import scalafxml.core.macros.sfxml
 import net.mikolak.pomisos.utils.Implicits._
-
 import scalafx.beans.binding.BooleanBinding
 
 trait RunView {
@@ -51,6 +51,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
                         processMan: ActorRefContainer[ProcessManager],
                         qualityService: QualityService,
                         db: ScalaGraphAccess,
+                        pomodoroDao: PomodoroDao,
                         preferenceDao: PreferenceDao,
                         glyphs: FontAwesomeGlyphs,
                         glyphRotators: GlyphRotators)
@@ -158,13 +159,9 @@ class RunViewController(val currentPomodoroDisplay: Text,
 
   private def storeRun(period: TimerPeriod) =
     for {
-      pomId    <- period.id
-      pomodoro <- db(_.V.hasLabel[Pomodoro].hasId(pomId).headOption())
+      pomId <- period.id
     } {
-      db { db =>
-        val run = db.addVertex(PomodoroRun(Instant.now(), period.duration))
-        pomodoro.addEdge("ranAt", run)
-      }
+      pomodoroDao.addRun(PomodoroRun(pomId, Instant.now(), period.duration))
     }
 
   private def playNotifyIfNeeded() =
@@ -193,8 +190,7 @@ case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceD
     case Stop =>
       log.debug("Pomodoro stopped")
       handleUpdate(0)
-      ticker.foreach { t =>
-        t ! Stop
+      ticker.foreach { t => t ! Stop
       }
     case Tick =>
       log.debug("Pomodoro tick")

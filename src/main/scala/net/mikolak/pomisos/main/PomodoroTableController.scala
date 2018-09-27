@@ -2,6 +2,7 @@ package net.mikolak.pomisos.main
 
 import javafx.scene.control.TableCell
 import com.jfoenix.controls.JFXButton
+import net.mikolak.pomisos.crud.PomodoroDao
 import scalafx.scene.control._
 import scalafxml.core.macros.sfxml
 import scalafx.Includes._
@@ -9,8 +10,8 @@ import net.mikolak.pomisos.utils.UiUtils._
 import scalafx.beans.property.{BooleanProperty, ObjectProperty, StringProperty}
 import net.mikolak.pomisos.data.Pomodoro
 import net.mikolak.pomisos.graphics.FontAwesomeGlyphs
-import net.mikolak.pomisos.prefs.PomodoroDao
 import net.mikolak.pomisos.prefs.task.TrelloNetworkService
+import net.mikolak.pomisos.ui.CommitmentColorCalculator
 import org.controlsfx.glyphfont.FontAwesome
 import scalafx.beans.binding.Bindings
 import scalafx.event.{ActionEvent, Event}
@@ -25,7 +26,7 @@ trait PomodoroTable {
 
   def pomodoroToRun: ObjectProperty[Option[Pomodoro]]
 
-  def addItem(newName: String)
+  def addItem(newName: String, commitment: Int)
 
 }
 
@@ -33,7 +34,9 @@ trait PomodoroTable {
 class PomodoroTableController(
     val pomodoroTable: TableView[Pomodoro],
     val textColumn: TableColumn[Pomodoro, String],
+    val commitmentColumn: TableColumn[Pomodoro, String],
     val buttonColumn: TableColumn[Pomodoro, Pomodoro],
+    commitmentColorCalculator: CommitmentColorCalculator,
     dao: PomodoroDao,
     glyphs: FontAwesomeGlyphs,
     trelloNetworkService: TrelloNetworkService
@@ -47,8 +50,8 @@ class PomodoroTableController(
 
   items.onChange(observerFor(dao))
 
-  def addItem(newName: String) = {
-    val newPomodoro = dao.save(Pomodoro(newName))
+  def addItem(newName: String, commitment: Int) = {
+    val newPomodoro = dao.save(Pomodoro(newName, commitment))
     items.add(newPomodoro)
   }
 
@@ -64,19 +67,39 @@ class PomodoroTableController(
     .forTableColumn[Pomodoro]()
     .andThen(cell => {
       val completeStyle = "pomodoro-completed-text"
-      def updateComplete(): Unit = {
-        val itemIndex: Int = cell.tableRow.value.indexProperty().intValue()
-        if ((0 until items.length).contains(itemIndex)) {
-          val cpl = items.get(itemIndex).completed
+      def updateComplete(): Unit =
+        getPomForCell(cell).foreach { p =>
+          val cpl = p.completed
           if (cpl && !cell.styleClass.contains(completeStyle)) {
             cell.styleClass.add(completeStyle)
           } else if (!cpl) {
             cell.styleClass.remove(completeStyle)
           }
         }
-      }
       items.onChange(updateComplete())
       cell.item.onChange(updateComplete())
+      cell
+    })
+
+  commitmentColumn.cellValueFactory = { p =>
+    val pomodoroRuns = dao.getRunsForPomodoro(p.value)
+    Bindings.createStringBinding(() => {
+      val committed = p.value.committed
+      s"${pomodoroRuns.value} / $committed"
+    }, p.tableView.getItems, pomodoroRuns)
+  }
+
+  commitmentColumn.cellFactory = TextFieldTableCell
+    .forTableColumn[Pomodoro]()
+    .andThen(cell => {
+
+      def updateComplete() = getPomForCell(cell).foreach { p =>
+        cell.textFill <== dao.getRunsForPomodoro(p).map(commitmentColorCalculator(p.committed, _).delegate)
+      }
+
+      items.onChange(updateComplete())
+      cell.item.onChange(updateComplete())
+
       cell
     })
 
@@ -87,6 +110,11 @@ class PomodoroTableController(
   buttonColumn.cellValueFactory = { p => ObjectProperty[Pomodoro](p.value)
   }
   buttonColumn.cellFactory = _ => new ButtonCell(pomodoroToRun, glyphs)
+
+  private def getPomForCell(cell: TableCell[Pomodoro, _]): Option[Pomodoro] = {
+    val itemIndex: Int = cell.tableRow.value.indexProperty().intValue()
+    (0 until items.length).find(_ == itemIndex).map(_ => items.get(itemIndex))
+  }
 
 }
 

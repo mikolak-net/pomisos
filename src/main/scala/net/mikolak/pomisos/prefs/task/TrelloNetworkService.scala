@@ -7,6 +7,7 @@ import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
 import com.softwaremill.tagging.@@
 import com.typesafe.scalalogging.Logger
+import net.mikolak.pomisos.crud.PomodoroDao
 import net.mikolak.pomisos.data._
 import net.mikolak.pomisos.prefs.ColumnType.ColumnType
 import net.mikolak.pomisos.prefs._
@@ -77,7 +78,7 @@ class TrelloNetworkService(dao: PreferenceDao,
             lists
               .get(listId)
               .toList
-              .flatMap(_.map(card => Pomodoro(None, card.name, columnType == ColumnType.Done, Some(card.id))))
+              .flatMap(_.map(card => Pomodoro(None, card.name, 0, columnType == ColumnType.Done, Some(card.id))))
         }
     }
 

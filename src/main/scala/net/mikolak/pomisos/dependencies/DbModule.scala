@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.metadata.schema.{OClass, OType}
 import gremlin.scala.{Key, ScalaGraph, _}
 import org.apache.tinkerpop.gremlin.orientdb.{OrientGraph, OrientGraphFactory}
 import com.softwaremill.macwire._
+import net.mikolak.pomisos.crud.PomodoroDao
 import org.apache.commons.configuration.BaseConfiguration
 import net.mikolak.pomisos.data.{Pomodoro, PomodoroRun, ScalaGraphAccess}
 import net.mikolak.pomisos.prefs._

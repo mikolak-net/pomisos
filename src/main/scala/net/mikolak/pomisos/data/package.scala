@@ -30,17 +30,18 @@ package object data {
     def idOf(e: T): Option[IdOf[_]]
   }
 
-  case class Pomodoro(@id id: DbIdKey, name: String, completed: Boolean, cardId: Option[IdOf[Card]]) extends RecursiveTreeObject[Pomodoro] with WithDbId
+  case class Pomodoro(@id id: DbIdKey, name: String, committed: Int, completed: Boolean, cardId: Option[IdOf[Card]])
+      extends RecursiveTreeObject[Pomodoro]
+      with WithDbId
 
   object Pomodoro {
 
-    def apply(name: String): Pomodoro = {
-      apply(None, name, completed = false, None)
-    }
+    def apply(name: String, committed: Int = 0): Pomodoro =
+      apply(None, name, committed, completed = false, None)
 
   }
 
   case class TimerPeriod(id: DbIdKey, name: String, duration: Duration)
 
-  case class PomodoroRun(endTime: Instant, duration: Duration)
+  case class PomodoroRun(pomodoroId: DbId, endTime: Instant, duration: Duration)
 }
