@@ -161,7 +161,7 @@ class RunViewController(val currentPomodoroDisplay: Text,
     for {
       pomId <- period.id
     } {
-      pomodoroDao.addRun(PomodoroRun(pomId, Instant.now(), period.duration))
+      pomodoroDao.addRun(pomId, PomodoroRun(Instant.now(), period.duration))
     }
 
   private def playNotifyIfNeeded() =
@@ -190,7 +190,8 @@ case class TimerActor(remainingSeconds: LongProperty, preferenceDao: PreferenceD
     case Stop =>
       log.debug("Pomodoro stopped")
       handleUpdate(0)
-      ticker.foreach { t => t ! Stop
+      ticker.foreach { t =>
+        t ! Stop
       }
     case Tick =>
       log.debug("Pomodoro tick")

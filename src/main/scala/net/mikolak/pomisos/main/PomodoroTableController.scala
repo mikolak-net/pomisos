@@ -61,7 +61,8 @@ class PomodoroTableController(
     Option(selectedIndex.value).filter(_ => k.code == KeyCode.Delete).foreach(i => items.remove(i.toInt))
   }
 
-  textColumn.cellValueFactory = { p => Bindings.createStringBinding(() => p.value.name, p.tableView.getItems)
+  textColumn.cellValueFactory = { p =>
+    Bindings.createStringBinding(() => p.value.name, p.tableView.getItems)
   }
   textColumn.cellFactory = TextFieldTableCell
     .forTableColumn[Pomodoro]()
@@ -99,7 +100,6 @@ class PomodoroTableController(
 
       items.onChange(updateComplete())
       cell.item.onChange(updateComplete())
-
       cell
     })
 
@@ -107,7 +107,8 @@ class PomodoroTableController(
     dao.saveWith(_.copy(name = e.newValue))(e.rowValue.id)
   }
 
-  buttonColumn.cellValueFactory = { p => ObjectProperty[Pomodoro](p.value)
+  buttonColumn.cellValueFactory = { p =>
+    ObjectProperty[Pomodoro](p.value)
   }
   buttonColumn.cellFactory = _ => new ButtonCell(pomodoroToRun, glyphs)
 

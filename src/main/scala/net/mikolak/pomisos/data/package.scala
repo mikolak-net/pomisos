@@ -31,8 +31,7 @@ package object data {
   }
 
   case class Pomodoro(@id id: DbIdKey, name: String, committed: Int, completed: Boolean, cardId: Option[IdOf[Card]])
-      extends RecursiveTreeObject[Pomodoro]
-      with WithDbId
+      extends WithDbId
 
   object Pomodoro {
 
@@ -43,5 +42,5 @@ package object data {
 
   case class TimerPeriod(id: DbIdKey, name: String, duration: Duration)
 
-  case class PomodoroRun(pomodoroId: DbId, endTime: Instant, duration: Duration)
+  case class PomodoroRun(endTime: Instant, duration: Duration)
 }

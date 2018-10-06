@@ -29,8 +29,7 @@ class PomodoroDao(db: ScalaGraphAccess) extends MultiDao[Pomodoro] {
   override def removeAll(): Unit = db[Unit](getAllQuery.andThen(_.drop().iterate()))
 
   private val LabelRan = "ranAt"
-  def addRun(run: PomodoroRun) = {
-    val pomId = run.pomodoroId
+  def addRun(pomId: DbId, run: PomodoroRun) =
     for {
       vPomodoro ← elemWithIdQuery(pomId)
     } {
@@ -40,14 +39,14 @@ class PomodoroDao(db: ScalaGraphAccess) extends MultiDao[Pomodoro] {
         observablesForRuns.get(pomId.some).foreach(_.value += 1)
       }
     }
-  }
 
   private var observablesForRuns: Map[DbIdKey, LongProperty] = Map.empty
 
   def getRunsForPomodoro(pomodoro: Pomodoro): LongProperty =
     observablesForRuns.getOrElse(
       pomodoro.id, {
-        val value     = currentRunsForPomodoro(pomodoro.id)
+        val value = currentRunsForPomodoro(pomodoro.id)
+        println(value)
         val newBuffer = LongProperty(value.getOrElse(0L))
 
         observablesForRuns += pomodoro.id → newBuffer
@@ -56,12 +55,14 @@ class PomodoroDao(db: ScalaGraphAccess) extends MultiDao[Pomodoro] {
     )
 
   private def currentRunsForPomodoro(pomodoroId: DbIdKey) =
-    db(
-      _.V
-        .hasId(pomodoroId)
-        .outE()
-        .hasLabel(LabelRan)
-        .count()
-        .headOption()
-        .map(_.longValue()))
+    pomodoroId.flatMap { id =>
+      db(
+        _.V
+          .hasId(id)
+          .outE()
+          .hasLabel(LabelRan)
+          .count()
+          .headOption()
+          .map(_.longValue()))
+    }
 }
