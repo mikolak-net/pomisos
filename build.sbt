@@ -62,8 +62,6 @@ assemblyMergeStrategy in assembly := {
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
-scalacOptions += "-P:clippy:colors=true"
-
 val makeIcons = taskKey[Seq[File]]("make them icons")
 
 resourceGenerators in Compile += makeIcons.taskValue
