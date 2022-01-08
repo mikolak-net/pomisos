@@ -36,7 +36,8 @@ class TrelloPrefsController(dao: PreferenceDao,
                             todoColumn: ComboBox[CardList],
                             doingColumn: ComboBox[CardList],
                             doneColumn: ComboBox[CardList],
-                            syncButton: Button)
+                            syncButton: Button,
+                            clearButton: Button)
     extends TrelloPrefs {
 
   import TrelloPrefsControllerUtils._
@@ -58,6 +59,8 @@ class TrelloPrefsController(dao: PreferenceDao,
       val newBoardId = Option(newVal).map(_.id)
       dao.saveWith(_.modify(_.trello.each.board).setTo(newBoardId))
       actorSystem.eventStream.publish(SyncNotify)
+
+      clearButton.disable = newVal == null
     })
 
   for ((columnType, columnBox) <- columnControls) {
@@ -116,6 +119,8 @@ class TrelloPrefsController(dao: PreferenceDao,
 
   prefPane.visible <== authToken.mapToBoolean(_.nonEmpty)
   syncButton.visible <== !prefPane.visible
+
+  clearButton.onAction = () => taskBoard.getSelectionModel.clearSelection()
 
   override lazy val prefs: ObservableValue[Option[TrelloPreferences], _] = Bindings.createObjectBinding(
     () => {

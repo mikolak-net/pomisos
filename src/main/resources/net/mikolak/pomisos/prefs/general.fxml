@@ -28,7 +28,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="10.0" prefHeight="120.0" vgrow="ALWAYS" />
         </rowConstraints>
         <children>
             <Label text="Minutes for pomodoro:" />
