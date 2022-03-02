@@ -44,7 +44,8 @@ object App extends JFXApp {
   stage = new PrimaryStage() {
     title = "pomisos"
     scene = new Scene(root)
-    resizable = false
+    //FIXME: this should be false, but needed as a workaround to the resize on start problem
+    resizable = true
     icons += dependencies.icon.image
   }
 
@@ -64,6 +65,8 @@ object App extends JFXApp {
   private def showStage(): Unit = {
     stage.show()
     stage.toFront()
+    //FIXME: this should be unnecessary, but possibly helps as a workaround to the resize on start problem
+    stage.sizeToScene()
   }
 
   private def doExit(): Unit = {
