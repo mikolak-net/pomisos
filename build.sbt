@@ -14,14 +14,14 @@ resolvers += "jitpack" at "https://jitpack.io"
 resolvers += Resolver.bintrayRepo("jerady", "maven")
 
 val gremlinVersion = "3.2.3."
-val sfxVersion     = "0.3"
+val sfxVersion     = "0.5"
 val macwireVersion = "2.3.0"
 val akkaVersion    = "2.4.17"
 val logbackVersion = "1.2.2"
 val smileVersion   = "1.3.1"
 
 libraryDependencies ++= Seq(
-  "org.scalafx"                %% "scalafx"                     % "8.0.102-R11",
+  "org.scalafx"                %% "scalafx"                     % "8.0.192-R14",
   "org.scalafx"                %% "scalafxml-core-sfx8"         % sfxVersion,
   "org.scalafx"                %% "scalafxml-macwire-sfx8"      % sfxVersion,
   "de.jensd"                   % "fontawesomefx-fontawesome"    % "4.7.0-9.1.2",
